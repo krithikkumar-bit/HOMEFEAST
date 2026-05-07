@@ -389,6 +389,27 @@ tr:hover td{background:rgba(232,93,44,.02)}
 }
 @media(max-width:480px){.steps-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}.hero-title{font-size:2rem}.cta-form{flex-direction:column}.auth-card{padding:24px 18px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}html{scroll-behavior:auto}}
+.role-tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.role-tab{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#f3f3f3;
+  cursor:pointer;
+  font-weight:600;
+  transition:.3s;
+}
+
+.role-tab.active{
+  background:var(--accent);
+  color:#fff;
+}
 </style>
 </head>
 <body>
@@ -540,8 +561,6 @@ const cur=getRoute().page;
 if(auth){const inits=ini(S.user.name);$('#authArea').innerHTML=`<div style="position:relative"><button class="user-btn" id="uBtn">${inits}</button><div class="user-dd" id="uDD"><a data-nv="${r==='cook'?'cook-settings':'profile'}"><i class="fas fa-user"></i> My Profile</a>${r==='user'?'<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>':''}<div class="dd-div"></div><button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button></div></div>`;$('#uBtn')?.addEventListener('click',e=>{e.stopPropagation();$('#uDD').classList.toggle('open')});document.addEventListener('click',e=>{if(!$('#authArea').contains(e.target))$('#uDD')?.classList.remove('open')});$('#loBtn')?.addEventListener('click',()=>{closeMob();doLogout()})}else{$('#authArea').innerHTML=`<button class="btn btn-p btn-sm" data-nv="login">Login</button>`}
 // Cart badge
 const cb=$('#cartBadge');const cc=cartCount();cb.textContent=cc;cb.classList.toggle('vis',cc>0);
-// Demo panel visibility
- $('#demoPanel').style.display='';
 // Bind nav
  $$('[data-nv]').forEach(el=>{if(el.dataset.nvBound)return;el.dataset.nvBound='1';el.addEventListener('click',e=>{e.preventDefault();closeMob();nav(el.dataset.nv)})});
 }
@@ -739,10 +758,47 @@ function pgLogin(a){
         <h2>Welcome Back</h2>
 
         <p class="auth-sub">
-          Login to your HomeFeast account
+          Select your login type
         </p>
 
+        <div class="role-tabs">
+
+          <button
+            type="button"
+            class="role-tab active"
+            id="userTab">
+
+            User
+
+          </button>
+
+          <button
+            type="button"
+            class="role-tab"
+            id="cookTab">
+
+            Cook
+
+          </button>
+
+          <button
+            type="button"
+            class="role-tab"
+            id="adminTab">
+
+            Admin
+
+          </button>
+
+        </div>
+
         <form id="loginF">
+
+          <input
+            type="hidden"
+            id="loginRole"
+            value="user"
+          />
 
           <div class="fg">
 
@@ -806,6 +862,55 @@ function pgLogin(a){
 
   updateUI();
 
+  /* =========================
+     ROLE SWITCHING
+  ========================= */
+
+  let currentRole = 'user';
+
+  $('#userTab',a).onclick = () => {
+
+    currentRole = 'user';
+
+    $('#loginRole',a).value = 'user';
+
+    $('#userTab',a).classList.add('active');
+
+    $('#cookTab',a).classList.remove('active');
+
+    $('#adminTab',a).classList.remove('active');
+  };
+
+  $('#cookTab',a).onclick = () => {
+
+    currentRole = 'cook';
+
+    $('#loginRole',a).value = 'cook';
+
+    $('#cookTab',a).classList.add('active');
+
+    $('#userTab',a).classList.remove('active');
+
+    $('#adminTab',a).classList.remove('active');
+  };
+
+  $('#adminTab',a).onclick = () => {
+
+    currentRole = 'admin';
+
+    $('#loginRole',a).value = 'admin';
+
+    $('#adminTab',a).classList.add('active');
+
+    $('#userTab',a).classList.remove('active');
+
+    $('#cookTab',a).classList.remove('active');
+  };
+
+  /* =========================
+     LOGIN SUBMIT
+  ========================= */
+
   $('#loginF',a).addEventListener(
     'submit',
     async e => {
@@ -839,7 +944,8 @@ function pgLogin(a){
 
             body: JSON.stringify({
               email,
-              password
+              password,
+              role: currentRole
             })
           }
         );
@@ -1796,65 +1902,6 @@ updateUI();
 if(!window.location.hash)window.location.hash='#home';
 route();
 });
-async function doLogin(e){
-
-  e.preventDefault();
-
-  const email =
-    document.getElementById('loginEmail').value;
-
-  const password =
-    document.getElementById('loginPassword').value;
-
-  try{
-
-    const res = await fetch(
-      'http://localhost:5000/api/auth/login',
-      {
-        method:'POST',
-
-        headers:{
-          'Content-Type':'application/json'
-        },
-
-        body: JSON.stringify({
-          email,
-          password
-        })
-      }
-    );
-
-    const data = await res.json();
-
-    if(!res.ok){
-
-      toast(data.message || 'Login failed','error');
-      return;
-    }
-
-    localStorage.setItem(
-      'hf_tk',
-      data.token
-    );
-
-    localStorage.setItem(
-      'hf_user',
-      JSON.stringify(data.user)
-    );
-
-    S.user = data.user;
-
-    toast('Login successful');
-
-    nav('home');
-
-  }catch(err){
-
-    console.error(err);
-
-    toast('Server error','error');
-  }
-}
 </script>
 </body>
 </html>

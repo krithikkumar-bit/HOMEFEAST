@@ -26,22 +26,91 @@ router.post('/register', async (req, res, next) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ success: false, message: 'Provide email and password' });
+router.post('/login', async (req,res)=>{
 
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) return res.status(401).json({ success: false, message: 'Invalid email or password' });
-    if (user.status === 'Suspended') return res.status(403).json({ success: false, message: 'Account suspended' });
+  try{
 
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    const {
+      email,
+      password,
+      role
+    } = req.body;
 
-    const token = generateToken(user._id);
-    res.cookie('token', token, { httpOnly: true, expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), sameSite: 'lax' });
-    res.json({ success: true, message: 'Login successful', data: { id: user._id, name: user.fullName, email: user.email, role: user.role }, token });
-  } catch (err) { next(err); }
+    const User =
+      require('../models/User');
+
+    const Cook =
+      require('../models/Cook');
+
+    let account;
+
+    if(role === 'cook'){
+
+      account = await Cook.findOne({ email });
+
+    }else{
+
+      account = await User.findOne({
+        email,
+        role
+      });
+    }
+
+    if(!account){
+
+      return res.status(401).json({
+        success:false,
+        message:'Invalid credentials'
+      });
+    }
+
+    const bcrypt =
+      require('bcryptjs');
+
+    const jwt =
+      require('jsonwebtoken');
+
+    const isMatch =
+      await bcrypt.compare(
+        password,
+        account.password
+      );
+
+    if(!isMatch){
+
+      return res.status(401).json({
+        success:false,
+        message:'Invalid credentials'
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: account._id,
+        role: account.role
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn:'7d'
+      }
+    );
+
+    res.json({
+      success:true,
+      token,
+      user:account
+    });
+
+  }catch(err){
+
+    console.error(err);
+
+    res.status(500).json({
+      success:false,
+      message:'Server error'
+    });
+  }
+
 });
 
 // GET /api/auth/me
