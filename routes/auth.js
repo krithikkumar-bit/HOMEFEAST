@@ -27,9 +27,9 @@ router.post('/register', async (req, res, next) => {
 
 // POST /api/auth/login
 // POST /api/auth/login
-router.post('/login', async (req,res)=>{
+router.post('/login', async (req, res) => {
 
-  try{
+  try {
 
     const {
       email,
@@ -38,65 +38,58 @@ router.post('/login', async (req,res)=>{
     } = req.body;
 
     const account = await User.findOne({
-  email,
-  role
-}).select('+password');
+      email,
+      role
+    }).select('+password');
 
-    if(!account){
+    if (!account) {
 
       return res.status(401).json({
-        success:false,
-        message:'Invalid credentials'
+        success: false,
+        message: 'Invalid credentials'
       });
     }
-
-    const bcrypt =
-      require('bcryptjs');
 
     const isMatch =
-      await bcrypt.compare(
-        password,
-        account.password
-      );
+      await account.matchPassword(password);
 
-    if(!isMatch){
+    if (!isMatch) {
 
       return res.status(401).json({
-        success:false,
-        message:'Invalid credentials'
+        success: false,
+        message: 'Invalid credentials'
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: account._id,
-        role: account.role
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn:'7d'
-      }
-    );
+    const token = generateToken(account._id);
 
     res.json({
-      success:true,
+
+      success: true,
+
       token,
-      user:{
+
+      user: {
+
         id: account._id,
+
         firstName: account.firstName,
+
         lastName: account.lastName,
+
         email: account.email,
+
         role: account.role
       }
     });
 
-  }catch(err){
+  } catch (err) {
 
     console.error(err);
 
     res.status(500).json({
-      success:false,
-      message:'Server error'
+      success: false,
+      message: 'Server error'
     });
   }
 
