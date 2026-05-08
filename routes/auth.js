@@ -26,6 +26,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 // POST /api/auth/login
+// POST /api/auth/login
 router.post('/login', async (req,res)=>{
 
   try{
@@ -36,25 +37,10 @@ router.post('/login', async (req,res)=>{
       role
     } = req.body;
 
-    const User =
-      require('../models/User');
-
-    const Cook =
-      require('../models/Cook');
-
-    let account;
-
-    if(role === 'cook'){
-
-      account = await Cook.findOne({ email });
-
-    }else{
-
-      account = await User.findOne({
-        email,
-        role
-      });
-    }
+    const account = await User.findOne({
+      email,
+      role
+    });
 
     if(!account){
 
@@ -66,9 +52,6 @@ router.post('/login', async (req,res)=>{
 
     const bcrypt =
       require('bcryptjs');
-
-    const jwt =
-      require('jsonwebtoken');
 
     const isMatch =
       await bcrypt.compare(
@@ -98,7 +81,13 @@ router.post('/login', async (req,res)=>{
     res.json({
       success:true,
       token,
-      user:account
+      user:{
+        id: account._id,
+        firstName: account.firstName,
+        lastName: account.lastName,
+        email: account.email,
+        role: account.role
+      }
     });
 
   }catch(err){
