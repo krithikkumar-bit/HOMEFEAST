@@ -3458,33 +3458,260 @@
 
         /* ── CHECKOUT ── */
         function pgCheckout(a) {
-            if (!S.user) { nav('login'); return } if (S.cart.length === 0) { nav('cart'); return }
-            const sub = cartSub(), del = sub >= 500 ? 0 : 29, gst = Math.round(sub * .05), tot = sub + del + gst;
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Checkout</div><h2 class="sec-title">Complete Your Order</h2></div>
-<div class="checkout-layout"><div>
-<div class="co-card"><h3><span class="sn">1</span> Delivery Address</h3><form id="coF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="coN" value="${S.user.name}" required/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="coPh" value="${S.user.phone || ''}" required/></div></div><div class="fg"><label class="fl">Address Line 1</label><input class="fi" id="coA1" value="${S.user.address?.line1 || ''}" placeholder="House, Building, Street" required/></div><div class="fg"><label class="fl">Address Line 2</label><input class="fi" id="coA2" value="${S.user.address?.line2 || ''}" placeholder="Landmark, Area"/></div><div class="fr"><div class="fg"><label class="fl">City</label><input class="fi" id="coCity" value="${S.user.address?.city || 'Bangalore'}" required/></div><div class="fg"><label class="fl">PIN Code</label><input class="fi" id="coPin" value="${S.user.address?.pin || ''}" required/></div></div><div class="fg"><label class="fl">Notes</label><textarea class="fi" id="coNotes" rows="2" placeholder="Delivery instructions..."></textarea></div></form></div>
-<div class="co-card"><h3><span class="sn">2</span> Payment</h3><div class="pay-opts"><label class="pay-opt active" data-pay="cod"><input type="radio" name="pay" value="cod" checked/><div class="rc"></div><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></label><label class="pay-opt" data-pay="online"><input type="radio" name="pay" value="online"/><div class="rc"></div><i class="fas fa-credit-card"></i><span>Online Payment</span></label></div></div>
+    if (!S.user) { nav('login'); return }
+    if (S.cart.length === 0) { nav('cart'); return }
+
+    const sub = cartSub(),
+        del = sub >= 500 ? 0 : 29,
+        gst = Math.round(sub * .05),
+        tot = sub + del + gst;
+
+    a.innerHTML = `<section class="page-sec"><div class="container">
+<div style="margin-bottom:24px">
+<div class="sec-label">Checkout</div>
+<h2 class="sec-title">Complete Your Order</h2>
 </div>
-<div class="cart-summary"><h3>Summary</h3>${S.cart.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}<div style="height:1px;background:var(--border);margin:12px 0"></div><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div><div class="sum-row"><span>GST</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem"><i class="fas fa-check-circle"></i> Place Order</button></div></div></div></section>`;
-            updateUI();
-            $$('.pay-opt', a).forEach(o => o.addEventListener('click', () => { $$('.pay-opt', a).forEach(x => x.classList.remove('active')); o.classList.add('active'); o.querySelector('input').checked = true }));
-            $('#placeOrder', a)?.addEventListener('click', async () => {
-                const form = $('#coF', a); if (!form.checkValidity()) { form.reportValidity(); return }
-                const addr = { name: $('#coN', a).value.trim(), phone: $('#coPh', a).value.trim(), line1: $('#coA1', a).value.trim(), line2: $('#coA2', a).value.trim(), city: $('#coCity', a).value.trim(), pin: $('#coPin', a).value.trim(), notes: $('#coNotes', a).value.trim() };
-                const pay = $('input[name=pay]:checked', a)?.value || 'cod';
-                const items = S.cart.map(c => ({ mealId: c.mid, name: c.name, price: c.price, qty: c.qty }));
-                const btn = $('#placeOrder', a); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing...';
-                try {
-                    const res = await api('/orders', { method: 'POST', body: JSON.stringify({ items, address: addr, paymentMethod: pay }) });
-                    clearCart(); toast('Order placed successfully!'); nav('orders');
-                } catch (err) {
-                    console.error(err); toast('Order failed', 'error');
-                } finally {
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
-                }
-            });
+
+<div class="checkout-layout">
+<div>
+
+<div class="co-card">
+<h3><span class="sn">1</span> Delivery Address</h3>
+
+<form id="coF">
+
+<div class="fr">
+
+<div class="fg">
+<label class="fl">Name</label>
+
+<input 
+class="fi" 
+id="coN" 
+value="${S.user.fullName || S.user.username || ''}" 
+required
+/>
+
+</div>
+
+<div class="fg">
+<label class="fl">Phone</label>
+
+<input 
+class="fi" 
+id="coPh" 
+value="${S.user.phone || ''}" 
+required
+/>
+
+</div>
+
+</div>
+
+<div class="fg">
+<label class="fl">Address Line 1</label>
+
+<input 
+class="fi" 
+id="coA1" 
+value="${S.user.address?.line1 || ''}" 
+placeholder="House, Building, Street" 
+required
+/>
+
+</div>
+
+<div class="fg">
+<label class="fl">Address Line 2</label>
+
+<input 
+class="fi" 
+id="coA2" 
+value="${S.user.address?.line2 || ''}" 
+placeholder="Landmark, Area"
+/>
+
+</div>
+
+<div class="fr">
+
+<div class="fg">
+<label class="fl">City</label>
+
+<input 
+class="fi" 
+id="coCity" 
+value="${S.user.address?.city || 'Bangalore'}" 
+required
+/>
+
+</div>
+
+<div class="fg">
+<label class="fl">PIN Code</label>
+
+<input 
+class="fi" 
+id="coPin" 
+value="${S.user.address?.pin || ''}" 
+required
+/>
+
+</div>
+
+</div>
+
+<div class="fg">
+<label class="fl">Notes</label>
+
+<textarea 
+class="fi" 
+id="coNotes" 
+rows="2" 
+placeholder="Delivery instructions..."
+></textarea>
+
+</div>
+
+</form>
+</div>
+
+<div class="co-card">
+<h3><span class="sn">2</span> Payment</h3>
+
+<div class="pay-opts">
+
+<label class="pay-opt active" data-pay="cod">
+<input type="radio" name="pay" value="cod" checked/>
+<div class="rc"></div>
+<i class="fas fa-money-bill-wave"></i>
+<span>Cash on Delivery</span>
+</label>
+
+<label class="pay-opt" data-pay="online">
+<input type="radio" name="pay" value="online"/>
+<div class="rc"></div>
+<i class="fas fa-credit-card"></i>
+<span>Online Payment</span>
+</label>
+
+</div>
+</div>
+
+</div>
+
+<div class="cart-summary">
+
+<h3>Summary</h3>
+
+${S.cart.map(i => `
+<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem">
+<span>${i.name} x${i.qty}</span>
+<span style="font-weight:600">${fp(i.price * i.qty)}</span>
+</div>
+`).join('')}
+
+<div style="height:1px;background:var(--border);margin:12px 0"></div>
+
+<div class="sum-row">
+<span>Subtotal</span>
+<span>${fp(sub)}</span>
+</div>
+
+<div class="sum-row ${del === 0 ? 'free' : ''}">
+<span>Delivery</span>
+<span>${del === 0 ? 'FREE' : fp(del)}</span>
+</div>
+
+<div class="sum-row">
+<span>GST</span>
+<span>${fp(gst)}</span>
+</div>
+
+<div class="sum-total">
+<span class="lb">Total</span>
+<span class="am">${fp(tot)}</span>
+</div>
+
+<button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem">
+<i class="fas fa-check-circle"></i> Place Order
+</button>
+
+</div>
+</div>
+</div>
+</section>`;
+
+    updateUI();
+
+    $$('.pay-opt', a).forEach(o =>
+        o.addEventListener('click', () => {
+            $$('.pay-opt', a).forEach(x => x.classList.remove('active'));
+            o.classList.add('active');
+            o.querySelector('input').checked = true;
+        })
+    );
+
+    $('#placeOrder', a)?.addEventListener('click', async () => {
+
+        const form = $('#coF', a);
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
         }
+
+        const addr = {
+            name: $('#coN', a).value.trim(),
+            phone: $('#coPh', a).value.trim(),
+            line1: $('#coA1', a).value.trim(),
+            line2: $('#coA2', a).value.trim(),
+            city: $('#coCity', a).value.trim(),
+            pin: $('#coPin', a).value.trim(),
+            notes: $('#coNotes', a).value.trim()
+        };
+
+        const pay = $('input[name=pay]:checked', a)?.value || 'cod';
+
+        const items = S.cart.map(c => ({
+            mealId: c.mid,
+            name: c.name,
+            price: c.price,
+            qty: c.qty
+        }));
+
+        const btn = $('#placeOrder', a);
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing...';
+
+        try {
+
+            const res = await api('/orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                    items,
+                    address: addr,
+                    paymentMethod: pay
+                })
+            });
+
+            clearCart();
+            toast('Order placed successfully!');
+            nav('orders');
+
+        } catch (err) {
+
+            console.error(err);
+            toast('Order failed', 'error');
+
+        } finally {
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+        }
+    });
+}
 
         /* ── ORDERS ── */
         async function pgOrders(a) {
