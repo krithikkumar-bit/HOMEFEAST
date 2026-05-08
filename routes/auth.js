@@ -38,9 +38,9 @@ router.post('/login', async (req,res)=>{
     } = req.body;
 
     const account = await User.findOne({
-      email,
-      role
-    });
+  email,
+  role
+}).select('+password');
 
     if(!account){
 
