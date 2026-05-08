@@ -558,7 +558,123 @@ const cur=getRoute().page;
 // Mobile
  $('#mobMenu').innerHTML=Object.entries(links).map(([k,v])=>`<a data-nv="${k}">${v}</a>`).join('')+(auth?'':`<a data-nv="login">Login / Register</a>`);
 // Auth area
-if(auth){const inits=ini(S.user.name);$('#authArea').innerHTML=`<div style="position:relative"><button class="user-btn" id="uBtn">${inits}</button><div class="user-dd" id="uDD"><a data-nv="${r==='cook'?'cook-settings':'profile'}"><i class="fas fa-user"></i> My Profile</a>${r==='user'?'<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>':''}<div class="dd-div"></div><button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button></div></div>`;$('#uBtn')?.addEventListener('click',e=>{e.stopPropagation();$('#uDD').classList.toggle('open')});document.addEventListener('click',e=>{if(!$('#authArea').contains(e.target))$('#uDD')?.classList.remove('open')});$('#loBtn')?.addEventListener('click',()=>{closeMob();doLogout()})}else{$('#authArea').innerHTML=`<button class="btn btn-p btn-sm" data-nv="login">Login</button>`}
+if(auth){
+
+  const fullName =
+    `${S.user.firstName || ''} ${S.user.lastName || ''}`.trim();
+
+  const inits =
+    ini(fullName || 'U');
+
+  $('#authArea').innerHTML = `
+  <div style="position:relative">
+
+    <button
+      class="user-btn"
+      id="uBtn">
+
+      ${inits}
+
+    </button>
+
+    <div
+      class="user-dd"
+      id="uDD">
+
+      <a data-nv="${
+        r === 'cook'
+        ? 'cook-settings'
+        : 'profile'
+      }">
+
+        <i class="fas fa-user"></i>
+
+        My Profile
+
+      </a>
+
+      ${
+        r === 'user'
+        ? `
+        <a data-nv="orders">
+
+          <i class="fas fa-receipt"></i>
+
+          My Orders
+
+        </a>
+
+        <a data-nv="subscriptions">
+
+          <i class="fas fa-repeat"></i>
+
+          Subscriptions
+
+        </a>
+        `
+        : ''
+      }
+
+      <div class="dd-div"></div>
+
+      <button id="loBtn">
+
+        <i class="fas fa-right-from-bracket"></i>
+
+        Logout
+
+      </button>
+
+    </div>
+
+  </div>
+  `;
+
+  $('#uBtn')?.addEventListener(
+    'click',
+    e => {
+
+      e.stopPropagation();
+
+      $('#uDD').classList.toggle('open');
+    }
+  );
+
+  document.addEventListener(
+    'click',
+    e => {
+
+      if(
+        !$('#authArea').contains(e.target)
+      ){
+
+        $('#uDD')?.classList.remove('open');
+      }
+    }
+  );
+
+  $('#loBtn')?.addEventListener(
+    'click',
+    () => {
+
+      closeMob();
+
+      doLogout();
+    }
+  );
+
+}else{
+
+  $('#authArea').innerHTML = `
+  <button
+    class="btn btn-p btn-sm"
+    data-nv="login">
+
+    Login
+
+  </button>
+  `;
+}
 // Cart badge
 const cb=$('#cartBadge');const cc=cartCount();cb.textContent=cc;cb.classList.toggle('vis',cc>0);
 // Bind nav
@@ -1515,7 +1631,88 @@ function pgProfile(a){if(!S.user){nav('login');return}
 a.innerHTML=`<section class="page-sec"><div class="container" style="max-width:600px">
 <div style="margin-bottom:24px"><div class="sec-label">Account</div><h2 class="sec-title">My Profile</h2></div>
 <div class="prof-header"><div class="prof-av">${ini(S.user.name)}</div><div class="prof-info"><h2>${S.user.name}</h2><p>${S.user.email} | ${S.user.role}</p></div></div>
-<div class="co-card"><h3><i class="fas fa-pen" style="color:var(--accent)"></i> Edit Profile</h3><form id="profF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="pN" value="${S.user.name}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="pPh" value="${S.user.phone||''}"/></div></div><div class="fg"><label class="fl">Address</label><input class="fi" id="pAddr" value="${S.user.address?.line1+', '+S.user.address?.line2||''}"/></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save</button></form></div>
+<div class="co-card">
+
+  <h3>
+
+    <i
+      class="fas fa-pen"
+      style="color:var(--accent)">
+    </i>
+
+    Edit Profile
+
+  </h3>
+
+  <form id="profF">
+
+    <div class="fr">
+
+      <div class="fg">
+
+        <label class="fl">
+          Name
+        </label>
+
+        <input
+          class="fi"
+          id="pN"
+          value="${S.user.firstName || ''} ${S.user.lastName || ''}"
+        />
+
+      </div>
+
+      <div class="fg">
+
+        <label class="fl">
+          Phone
+        </label>
+
+        <input
+          class="fi"
+          id="pPh"
+          value="${S.user.phone || ''}"
+        />
+
+      </div>
+
+    </div>
+
+    <div class="fg">
+
+      <label class="fl">
+        Address
+      </label>
+
+      <input
+        class="fi"
+        id="pAddr"
+        value="${
+          S.user.address
+          ? `${S.user.address.line1 || ''}${
+              S.user.address.line2
+              ? ', ' + S.user.address.line2
+              : ''
+            }`
+          : ''
+        }"
+      />
+
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-p btn-sm">
+
+      <i class="fas fa-save"></i>
+
+      Save
+
+    </button>
+
+  </form>
+
+</div>
 <div class="co-card"><h3><i class="fas fa-key" style="color:var(--accent)"></i> Change Password</h3><form id="passF"><div class="fg"><label class="fl">Current Password</label><input class="fi" type="password" id="curP"/></div><div class="fg"><label class="fl">New Password</label><input class="fi" type="password" id="newP" minlength="6"/></div><div class="fg"><label class="fl">Confirm</label><input class="fi" type="password" id="confP"/></div><button type="submit" class="btn btn-o btn-sm"><i class="fas fa-lock"></i> Update</button></form></div>
 </div></section>`;
 updateUI();
