@@ -1630,7 +1630,33 @@ let selStars=0;
 function pgProfile(a){if(!S.user){nav('login');return}
 a.innerHTML=`<section class="page-sec"><div class="container" style="max-width:600px">
 <div style="margin-bottom:24px"><div class="sec-label">Account</div><h2 class="sec-title">My Profile</h2></div>
-<div class="prof-header"><div class="prof-av">${ini(S.user.name)}</div><div class="prof-info"><h2>${S.user.name}</h2><p>${S.user.email} | ${S.user.role}</p></div></div>
+<div class="prof-header">
+
+  <div class="prof-av">
+
+    ${ini(
+      `${S.user.firstName || ''} ${S.user.lastName || ''}`
+    )}
+
+  </div>
+
+  <div class="prof-info">
+
+    <h2>
+
+      ${S.user.firstName || ''} ${S.user.lastName || ''}
+
+    </h2>
+
+    <p>
+
+      ${S.user.email} | ${S.user.role}
+
+    </p>
+
+  </div>
+
+</div>
 <div class="co-card">
 
   <h3>
