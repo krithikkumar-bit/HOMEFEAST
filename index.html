@@ -2991,67 +2991,37 @@
         /* ── API ── */
         async function api(ep, opts = {}) { const tk = localStorage.getItem('hf_tk'); const h = { 'Content-Type': 'application/json', ...opts.headers }; if (tk) h.Authorization = `Bearer ${tk}`; try { const r = await fetch(`${API}${ep}`, { ...opts, headers: h }); const d = await r.json(); if (!r.ok) { if (r.status === 401) { doLogout(); throw new Error('Session expired') } throw new Error(d.message || 'Request failed') } return d } catch (e) { if (e.message === 'Session expired') throw e; if (e.name === 'TypeError' && e.message.includes('fetch')) throw new Error('Server unreachable'); throw e } }
 
-        /* ── MOCK DATABASE ── */
-        const DB = {
-            categories: [{ _id: 'c1', name: 'North Indian' }, { _id: 'c2', name: 'South Indian' }, { _id: 'c3', name: 'Chinese' }, { _id: 'c4', name: 'Biryani' }, { _id: 'c5', name: 'Desserts' }, { _id: 'c6', name: 'Continental' }],
-            users: [
-                { _id: 'u1', name: 'Rahul Sharma', email: 'rahul@test.com', phone: '9876543210', role: 'user', address: { line1: 'Flat 302, Prestige Shantiniketan', line2: 'Whitefield', city: 'Bangalore', pin: '560066' } },
-                { _id: 'u2', name: 'Priya Patel', email: 'priya@test.com', phone: '9876543211', role: 'user', address: { line1: 'Room 12, PG Grand', line2: 'Koramangala', city: 'Bangalore', pin: '560034' } },
-                { _id: 'u3', name: 'Amit Menon', email: 'amit@test.com', phone: '9876543212', role: 'user', address: { line1: 'House 45, JP Nagar Phase 7', line2: 'JP Nagar', city: 'Bangalore', pin: '560078' } },
-            ],
-            cooks: [
-                { _id: 'ck1', name: 'Meena Aunty', email: 'meena@test.com', phone: '9876543220', role: 'cook', status: 'approved', rating: 4.8, totalOrders: 452, cuisine: 'North Indian', serviceArea: 'Whitefield, ITPL, Mahadevapura', timings: 'Lunch: 11AM-1PM | Dinner: 7PM-9PM', bio: 'Experienced home cook with 15+ years of expertise in authentic North Indian cuisine. Specializes in rich gravies, dal, and traditional thali meals.', experience: '15 years', fssai: 'FSSAI-1234567890', plans: [{ type: 'daily', meal: 'lunch', price: 120 }, { type: 'daily', meal: 'dinner', price: 130 }, { type: 'weekly', meal: 'lunch', price: 750 }, { type: 'weekly', meal: 'dinner', price: 820 }, { type: 'monthly', meal: 'lunch', price: 2800 }, { type: 'monthly', meal: 'dinner', price: 3100 }, { type: 'monthly', meal: 'both', price: 5500 }] },
-                { _id: 'ck2', name: 'Lakshmi Amma', email: 'lakshmi@test.com', phone: '9876543221', role: 'cook', status: 'approved', rating: 4.9, totalOrders: 380, cuisine: 'South Indian', serviceArea: 'Koramangala, HSR Layout, BTM', timings: 'Lunch: 12PM-2PM | Dinner: 7:30PM-9:30PM', bio: 'Specialist in authentic South Indian meals — dosa, idli, sambar, rasam, and elaborate Karnataka-style lunches on banana leaves.', experience: '20 years', fssai: 'FSSAI-2345678901', plans: [{ type: 'daily', meal: 'lunch', price: 100 }, { type: 'daily', meal: 'dinner', price: 110 }, { type: 'weekly', meal: 'lunch', price: 620 }, { type: 'weekly', meal: 'dinner', price: 680 }, { type: 'monthly', meal: 'lunch', price: 2300 }, { type: 'monthly', meal: 'dinner', price: 2500 }, { type: 'monthly', meal: 'both', price: 4500 }] },
-                { _id: 'ck3', name: 'Nafees Bhai', email: 'nafees@test.com', phone: '9876543222', role: 'cook', status: 'approved', rating: 4.7, totalOrders: 290, cuisine: 'Biryani & Mughlai', serviceArea: 'Indiranagar, Domlur, MG Road', timings: 'Lunch: 12PM-2PM | Dinner: 7PM-9PM', bio: 'Hyderabadi biryani specialist. Also serves rich Mughlai curries, kebabs, and traditional Dum Biryani on weekends.', experience: '10 years', fssai: 'FSSAI-3456789012', plans: [{ type: 'daily', meal: 'lunch', price: 150 }, { type: 'daily', meal: 'dinner', price: 160 }, { type: 'weekly', meal: 'lunch', price: 920 }, { type: 'weekly', meal: 'dinner', price: 980 }, { type: 'monthly', meal: 'lunch', price: 3500 }, { type: 'monthly', meal: 'dinner', price: 3800 }, { type: 'monthly', meal: 'both', price: 7000 }] },
-                { _id: 'ck4', name: 'Sunita Didi', email: 'sunita@test.com', phone: '9876543223', role: 'cook', status: 'approved', rating: 4.6, totalOrders: 180, cuisine: 'North Indian', serviceArea: 'Electronic City, BTM, Silk Board', timings: 'Lunch: 11:30AM-1:30PM | Dinner: 7PM-9PM', bio: 'Home cook specializing in healthy, less-oil North Indian meals. Perfect for students and working professionals who want nutritious food.', experience: '8 years', fssai: 'FSSAI-4567890123', plans: [{ type: 'daily', meal: 'lunch', price: 90 }, { type: 'daily', meal: 'dinner', price: 95 }, { type: 'weekly', meal: 'lunch', price: 550 }, { type: 'weekly', meal: 'dinner', price: 580 }, { type: 'monthly', meal: 'lunch', price: 2000 }, { type: 'monthly', meal: 'dinner', price: 2200 }, { type: 'monthly', meal: 'both', price: 4000 }] },
-                { _id: 'ck5', name: 'Wang Sister', email: 'wang@test.com', phone: '9876543224', role: 'cook', status: 'pending', rating: 0, totalOrders: 0, cuisine: 'Chinese & Indo-Chinese', serviceArea: 'Marathahalli, Whitefield', timings: 'Lunch: 12PM-1:30PM | Dinner: 7PM-9PM', bio: 'Expert in authentic Chinese and Indo-Chinese cuisine. Momos, fried rice, noodles, and Manchurian are specialties.', experience: '5 years', fssai: 'FSSAI-5678901234', plans: [{ type: 'daily', meal: 'lunch', price: 110 }, { type: 'daily', meal: 'dinner', price: 120 }, { type: 'weekly', meal: 'lunch', price: 700 }, { type: 'weekly', meal: 'dinner', price: 760 }, { type: 'monthly', meal: 'lunch', price: 2600 }, { type: 'monthly', meal: 'dinner', price: 2800 }, { type: 'monthly', meal: 'both', price: 5000 }] },
-                { _id: 'ck6', name: 'Kavita Aunty', email: 'kavita@test.com', phone: '9876543225', role: 'cook', status: 'rejected', rating: 0, totalOrders: 0, cuisine: 'Gujarati & Rajasthani', serviceArea: 'Jayanagar, JP Nagar', timings: 'Lunch: 11AM-1PM', bio: 'Traditional Gujarati and Rajasthani thali specialist.', experience: '3 years', fssai: 'PENDING', plans: [] },
-            ],
-            menuItems: [
-                { _id: 'm1', cookId: 'ck1', name: 'Butter Chicken', type: 'non-veg', price: 180, category: 'c1', desc: 'Tender chicken in rich, creamy tomato-based gravy with aromatic spices and butter.', img: 'https://picsum.photos/seed/hf-bc1/500/400.jpg', avail: true },
-                { _id: 'm2', cookId: 'ck1', name: 'Dal Makhani', type: 'veg', price: 120, category: 'c1', desc: 'Black lentils slow-cooked overnight with butter and cream, served with steamed rice.', img: 'https://picsum.photos/seed/hf-dm2/500/400.jpg', avail: true },
-                { _id: 'm3', cookId: 'ck1', name: 'Palak Paneer', type: 'veg', price: 140, category: 'c1', desc: 'Soft cottage cheese cubes in velvety spinach gravy tempered with garlic and cumin.', img: 'https://picsum.photos/seed/hf-pp3/500/400.jpg', avail: true },
-                { _id: 'm4', cookId: 'ck1', name: 'Rajma Chawal', type: 'veg', price: 100, category: 'c1', desc: 'Hearty kidney bean curry simmered in tomato-onion gravy, served with basmati rice.', img: 'https://picsum.photos/seed/hf-rc4/500/400.jpg', avail: true },
-                { _id: 'm5', cookId: 'ck2', name: 'Masala Dosa', type: 'veg', price: 80, category: 'c2', desc: 'Crispy golden crepe filled with spiced potato masala, served with chutney and sambar.', img: 'https://picsum.photos/seed/hf-md5/500/400.jpg', avail: true },
-                { _id: 'm6', cookId: 'ck2', name: 'Curd Rice', type: 'veg', price: 60, category: 'c2', desc: 'Cool yogurt rice tempered with mustard seeds, curry leaves, and green chilies.', img: 'https://picsum.photos/seed/hf-cr6/500/400.jpg', avail: true },
-                { _id: 'm7', cookId: 'ck2', name: 'Sambar Rice', type: 'veg', price: 80, category: 'c2', desc: 'Rice mixed with lentil-based vegetable stew, served with papad and pickle.', img: 'https://picsum.photos/seed/hf-sr7/500/400.jpg', avail: true },
-                { _id: 'm8', cookId: 'ck2', name: 'Chettinad Chicken', type: 'non-veg', price: 160, category: 'c2', desc: 'Spicy chicken curry from Tamil Nadu made with freshly ground Chettinad spices.', img: 'https://picsum.photos/seed/hf-cc8/500/400.jpg', avail: true },
-                { _id: 'm9', cookId: 'ck3', name: 'Hyderabadi Biryani', type: 'non-veg', price: 200, category: 'c4', desc: 'Fragrant basmati rice layered with succulent mutton, saffron, and caramelized onions.', img: 'https://picsum.photos/seed/hf-hb9/500/400.jpg', avail: true },
-                { _id: 'm10', cookId: 'ck3', name: 'Chicken 65', type: 'non-veg', price: 150, category: 'c4', desc: 'Spicy deep-fried chicken bites tossed with curry leaves and green chilies.', img: 'https://picsum.photos/seed/hf-c65/500/400.jpg', avail: true },
-                { _id: 'm11', cookId: 'ck3', name: 'Mutton Dum Biryani', type: 'non-veg', price: 250, category: 'c4', desc: 'Slow-cooked mutton biryani sealed with dough, cooked on low flame for perfect infusion.', img: 'https://picsum.photos/seed/hf-mdb/500/400.jpg', avail: true },
-                { _id: 'm12', cookId: 'ck4', name: 'Roti + Sabzi Thali', type: 'veg', price: 90, category: 'c1', desc: '4 rotis with seasonal vegetable, dal, rice, and salad. Healthy and wholesome.', img: 'https://picsum.photos/seed/hf-ts12/500/400.jpg', avail: true },
-                { _id: 'm13', cookId: 'ck4', name: 'Paneer Tikka Meal', type: 'veg', price: 130, category: 'c1', desc: 'Grilled paneer tikka with mint chutney, 2 rotis, and rice.', img: 'https://picsum.photos/seed/hf-pt13/500/400.jpg', avail: true },
-                { _id: 'm14', cookId: 'ck5', name: 'Veg Fried Rice', type: 'veg', price: 100, category: 'c3', desc: 'Wok-tossed rice with mixed vegetables, soy sauce, and sesame oil.', img: 'https://picsum.photos/seed/hf-vfr/500/400.jpg', avail: true },
-                { _id: 'm15', cookId: 'ck5', name: 'Chicken Momos (10 pcs)', type: 'non-veg', price: 120, category: 'c3', desc: 'Steamed dumplings filled with spiced chicken, served with hot red chutney.', img: 'https://picsum.photos/seed/hf-cm15/500/400.jpg', avail: true },
-                { _id: 'm16', cookId: 'ck5', name: 'Chilli Chicken', type: 'non-veg', price: 160, category: 'c3', desc: 'Crispy fried chicken tossed in spicy chilli sauce with bell peppers and onions.', img: 'https://picsum.photos/seed/hf-chc/500/400.jpg', avail: true },
-            ],
-            orders: [
-                { _id: 'o1', userId: 'u1', cookId: 'ck1', items: [{ mealId: 'm1', name: 'Butter Chicken', price: 180, qty: 2 }, { mealId: 'm2', name: 'Dal Makhani', price: 120, qty: 1 }], subtotal: 480, delivery: 29, gst: 24, total: 533, status: 'delivered', payment: 'cod', address: { line1: 'Flat 302, Prestige Shantiniketan', line2: 'Whitefield', city: 'Bangalore', pin: '560066' }, createdAt: '2025-01-10T12:30:00', updatedAt: '2025-01-10T13:15:00' },
-                { _id: 'o2', userId: 'u1', cookId: 'ck2', items: [{ mealId: 'm5', name: 'Masala Dosa', price: 80, qty: 3 }, { mealId: 'm7', name: 'Sambar Rice', price: 80, qty: 2 }], subtotal: 400, delivery: 0, gst: 20, total: 420, status: 'on_the_way', payment: 'online', address: { line1: 'Flat 302, Prestige Shantiniketan', line2: 'Whitefield', city: 'Bangalore', pin: '560066' }, createdAt: '2025-01-15T11:45:00', updatedAt: '2025-01-15T12:30:00' },
-                { _id: 'o3', userId: 'u2', cookId: 'ck3', items: [{ mealId: 'm9', name: 'Hyderabadi Biryani', price: 200, qty: 1 }], subtotal: 200, delivery: 29, gst: 10, total: 239, status: 'preparing', payment: 'cod', address: { line1: 'Room 12, PG Grand', line2: 'Koramangala', city: 'Bangalore', pin: '560034' }, createdAt: '2025-01-15T12:00:00', updatedAt: '2025-01-15T12:10:00' },
-                { _id: 'o4', userId: 'u3', cookId: 'ck4', items: [{ mealId: 'm12', name: 'Roti + Sabzi Thali', price: 90, qty: 2 }, { mealId: 'm13', name: 'Paneer Tikka Meal', price: 130, qty: 1 }], subtotal: 310, delivery: 29, gst: 16, total: 355, status: 'placed', payment: 'online', address: { line1: 'House 45, JP Nagar Phase 7', line2: 'JP Nagar', city: 'Bangalore', pin: '560078' }, createdAt: '2025-01-15T12:30:00', updatedAt: '2025-01-15T12:30:00' },
-                { _id: 'o5', userId: 'u1', cookId: 'ck1', items: [{ mealId: 'm4', name: 'Rajma Chawal', price: 100, qty: 1 }], subtotal: 100, delivery: 29, gst: 5, total: 134, status: 'cancelled', payment: 'cod', address: { line1: 'Flat 302, Prestige Shantiniketan', line2: 'Whitefield', city: 'Bangalore', pin: '560066' }, createdAt: '2025-01-14T13:00:00', updatedAt: '2025-01-14T13:05:00' },
-            ],
-            subscriptions: [
-                { _id: 's1', userId: 'u1', cookId: 'ck1', plan: 'monthly', meal: 'lunch', price: 2800, status: 'active', startDate: '2025-01-01', endDate: '2025-01-30', nextDelivery: '2025-01-16' },
-                { _id: 's2', userId: 'u1', cookId: 'ck2', plan: 'weekly', meal: 'dinner', price: 680, status: 'active', startDate: '2025-01-13', endDate: '2025-01-19', nextDelivery: '2025-01-16' },
-                { _id: 's3', userId: 'u2', cookId: 'ck3', plan: 'daily', meal: 'lunch', price: 150, status: 'paused', startDate: '2025-01-10', endDate: null, nextDelivery: null },
-                { _id: 's4', userId: 'u3', cookId: 'ck4', plan: 'monthly', meal: 'both', price: 4000, status: 'active', startDate: '2025-01-01', endDate: '2025-01-30', nextDelivery: '2025-01-16' },
-            ],
-            reviews: [
-                { _id: 'r1', userId: 'u1', cookId: 'ck1', rating: 5, comment: 'Meena Aunty\'s butter chicken is the best I\'ve had. Reminds me of home cooking. Highly recommend!', createdAt: '2025-01-11' },
-                { _id: 'r2', userId: 'u2', cookId: 'ck1', rating: 4, comment: 'Great food, consistent quality. Dal makhani is exceptional. Delivery is usually on time.', createdAt: '2025-01-09' },
-                { _id: 'r3', userId: 'u3', cookId: 'ck2', rating: 5, comment: 'Lakshmi Amma makes the most authentic South Indian food. The sambar is incredible!', createdAt: '2025-01-12' },
-                { _id: 'r4', userId: 'u1', cookId: 'ck2', rating: 5, comment: 'Perfect dosa every single time. Chutney is fresh. Best tiffin service in Koramangala.', createdAt: '2025-01-08' },
-                { _id: 'r5', userId: 'u2', cookId: 'ck3', rating: 4, comment: 'Biryani is very good, portions are generous. Slightly oily but taste makes up for it.', createdAt: '2025-01-10' },
-                { _id: 'r6', userId: 'u1', cookId: 'ck4', rating: 5, comment: 'Sunita Didi\'s thali is perfect for daily meals. Healthy, less oil, very satisfying.', createdAt: '2025-01-13' },
-                { _id: 'r7', userId: 'u3', cookId: 'ck4', rating: 4, comment: 'Good value for money. Paneer tikka is delicious. Would recommend for students.', createdAt: '2025-01-11' },
-            ],
-            complaints: [
-                { _id: 'cp1', userId: 'u1', orderId: 'o5', subject: 'Order cancelled without info', message: 'My order was cancelled but I didn\'t receive any notification. Please improve communication.', status: 'open', createdAt: '2025-01-14' },
-                { _id: 'cp2', userId: 'u3', orderId: 'o4', subject: 'Late delivery', message: 'Food arrived 45 minutes late. It was cold.', status: 'resolved', createdAt: '2025-01-15' },
-            ]
-        };
+       let DB = {
+    cooks: [],
+    menuItems: [],
+    users: [],
+    orders: [],
+    subscriptions: [],
+    reviews: [],
+    complaints: []
+};
+async function loadDatabase() {
+
+    try {
+
+        const cooksRes = await fetch('http://localhost:5000/api/cooks');
+        DB.cooks = await cooksRes.json();
+
+        const menusRes = await fetch('http://localhost:5000/api/menus');
+        DB.menuItems = await menusRes.json();
+
+        console.log("Cooks Loaded:", DB.cooks.length);
+        console.log("Menus Loaded:", DB.menuItems.length);
+
+        route();
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+}
 
         /* ── State ── */
         let S = { user: JSON.parse(localStorage.getItem('hf_u') || 'null'), token: localStorage.getItem('hf_tk'), cart: JSON.parse(localStorage.getItem('hf_c') || '[]'), likes: new Set(JSON.parse(localStorage.getItem('hf_l') || '[]')), browseFilters: { search: '', type: 'all', cuisine: 'all', priceMax: 300, sort: 'rating' }, cookMenuTab: 'menu' };
@@ -4029,7 +3999,7 @@ ${S.cart.map(i => `
                 window.location.hash = '#home';
             }
 
-            route();
+            loadDatabase();
         });
     </script>
 </body>

@@ -221,7 +221,7 @@ const seed = async () => {
 
 ]);
 
-    console.log('  Seed complete! 17 cooks, 28 menu items');
+    console.log('  Seed complete! 17 cooks, 136 menu items');
 
     process.exit(0);
 
