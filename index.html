@@ -2992,13 +2992,23 @@
         async function api(ep, opts = {}) { const tk = localStorage.getItem('hf_tk'); const h = { 'Content-Type': 'application/json', ...opts.headers }; if (tk) h.Authorization = `Bearer ${tk}`; try { const r = await fetch(`${API}${ep}`, { ...opts, headers: h }); const d = await r.json(); if (!r.ok) { if (r.status === 401) { doLogout(); throw new Error('Session expired') } throw new Error(d.message || 'Request failed') } return d } catch (e) { if (e.message === 'Session expired') throw e; if (e.name === 'TypeError' && e.message.includes('fetch')) throw new Error('Server unreachable'); throw e } }
 
        let DB = {
+
+    categories: [],
+
     cooks: [],
+
     menuItems: [],
+
     users: [],
+
     orders: [],
+
     subscriptions: [],
+
     reviews: [],
+
     complaints: []
+
 };
 async function loadDatabase() {
 
