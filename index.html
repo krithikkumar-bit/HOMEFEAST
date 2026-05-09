@@ -3014,11 +3014,29 @@ async function loadDatabase() {
 
     try {
 
+        // LOAD COOKS
         const cooksRes = await fetch('http://localhost:5000/api/cooks');
         DB.cooks = await cooksRes.json();
 
+        // LOAD MENUS
         const menusRes = await fetch('http://localhost:5000/api/menus');
         DB.menuItems = await menusRes.json();
+
+        // CREATE CATEGORIES
+        DB.categories = [];
+
+        DB.menuItems.forEach(menu => {
+
+            if (!DB.categories.find(c => c.name === menu.type)) {
+
+                DB.categories.push({
+                    _id: menu.type,
+                    name: menu.type
+                });
+
+            }
+
+        });
 
         console.log("Cooks Loaded:", DB.cooks.length);
         console.log("Menus Loaded:", DB.menuItems.length);
@@ -3027,7 +3045,7 @@ async function loadDatabase() {
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Database Load Error:", err);
 
     }
 
