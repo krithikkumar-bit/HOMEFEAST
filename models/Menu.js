@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const menuSchema = new mongoose.Schema({
   cook: { type: mongoose.Schema.Types.ObjectId, ref: 'Cook', required: true },
   name: { type: String, required: [true, 'Dish name required'], trim: true },
+  image:{
+  type:String,
+  default:''
+},
   type: { type: String, enum: ['Veg', 'Non-Veg'], required: true },
   price: { type: Number, required: [true, 'Price required'], min: 0 },
   available: { type: Boolean, default: true },
