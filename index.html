@@ -3073,13 +3073,158 @@ async function loadDatabase() {
         const stMap = { placed: { l: 'Placed', c: 'st-placed' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
 
         /* ── Router ── */
-        function nav(r, p = {}) { window.location.hash = '#' + r + (p.id ? '/' + p.id : '') }
-        function getRoute() { const h = window.location.hash.slice(1) || 'home'; const p = h.split('/'); return { page: p[0], id: p[1] || null } }
-        function route() {
-            const { page, id } = getRoute(); const app = $('#app'); window.scrollTo({ top: 0, behavior: 'instant' }); updateUI();
-            const R = { home: pgHome, browse: pgBrowse, cook: () => pgCookProfile(id), how: pgHow, about: pgAbout, login: pgLogin, register: pgRegister, 'register-cook': () => pgRegister('cook'), cart: pgCart, checkout: pgCheckout, dashboard: pgDashboard, subscriptions: pgSubs, orders: pgOrders, 'order-detail': () => pgOrderDetail(id), 'sub-detail': () => pgSubDetail(id), profile: pgProfile, 'cook-dashboard': pgCookDash, 'cook-menu': pgCookMenu, 'cook-orders': pgCookOrders, 'cook-subs': pgCookSubs, 'cook-earnings': pgCookEarnings, 'cook-settings': pgCookSettings, 'admin-dashboard': pgAdminDash, 'admin-users': pgAdminUsers, 'admin-cooks': pgAdminCooks, 'admin-orders': pgAdminOrders, 'admin-categories': pgAdminCats, 'admin-complaints': pgAdminComplaints };
-            const fn = R[page] || pgNotFound; app.innerHTML = ''; fn(app); requestAnimationFrame(initReveal)
-        }
+       function nav(r, p = {}) {
+
+    window.location.hash =
+        '#' + r + (p.id ? '/' + p.id : '');
+
+}
+
+function getRoute() {
+
+    const h =
+        window.location.hash.slice(1) || 'home';
+
+    const p = h.split('/');
+
+    return {
+        page: p[0],
+        id: p[1] || null
+    };
+
+}
+
+function route() {
+
+    const { page, id } = getRoute();
+
+    const app = $('#app');
+
+    // SCROLL TOP
+    window.scrollTo({
+        top: 0,
+        behavior: 'instant'
+    });
+
+    updateUI();
+
+    // ADMIN PROTECTION
+    if (
+        page.startsWith('admin') &&
+        (
+            !S.user ||
+            S.user.role !== 'admin'
+        )
+    ) {
+
+        window.location.hash = '#home';
+
+        return;
+
+    }
+
+    // COOK PROTECTION
+    if (
+        page.startsWith('cook') &&
+        (
+            !S.user ||
+            S.user.role !== 'cook'
+        )
+    ) {
+
+        window.location.hash = '#home';
+
+        return;
+
+    }
+
+    // USER PROTECTION
+    if (
+        (
+            page === 'dashboard' ||
+            page === 'subscriptions' ||
+            page === 'orders' ||
+            page === 'profile'
+        ) &&
+        !S.user
+    ) {
+
+        window.location.hash = '#login';
+
+        return;
+
+    }
+
+    // ROUTES
+    const R = {
+
+        home: pgHome,
+
+        browse: pgBrowse,
+
+        cook: () => pgCookProfile(id),
+
+        how: pgHow,
+
+        about: pgAbout,
+
+        login: pgLogin,
+
+        register: pgRegister,
+
+        'register-cook': () => pgRegister('cook'),
+
+        cart: pgCart,
+
+        checkout: pgCheckout,
+
+        dashboard: pgDashboard,
+
+        subscriptions: pgSubs,
+
+        orders: pgOrders,
+
+        'order-detail': () => pgOrderDetail(id),
+
+        'sub-detail': () => pgSubDetail(id),
+
+        profile: pgProfile,
+
+        'cook-dashboard': pgCookDash,
+
+        'cook-menu': pgCookMenu,
+
+        'cook-orders': pgCookOrders,
+
+        'cook-subs': pgCookSubs,
+
+        'cook-earnings': pgCookEarnings,
+
+        'cook-settings': pgCookSettings,
+
+        'admin-dashboard': pgAdminDash,
+
+        'admin-users': pgAdminUsers,
+
+        'admin-cooks': pgAdminCooks,
+
+        'admin-orders': pgAdminOrders,
+
+        'admin-categories': pgAdminCats,
+
+        'admin-complaints': pgAdminComplaints
+
+    };
+
+    const fn = R[page] || pgNotFound;
+
+    app.innerHTML = '';
+
+    fn(app);
+
+    requestAnimationFrame(initReveal);
+
+}
         window.addEventListener('hashchange', route);
 
         /* ── UI Updates ── */
@@ -4146,21 +4291,123 @@ No reviews yet.
             $('#adminTab', a).onclick = () => { currentRole = 'admin'; $('#loginRole', a).value = 'admin'; $('#adminTab', a).classList.add('active'); $('#userTab', a).classList.remove('active'); $('#cookTab', a).classList.remove('active'); };
 
             $('#loginF', a).addEventListener('submit', async e => {
-                e.preventDefault();
-                const email = $('#loginEmail', a).value.trim();
-                const password = $('#loginPassword', a).value;
-                const btn = $('button[type=submit]', a);
-                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-                try {
-                    const r = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
-                    const data = await r.json();
-                    if (!r.ok) { toast(data.message || 'Login failed', 'error'); return; }
-                    S.user = data.user || data.data?.user; S.token = data.token || data.data?.token;
-                    localStorage.setItem('hf_tk', S.token); localStorage.setItem('hf_user', JSON.stringify(S.user));
-                    saveU(); saveT(); updateUI(); toast(`Welcome, ${S.user.name}!`);
-                    nav(S.user.role === 'cook' ? 'cook-dashboard' : S.user.role === 'admin' ? 'admin-dashboard' : 'dashboard');
-                } catch (err) { console.error(err); toast('Server error', 'error'); } finally { btn.disabled = false; btn.innerHTML = 'Login'; }
-            });
+
+    e.preventDefault();
+
+    const email = $('#loginEmail', a).value.trim();
+
+    const password = $('#loginPassword', a).value;
+
+    const btn = $('button[type=submit]', a);
+
+    btn.disabled = true;
+
+    btn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+
+    try {
+
+        const r = await fetch(
+            'http://localhost:5000/api/auth/login',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({
+                    email,
+                    password,
+                    role: currentRole
+                })
+            }
+        );
+
+        const data = await r.json();
+
+        console.log("LOGIN RESPONSE:", data);
+
+        if (!r.ok) {
+
+            toast(
+                data.message || 'Login failed',
+                'error'
+            );
+
+            return;
+        }
+
+        // SAVE USER
+        S.user = data.user || data.data?.user;
+
+        // SAVE TOKEN
+        S.token = data.token || data.data?.token;
+
+        localStorage.setItem(
+            'hf_tk',
+            S.token
+        );
+
+        localStorage.setItem(
+            'hf_user',
+            JSON.stringify(S.user)
+        );
+
+        saveU();
+
+        saveT();
+
+        updateUI();
+
+        toast(
+            `Welcome ${S.user.firstName || S.user.name || 'User'}!`
+        );
+
+        // ROLE BASED REDIRECT
+        if (S.user.role === 'admin') {
+
+            window.location.hash =
+                '#admin-dashboard';
+
+        }
+
+        else if (S.user.role === 'cook') {
+
+            window.location.hash =
+                '#cook-dashboard';
+
+        }
+
+        else {
+
+            window.location.hash =
+                '#dashboard';
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        toast(
+            'Server error',
+            'error'
+        );
+
+    }
+
+    finally {
+
+        btn.disabled = false;
+
+        btn.innerHTML = 'Login';
+
+    }
+
+});
         }
         
         /* ── REGISTER ── */
