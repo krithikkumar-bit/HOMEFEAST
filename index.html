@@ -3472,13 +3472,20 @@ if (
 
         el.addEventListener('click', e => {
 
-            e.preventDefault();
+    e.preventDefault();
+    e.stopPropagation();
 
-            closeMob();
+    closeMob();
 
-            nav(el.dataset.nv);
+    const currentScroll = window.scrollY;
 
-        });
+    nav(el.dataset.nv);
+
+    setTimeout(() => {
+        window.scrollTo(0, currentScroll);
+    }, 50);
+
+});
 
     });
 
@@ -3583,11 +3590,14 @@ if (
 
                 </div>
 
-                <button class="cook-card-btn" data-ck="${ck._id}">
+               <button 
+    class="cook-card-btn"
+    type="button"
+    onclick="event.preventDefault(); event.stopPropagation(); nav('cook', {id:'${ck._id}'})">
 
-                    View Menu
+    View Menu
 
-                </button>
+</button>
 
             </div>
 
