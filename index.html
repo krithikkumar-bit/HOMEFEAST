@@ -3097,7 +3097,51 @@ function getRoute() {
 function route() {
 
     const { page, id } = getRoute();
+    /* =========================
+   BLOCK NORMAL PAGES FOR COOK
+========================= */
 
+if (
+    S.user &&
+    S.user.role === 'cook' &&
+    (
+        page === 'home' ||
+        page === 'browse' ||
+        page === 'how' ||
+        page === 'about' ||
+        page === 'dashboard' ||
+        page === 'subscriptions' ||
+        page === 'profile'
+    )
+) {
+
+    location.hash = '#cook-dashboard';
+    return;
+}
+
+/* =========================
+   BLOCK NORMAL PAGES FOR ADMIN
+========================= */
+
+if (
+    S.user &&
+    S.user.role === 'admin' &&
+    (
+        page === 'home' ||
+        page === 'browse' ||
+        page === 'how' ||
+        page === 'about' ||
+        page === 'cook-dashboard' ||
+        page === 'cook-menu' ||
+        page === 'cook-orders' ||
+        page === 'cook-earnings' ||
+        page === 'cook-settings'
+    )
+) {
+
+    location.hash = '#admin-dashboard';
+    return;
+}
     const app = $('#app');
 
     // SCROLL TOP
