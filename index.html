@@ -4059,7 +4059,9 @@ $$('.cook-card-btn', a).forEach(btn => {
 
         console.log('CLICKED COOK:', cookId);
 
-        nav('cook', { id: cookId });
+        window.location.hash = '#cook/' + cookId;
+
+route();
 
     });
 
