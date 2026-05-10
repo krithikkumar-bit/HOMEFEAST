@@ -13,7 +13,6 @@ const seed = async () => {
     await connectDB();
 
     console.log('  Clearing data...');
-    const hashedPassword = await bcrypt.hash('123456', 10);
 
     await Menu.deleteMany({});
     await Cook.deleteMany({});
@@ -23,7 +22,7 @@ const seed = async () => {
   firstName: 'Admin',
   lastName: 'HomeFeast',
   email: 'admin@homefeast.com',
-  password: hashedPassword,
+  password: 'admin123',
   role: 'admin',
   status: 'Active'
 });
@@ -34,7 +33,7 @@ const cookUsers = await User.create([
   firstName:'Meera',
   lastName:'Sharma',
   email:'meera@homefeast.com',
-  password: await bcrypt.hash('meera123',10),
+  password:'meera123',
   role:'cook',
   status:'Active'
 },
@@ -43,7 +42,7 @@ const cookUsers = await User.create([
   firstName:'Lakshmi',
   lastName:'Iyer',
   email:'lakshmi@homefeast.com',
-  password: await bcrypt.hash('lakshmi123',10),
+  password:'lakshmi123',
   role:'cook',
   status:'Active'
 },
@@ -52,7 +51,7 @@ const cookUsers = await User.create([
   firstName:'Rashida',
   lastName:'Begum',
   email:'rashida@homefeast.com',
-    password: await bcrypt.hash('rashida123',10),
+  password:'rashida123',
   role:'cook',
   status:'Active'
 },
@@ -61,7 +60,7 @@ const cookUsers = await User.create([
   firstName:'Shanti',
   lastName:'Patel',
   email:'shanti@homefeast.com',
-    password: await bcrypt.hash('shanti123',10),
+  password:'shanti123',
   role:'cook',
   status:'Active'
 },
@@ -70,7 +69,7 @@ const cookUsers = await User.create([
   firstName:'Ananya',
   lastName:'Das',
   email:'ananya@homefeast.com',
-    password: await bcrypt.hash('ananya123',10),
+  password:'ananya123',
   role:'cook',
   status:'Active'
 },
@@ -79,7 +78,7 @@ const cookUsers = await User.create([
   firstName:'Maria',
   lastName:'DSouza',
   email:'maria@homefeast.com',
-    password: await bcrypt.hash('maria123',10),
+  password:'maria123',
   role:'cook',
   status:'Active'
 },
@@ -88,7 +87,7 @@ const cookUsers = await User.create([
   firstName:'Suresh',
   lastName:'Anna',
   email:'suresh@homefeast.com',
-    password: await bcrypt.hash('suresh123',10),
+  password:'suresh123',
   role:'cook',
   status:'Active'
 },
@@ -97,7 +96,7 @@ const cookUsers = await User.create([
   firstName:'Meghana',
   lastName:'Iyer',
   email:'meghana@homefeast.com',
-    password: await bcrypt.hash('meghana123',10),
+  password:'meghana123',
   role:'cook',
   status:'Active'
 },
@@ -106,7 +105,7 @@ const cookUsers = await User.create([
   firstName:'Ritu',
   lastName:'Agarwal',
   email:'ritu@homefeast.com',
-    password: await bcrypt.hash('ritu1234',10),
+  password:'ritu1234',
   role:'cook',
   status:'Active'
 },
@@ -115,7 +114,7 @@ const cookUsers = await User.create([
   firstName:'Kiran',
   lastName:'Kumar',
   email:'kiran@homefeast.com',
-    password: await bcrypt.hash('kiran123',10),
+  password:'kiran123',
   role:'cook',
   status:'Active'
 },
@@ -124,7 +123,7 @@ const cookUsers = await User.create([
   firstName:'Pooja',
   lastName:'Sharma',
   email:'pooja@homefeast.com',
-    password: await bcrypt.hash('pooja123',10),
+  password:'pooja123',
   role:'cook',
   status:'Active'
 },
@@ -133,7 +132,7 @@ const cookUsers = await User.create([
   firstName:'Nafees',
   lastName:'Bhai',
   email:'nafees@homefeast.com',
-    password: await bcrypt.hash('nafees123',10),
+  password:'nafees123',
   role:'cook',
   status:'Active'
 },
@@ -142,7 +141,7 @@ const cookUsers = await User.create([
   firstName:'Geetha',
   lastName:'Rao',
   email:'geetha@homefeast.com',
-    password: await bcrypt.hash('geetha123',10),
+  password:'geetha123',
   role:'cook',
   status:'Active'
 },
@@ -151,7 +150,7 @@ const cookUsers = await User.create([
   firstName:'Arjun',
   lastName:'Chef',
   email:'arjun@homefeast.com',
-    password: await bcrypt.hash('arjun123',10),
+  password:'arjun123',
   role:'cook',
   status:'Active'
 },
@@ -160,7 +159,7 @@ const cookUsers = await User.create([
   firstName:'Sujatha',
   lastName:'Khanna',
   email:'sujatha@homefeast.com',
-    password: await bcrypt.hash('sujatha123',10),
+  password:'sujatha123',
   role:'cook',
   status:'Active'
 },
@@ -169,7 +168,7 @@ const cookUsers = await User.create([
   firstName:'Venkatesh',
   lastName:'Rao',
   email:'venkatesh@homefeast.com',
-    password: await bcrypt.hash('venkatesh123',10),
+  password:'venkatesh123',
   role:'cook',
   status:'Active'
 },
@@ -178,7 +177,7 @@ const cookUsers = await User.create([
   firstName:'Amina',
   lastName:'Pathan',
   email:'amina@homefeast.com',
-    password: await bcrypt.hash('amina123',10),
+  password:'amina123',
   role:'cook',
   status:'Active'
 }
