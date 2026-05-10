@@ -3016,11 +3016,17 @@ async function loadDatabase() {
 
         // LOAD COOKS
         const cooksRes = await fetch('http://localhost:5000/api/cooks');
-        DB.cooks = await cooksRes.json();
+
+        const cooksData = await cooksRes.json();
+
+        DB.cooks = cooksData.data || cooksData;
 
         // LOAD MENUS
         const menusRes = await fetch('http://localhost:5000/api/menus');
-        DB.menuItems = await menusRes.json();
+
+        const menusData = await menusRes.json();
+
+        DB.menuItems = menusData.data || menusData;
 
         // CREATE CATEGORIES
         DB.categories = [];
@@ -3039,6 +3045,7 @@ async function loadDatabase() {
         });
 
         console.log("Cooks Loaded:", DB.cooks.length);
+
         console.log("Menus Loaded:", DB.menuItems.length);
 
         route();
