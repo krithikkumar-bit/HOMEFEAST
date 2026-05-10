@@ -3593,11 +3593,9 @@ if (
                     From <strong>${fp(minP)}</strong>/day
 
                 </div>
-
-               <button 
+<button 
     class="cook-card-btn"
-    type="button"
-    onclick="event.preventDefault(); event.stopPropagation(); nav('cook', {id:'${ck._id}'})">
+    type="button">
 
     View Menu
 
@@ -4074,17 +4072,37 @@ Try adjusting your filters to find more options.
         });
     });
 
-    $$('[data-ck]', a).forEach(el => {
+    /* OPEN COOK PROFILE */
 
-        el.addEventListener('click', () => {
+$$('.cook-card', a).forEach(card => {
 
-            nav('cook', {
-                id: el.dataset.ck
-            });
+    card.addEventListener('click', () => {
 
+        nav('cook', {
+            id: card.dataset.ck
         });
 
     });
+
+});
+
+/* VIEW MENU BUTTON */
+
+$$('.cook-card-btn', a).forEach(btn => {
+
+    btn.addEventListener('click', e => {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        nav('cook', {
+            id: btn.closest('.cook-card').dataset.ck
+        });
+
+    });
+
+});
 
 }
 
