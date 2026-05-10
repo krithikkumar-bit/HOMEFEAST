@@ -2,12 +2,17 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+
 const errorHandler = require('./middleware/errorHandler');
 const connectDB = require('./config/db');
 
 require('dotenv').config({
   path: './.env'
 });
+
+/* =========================
+   CONNECT DATABASE
+========================= */
 
 connectDB();
 
@@ -30,13 +35,13 @@ app.use(
 
 app.use(
   express.json({
-    limit:'10mb'
+    limit: '10mb'
   })
 );
 
 app.use(
   express.urlencoded({
-    extended:true
+    extended: true
   })
 );
 
@@ -56,10 +61,10 @@ app.use(
    FRONTEND
 ========================= */
 
-app.get('/', (req,res)=>{
+app.get('/', (req, res) => {
 
   res.sendFile(
-    path.join(__dirname,'index.html')
+    path.join(__dirname, 'index.html')
   );
 
 });
@@ -81,6 +86,13 @@ app.use(
 app.use(
   '/api/cooks',
   require('./routes/cooks')
+);
+
+/* ===== MENU ROUTE ADDED ===== */
+
+app.use(
+  '/api/menus',
+  require('./routes/menus')
 );
 
 app.use(
@@ -107,11 +119,11 @@ app.use(
    HEALTH CHECK
 ========================= */
 
-app.get('/api/health',(req,res)=>{
+app.get('/api/health', (req, res) => {
 
   res.json({
-    success:true,
-    message:'HomeFeast API is running'
+    success: true,
+    message: 'HomeFeast API is running'
   });
 
 });
@@ -120,15 +132,15 @@ app.get('/api/health',(req,res)=>{
    SPA FALLBACK
 ========================= */
 
-app.get('*',(req,res,next)=>{
+app.get('*', (req, res, next) => {
 
-  if(req.path.startsWith('/api')){
+  if (req.path.startsWith('/api')) {
 
     return next();
   }
 
   res.sendFile(
-    path.join(__dirname,'index.html')
+    path.join(__dirname, 'index.html')
   );
 
 });
@@ -137,11 +149,11 @@ app.get('*',(req,res,next)=>{
    404 API
 ========================= */
 
-app.use((req,res)=>{
+app.use((req, res) => {
 
   res.status(404).json({
-    success:false,
-    message:`Route ${req.originalUrl} not found`
+    success: false,
+    message: `Route ${req.originalUrl} not found`
   });
 
 });
@@ -159,7 +171,7 @@ app.use(errorHandler);
 const PORT =
   process.env.PORT || 5000;
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
 
   console.log(`
 =================================

@@ -3122,10 +3122,112 @@ async function loadDatabase() {
 
         /* ── Cook card HTML ── */
         function cookCardHTML(ck) {
-            const revs = DB.reviews.filter(r => r.cookId === ck._id); const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : ck.rating;
-            const planTypes = [...new Set(ck.plans.map(p => p.type))]; const minP = ck.plans.length ? Math.min(...ck.plans.map(p => p.price)) : 0;
-            return `<div class="card cook-card" data-ck="${ck._id}"><div class="cook-card-img"><img src="https://picsum.photos/seed/cook-${ck._id}/600/400.jpg" alt="${ck.name}" loading="lazy"/><div class="cook-card-badge"><span class="badge ${ck.status === 'approved' ? 'badge-veg' : ck.status === 'pending' ? 'badge-new' : 'badge-nv'}">${ck.status}</span></div></div><div class="cook-card-body"><div class="cook-card-name">${ck.name}</div><div class="cook-card-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR}</span><span><i class="fas fa-utensils"></i> ${revs.length} reviews</span><span><i class="fas fa-truck"></i> ${ck.totalOrders} orders</span></div><div class="cook-card-cuisine"><i class="fas fa-fire" style="margin-right:4px"></i>${ck.cuisine}</div><div class="cook-card-plans">${planTypes.map(t => `<span class="plan-tag">${t === 'daily' ? 'Daily' : t === 'weekly' ? 'Weekly' : 'Monthly'}</span>`).join('')}</div><div class="cook-card-footer"><div class="cook-card-price">From <strong>${fp(minP)}</strong>/day</div><button class="cook-card-btn" data-ck="${ck._id}">View Menu</button></div></div></div>`
-        }
+
+    const revs = DB.reviews.filter(r => r.cookId === ck._id);
+
+    const avgR = revs.length
+        ? Math.round(
+            revs.reduce((s, r) => s + r.rating, 0) /
+            revs.length * 10
+        ) / 10
+        : (ck.rating || 4.5);
+
+    const minP = Math.min(
+        ck.plans?.daily || 0,
+        ck.plans?.weekly || 0,
+        ck.plans?.monthly || 0
+    );
+
+    return `
+    
+    <div class="card cook-card" data-ck="${ck._id}">
+    
+        <div class="cook-card-img">
+
+            <img 
+                src="${ck.image || 'https://picsum.photos/600/400'}" 
+                alt="${ck.name}" 
+                loading="lazy"
+            />
+
+            <div class="cook-card-badge">
+
+                <span class="badge ${ck.status === 'approved'
+                    ? 'badge-veg'
+                    : ck.status === 'pending'
+                    ? 'badge-new'
+                    : 'badge-nv'}">
+
+                    ${ck.status}
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="cook-card-body">
+
+            <div class="cook-card-name">
+                ${ck.name}
+            </div>
+
+            <div class="cook-card-meta">
+
+                <span class="ra">
+                    <i class="fas fa-star"></i> ${avgR}
+                </span>
+
+                <span>
+                    <i class="fas fa-utensils"></i> ${revs.length} reviews
+                </span>
+
+                <span>
+                    <i class="fas fa-truck"></i> ${ck.totalOrders || 0} orders
+                </span>
+
+            </div>
+
+            <div class="cook-card-cuisine">
+
+                <i class="fas fa-fire" style="margin-right:4px"></i>
+
+                ${ck.cuisine}
+
+            </div>
+
+            <div class="cook-card-plans">
+
+                <span class="plan-tag">Daily</span>
+
+                <span class="plan-tag">Weekly</span>
+
+                <span class="plan-tag">Monthly</span>
+
+            </div>
+
+            <div class="cook-card-footer">
+
+                <div class="cook-card-price">
+
+                    From <strong>${fp(minP)}</strong>/day
+
+                </div>
+
+                <button class="cook-card-btn" data-ck="${ck._id}">
+
+                    View Menu
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+    `;
+}
 
         /* ── Meal card HTML ── */
         function mealCardHTML(m) { const inC = S.cart.find(c => c.mid === m._id); return `<div class="card meal-card"><div class="mc-img"><img src="${m.img}" alt="${m.name}" loading="lazy"/><span class="mc-tag badge ${m.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span></div><div class="mc-body"><div class="mc-name">${m.name}</div><div class="mc-desc">${tr(m.desc)}</div><div class="mc-foot"><div class="mc-price">${fp(m.price)}</div><button class="mc-add ${inC ? 'added' : ''}" data-add="${m._id}"><i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i></button></div></div></div>` }
@@ -3194,40 +3296,361 @@ async function loadDatabase() {
 
         /* ── BROWSE ── */
         function pgBrowse(a) {
-            const f = S.browseFilters;
-            const cooks = DB.cooks.filter(c => {
-                if (c.status !== 'approved') return false;
-                if (f.search && !c.name.toLowerCase().includes(f.search.toLowerCase()) && !c.cuisine.toLowerCase().includes(f.search.toLowerCase()) && !c.serviceArea.toLowerCase().includes(f.search.toLowerCase())) return false;
-                if (f.type === 'veg') { const items = DB.menuItems.filter(m => m.cookId === c._id); if (!items.some(m => m.type === 'veg')) return false }
-                if (f.cuisine !== 'all' && c.cuisine !== f.cuisine) return false;
-                if (f.priceMax) { const minP = c.plans.length ? Math.min(...c.plans.map(p => p.price)) : Infinity; if (minP > f.priceMax) return false }
-                return true
-            });
-            const revsByCk = cid => { const r = DB.reviews.filter(x => x.cookId === cid); return r.length ? Math.round(r.reduce((s, x) => s + x.rating, 0) / r.length * 10) / 10 : 0 };
-            cooks.sort((a, b) => { if (f.sort === 'rating') return revsByCk(b._id) - revsByCk(a._id); if (f.sort === 'price_low') { const pa = a.plans.length ? Math.min(...a.plans.map(p => p.price)) : 0; const pb = b.plans.length ? Math.min(...b.plans.map(p => p.price)) : 0; return pa - pb } if (f.sort === 'orders') return b.totalOrders - a.totalOrders; return 0 });
 
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Find Tiffin</div><h2 class="sec-title">Browse Home Cooks</h2><p class="sec-desc">${cooks.length} cook${cooks.length !== 1 ? 's' : ''} found near you</p></div>
-<div class="filter-layout">
-<div class="filter-panel">
-<div class="filter-group"><div class="search-box"><i class="fas fa-search"></i><input class="fi" id="brSearch" placeholder="Search by name, cuisine, area..." value="${f.search}"/></div></div>
-<div class="filter-group"><label>Meal Type</label><div class="filter-chips" id="brType"><span class="chip ${f.type === 'all' ? 'active' : ''}" data-v="all">All</span><span class="chip ${f.type === 'veg' ? 'active' : ''}" data-v="veg">Vegetarian</span><span class="chip ${f.type === 'non-veg' ? 'active' : ''}" data-v="non-veg">Non-Veg</span></div></div>
-<div class="filter-group"><label>Cuisine</label><select class="fi" id="brCuisine"><option value="all" ${f.cuisine === 'all' ? 'selected' : ''}>All Cuisines</option>${DB.categories.map(c => `<option value="${c.name}" ${f.cuisine === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
-<div class="filter-group"><label>Max Price / Day</label><div class="filter-chips" id="brPrice"><span class="chip ${f.priceMax === 0 ? 'active' : ''}" data-v="0">Any</span><span class="chip ${f.priceMax === 100 ? 'active' : ''}" data-v="100">Under 100</span><span class="chip ${f.priceMax === 150 ? 'active' : ''}" data-v="150">Under 150</span><span class="chip ${f.priceMax === 200 ? 'active' : ''}" data-v="200">Under 200</span></div></div>
-<div class="filter-group"><label>Sort By</label><select class="fi" id="brSort"><option value="rating" ${f.sort === 'rating' ? 'selected' : ''}>Highest Rating</option><option value="price_low" ${f.sort === 'price_low' ? 'selected' : ''}>Lowest Price</option><option value="orders" ${f.sort === 'orders' ? 'selected' : ''}>Most Orders</option></select></div>
-</div>
-<div>
- ${cooks.length ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">${cooks.map(c => cookCardHTML(c)).join('')}</div>` : '<div class="empty-state"><i class="fas fa-search"></i><h3>No cooks found</h3><p>Try adjusting your filters to find more options.</p></div>'}
-</div></div></div></section>`;
+    const f = S.browseFilters;
 
-            const applyFilters = () => { S.browseFilters.search = $('#brSearch', a).value; S.browseFilters.cuisine = $('#brCuisine', a).value; S.browseFilters.sort = $('#brSort', a).value; pgBrowse(a) };
-            let searchTimer;
-            $('#brSearch', a)?.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(applyFilters, 300) });
-            $('#brCuisine', a)?.addEventListener('change', applyFilters);
-            $('#brSort', a)?.addEventListener('change', applyFilters);
-            $$('.chip', a).forEach(ch => { ch.addEventListener('click', () => { const grp = ch.parentElement.id; if (grp === 'brType') S.browseFilters.type = ch.dataset.v; if (grp === 'brPrice') S.browseFilters.priceMax = parseInt(ch.dataset.v); pgBrowse(a) }) });
-            $$('[data-ck]', a).forEach(el => el.addEventListener('click', () => nav('cook', { id: el.dataset.ck })));
+    const cooks = DB.cooks.filter(c => {
+
+        if (c.status !== 'approved') return false;
+
+        // SEARCH
+        if (
+            f.search &&
+            !c.name?.toLowerCase().includes(f.search.toLowerCase()) &&
+            !c.cuisine?.toLowerCase().includes(f.search.toLowerCase()) &&
+            !c.area?.toLowerCase().includes(f.search.toLowerCase())
+        ) {
+            return false;
         }
+
+        // VEG FILTER
+        if (f.type === 'veg') {
+
+            const items = DB.menuItems.filter(
+                m =>
+                    (m.cookId === c._id || m.cook === c._id) &&
+                    m.type?.toLowerCase() === 'veg'
+            );
+
+            if (!items.length) return false;
+        }
+
+        // NON VEG FILTER
+        if (f.type === 'non-veg') {
+
+            const items = DB.menuItems.filter(
+                m =>
+                    (m.cookId === c._id || m.cook === c._id) &&
+                    m.type?.toLowerCase() === 'non-veg'
+            );
+
+            if (!items.length) return false;
+        }
+
+        // CUISINE
+        if (
+            f.cuisine !== 'all' &&
+            c.cuisine !== f.cuisine
+        ) {
+            return false;
+        }
+
+        // PRICE FILTER
+        if (f.priceMax) {
+
+            const minP = Math.min(
+                c.plans?.daily || 0,
+                c.plans?.weekly || 0,
+                c.plans?.monthly || 0
+            );
+
+            if (minP > f.priceMax) return false;
+        }
+
+        return true;
+    });
+
+    // REVIEW FUNCTION
+    const revsByCk = cid => {
+
+        const r = DB.reviews.filter(
+            x => x.cookId === cid || x.cook === cid
+        );
+
+        return r.length
+            ? Math.round(
+                r.reduce((s, x) => s + x.rating, 0) /
+                r.length * 10
+            ) / 10
+            : 0;
+    };
+
+    // SORTING
+    cooks.sort((a, b) => {
+
+        if (f.sort === 'rating') {
+
+            return revsByCk(b._id) - revsByCk(a._id);
+        }
+
+        if (f.sort === 'price_low') {
+
+            const pa = Math.min(
+                a.plans?.daily || 0,
+                a.plans?.weekly || 0,
+                a.plans?.monthly || 0
+            );
+
+            const pb = Math.min(
+                b.plans?.daily || 0,
+                b.plans?.weekly || 0,
+                b.plans?.monthly || 0
+            );
+
+            return pa - pb;
+        }
+
+        if (f.sort === 'orders') {
+
+            return (b.totalOrders || 0) - (a.totalOrders || 0);
+        }
+
+        return 0;
+    });
+
+    a.innerHTML = `
+
+<section class="page-sec">
+
+<div class="container">
+
+<div style="margin-bottom:24px">
+
+<div class="sec-label">
+Find Tiffin
+</div>
+
+<h2 class="sec-title">
+Browse Home Cooks
+</h2>
+
+<p class="sec-desc">
+${cooks.length} cook${cooks.length !== 1 ? 's' : ''} found near you
+</p>
+
+</div>
+
+<div class="filter-layout">
+
+<div class="filter-panel">
+
+<div class="filter-group">
+
+<div class="search-box">
+
+<i class="fas fa-search"></i>
+
+<input
+class="fi"
+id="brSearch"
+placeholder="Search by name, cuisine, area..."
+value="${f.search}"
+/>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Meal Type</label>
+
+<div class="filter-chips" id="brType">
+
+<span class="chip ${f.type === 'all' ? 'active' : ''}" data-v="all">
+All
+</span>
+
+<span class="chip ${f.type === 'veg' ? 'active' : ''}" data-v="veg">
+Vegetarian
+</span>
+
+<span class="chip ${f.type === 'non-veg' ? 'active' : ''}" data-v="non-veg">
+Non-Veg
+</span>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Cuisine</label>
+
+<select class="fi" id="brCuisine">
+
+<option value="all"
+${f.cuisine === 'all' ? 'selected' : ''}>
+All Cuisines
+</option>
+
+${DB.categories.map(c => `
+<option
+value="${c.name}"
+${f.cuisine === c.name ? 'selected' : ''}>
+${c.name}
+</option>
+`).join('')}
+
+</select>
+
+</div>
+
+<div class="filter-group">
+
+<label>Max Price / Day</label>
+
+<div class="filter-chips" id="brPrice">
+
+<span class="chip ${f.priceMax === 0 ? 'active' : ''}" data-v="0">
+Any
+</span>
+
+<span class="chip ${f.priceMax === 100 ? 'active' : ''}" data-v="100">
+Under 100
+</span>
+
+<span class="chip ${f.priceMax === 150 ? 'active' : ''}" data-v="150">
+Under 150
+</span>
+
+<span class="chip ${f.priceMax === 200 ? 'active' : ''}" data-v="200">
+Under 200
+</span>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Sort By</label>
+
+<select class="fi" id="brSort">
+
+<option value="rating"
+${f.sort === 'rating' ? 'selected' : ''}>
+Highest Rating
+</option>
+
+<option value="price_low"
+${f.sort === 'price_low' ? 'selected' : ''}>
+Lowest Price
+</option>
+
+<option value="orders"
+${f.sort === 'orders' ? 'selected' : ''}>
+Most Orders
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div>
+
+${cooks.length
+? `
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+
+${cooks.map(c => cookCardHTML(c)).join('')}
+
+</div>
+`
+: `
+<div class="empty-state">
+
+<i class="fas fa-search"></i>
+
+<h3>No cooks found</h3>
+
+<p>
+Try adjusting your filters to find more options.
+</p>
+
+</div>
+`
+}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+`;
+
+    const applyFilters = () => {
+
+        S.browseFilters.search =
+            $('#brSearch', a).value;
+
+        S.browseFilters.cuisine =
+            $('#brCuisine', a).value;
+
+        S.browseFilters.sort =
+            $('#brSort', a).value;
+
+        pgBrowse(a);
+    };
+
+    let searchTimer;
+
+    $('#brSearch', a)?.addEventListener('input', () => {
+
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(
+            applyFilters,
+            300
+        );
+    });
+
+    $('#brCuisine', a)?.addEventListener(
+        'change',
+        applyFilters
+    );
+
+    $('#brSort', a)?.addEventListener(
+        'change',
+        applyFilters
+    );
+
+    $$('.chip', a).forEach(ch => {
+
+        ch.addEventListener('click', () => {
+
+            const grp = ch.parentElement.id;
+
+            if (grp === 'brType') {
+                S.browseFilters.type = ch.dataset.v;
+            }
+
+            if (grp === 'brPrice') {
+                S.browseFilters.priceMax =
+                    parseInt(ch.dataset.v);
+            }
+
+            pgBrowse(a);
+        });
+    });
+
+    $$('[data-ck]', a).forEach(el => {
+
+        el.addEventListener('click', () => {
+
+            nav('cook', {
+                id: el.dataset.ck
+            });
+
+        });
+
+    });
+
+}
 
         /* ── COOK PROFILE ── */
         function pgCookProfile(id, a) {
