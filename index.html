@@ -4880,11 +4880,13 @@ ${S.cart.map(i => `
     }
 
     const cookData = DB.cooks.find(
-        c =>
-            c.user === S.user._id ||
-            c.userId === S.user._id ||
-            c.email === S.user.email
-    );
+    c =>
+        c.user === S.user.id ||
+        c.userId === S.user.id ||
+        c.user === S.user._id ||
+        c.userId === S.user._id ||
+        c.email?.toLowerCase() === S.user.email?.toLowerCase()
+);
 
     if (!cookData) {
 
@@ -4961,7 +4963,7 @@ Cook Dashboard
 </div>
 
 <h2 class="sec-title">
-Welcome, ${cookData.name}
+Welcome, ${S.user.firstName} ${S.user.lastName}
 </h2>
 
 </div>
