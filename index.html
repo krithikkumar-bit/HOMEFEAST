@@ -5064,18 +5064,167 @@ Total Earnings
 
         /* ── COOK MENU ── */
         function pgCookMenu(a) {
-            if (!S.user || S.user.role !== 'cook') { nav('login'); return }
-            const items = DB.menuItems.filter(m => m.cookId === S.user._id);
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="sec-label">My Menu</div><h2 class="sec-title">${items.length} Items</h2></div><button class="btn btn-p btn-sm" id="addMealBtn"><i class="fas fa-plus"></i> Add Item</button></div>
- ${items.length ? `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.map(m => `<div class="card" style="padding:16px"><div style="height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px"><img src="${m.img}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover"/></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="badge ${m.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span><span style="font-weight:700;color:var(--accent)">${fp(m.price)}</span></div><h4 style="font-weight:700;font-size:.95rem;margin-bottom:4px">${m.name}</h4><p style="font-size:.8rem;color:var(--muted);margin-bottom:12px">${tr(m.desc, 50)}</p><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:.8rem;color:${m.avail ? 'var(--success)' : 'var(--danger)'}"><i class="fas fa-circle" style="font-size:.5rem;vertical-align:middle"></i> ${m.avail ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:6px"><button class="btn btn-o btn-sm toggle-avail" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-${m.avail ? 'eye-slash' : 'eye'}"></i></button><button class="btn btn-o btn-sm edit-meal" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-pen"></i></button><button class="btn btn-d btn-sm del-meal" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-trash"></i></button></div></div></div>`).join('')}</div>` : '<div class="empty-state"><i class="fas fa-utensils"></i><h3>No menu items yet</h3><p>Add your first dish to start receiving orders.</p></div>'}
-</div></section>`;
-            updateUI();
-            $('#addMealBtn', a)?.addEventListener('click', () => showMealModal(null, () => pgCookMenu(a)));
-            $$('.edit-meal', a).forEach(b => b.addEventListener('click', () => { const m = DB.menuItems.find(x => x._id === b.dataset.mid); if (m) showMealModal(m, () => pgCookMenu(a)) }));
-            $$('.del-meal', a).forEach(b => b.addEventListener('click', () => { const idx = DB.menuItems.findIndex(x => x._id === b.dataset.mid); if (idx > -1) { DB.menuItems.splice(idx, 1); toast('Item deleted'); pgCookMenu(a) } }));
-            $$('.toggle-avail', a).forEach(b => b.addEventListener('click', () => { const m = DB.menuItems.find(x => x._id === b.dataset.mid); if (m) { m.avail = !m.avail; toast(m.avail ? 'Marked available' : 'Marked unavailable'); pgCookMenu(a) } }));
-        }
+
+    if (!S.user || S.user.role !== 'cook') {
+        nav('login');
+        return;
+    }
+
+    /* FIND CURRENT COOK */
+
+    const cookData = DB.cooks.find(
+        c =>
+            c.user === S.user._id ||
+            c.userId === S.user._id ||
+            c.email === S.user.email
+    );
+
+    if (!cookData) {
+
+        a.innerHTML = `
+<section class="page-sec">
+<div class="container">
+<h2>Cook not found</h2>
+</div>
+</section>
+`;
+
+        return;
+    }
+
+    /* ONLY THIS COOK ITEMS */
+
+    const myItems = DB.menuItems.filter(
+        m =>
+            m.cookId === cookData._id ||
+            m.cook === cookData._id
+    );
+
+    a.innerHTML = `
+
+<section class="page-sec">
+
+<div class="container">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+">
+
+<h2 class="sec-title">
+${myItems.length} Items
+</h2>
+
+<button class="btn btn-p">
+<i class="fas fa-plus"></i>
+Add Item
+</button>
+
+</div>
+
+<div style="
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:24px;
+">
+
+${myItems.map(item => `
+
+<div class="card meal-card">
+
+<div class="mc-img">
+
+<img
+src="${item.image || item.img || 'https://picsum.photos/400/300'}"
+alt="${item.name}"
+style="
+width:100%;
+height:220px;
+object-fit:cover;
+border-radius:18px 18px 0 0;
+"
+/>
+
+</div>
+
+<div class="mc-body">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+">
+
+<span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">
+${item.type}
+</span>
+
+<strong style="color:var(--accent)">
+₹${item.price}
+</strong>
+
+</div>
+
+<h3 style="margin-bottom:10px">
+${item.name}
+</h3>
+
+<p style="
+color:var(--muted);
+margin-bottom:14px;
+">
+${item.description || item.desc || 'Fresh homemade food'}
+</p>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+">
+
+<span style="
+color:${item.available ? 'green' : 'red'};
+font-size:14px;
+">
+● ${item.available ? 'Available' : 'Unavailable'}
+</span>
+
+<div style="display:flex;gap:10px">
+
+<button class="icon-btn">
+<i class="fas fa-eye"></i>
+</button>
+
+<button class="icon-btn">
+<i class="fas fa-pen"></i>
+</button>
+
+<button class="icon-btn"
+style="background:#ef4444;color:white">
+<i class="fas fa-trash"></i>
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`).join('')}
+
+</div>
+
+</div>
+
+</section>
+`;
+
+}
 
         function showMealModal(meal, onSave) {
             const isEdit = !!meal;
