@@ -3073,13 +3073,13 @@ async function loadDatabase() {
         const stMap = { placed: { l: 'Placed', c: 'st-placed' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
 
         /* ── Router ── */
-function nav(route, params = {}) {
+function nav(r, p = {}) {
 
-    let url = '#' + route;
+    let url = '#' + r;
 
-    if (params.id) {
+    if (p.id) {
 
-        url += '/' + params.id;
+        url += '/' + p.id;
 
     }
 
