@@ -3228,7 +3228,7 @@ function route() {
         window.addEventListener('hashchange', route);
 
         /* ── UI Updates ── */
-        function updateUI() {
+       function updateUI() {
 
     const navLinks = $('#navLinks');
 
@@ -3243,6 +3243,7 @@ function route() {
             <a href="#browse">Find Tiffin</a>
             <a href="#how">How It Works</a>
             <a href="#about">About</a>
+            <a href="#login">Login</a>
         `;
 
         return;
@@ -3260,6 +3261,7 @@ function route() {
             <a href="#cook-orders">Orders</a>
             <a href="#cook-earnings">Earnings</a>
             <a href="#cook-settings">Settings</a>
+            <a href="#" id="logoutBtn">Logout</a>
         `;
 
     }
@@ -3276,6 +3278,7 @@ function route() {
             <a href="#admin-cooks">Cooks</a>
             <a href="#admin-orders">Orders</a>
             <a href="#admin-complaints">Complaints</a>
+            <a href="#" id="logoutBtn">Logout</a>
         `;
 
     }
@@ -3295,9 +3298,40 @@ function route() {
             <a href="#subscriptions">Subscriptions</a>
             <a href="#orders">My Orders</a>
             <a href="#profile">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
         `;
 
     }
+
+    /* =========================
+       LOGOUT BUTTON
+    ========================= */
+
+    setTimeout(() => {
+
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (logoutBtn) {
+
+            logoutBtn.onclick = (e) => {
+
+                e.preventDefault();
+
+                localStorage.removeItem('hf_user');
+                localStorage.removeItem('hf_tk');
+
+                S.user = null;
+                S.token = null;
+
+                window.location.hash = '#home';
+
+                location.reload();
+
+            };
+
+        }
+
+    }, 100);
 
 }
 
