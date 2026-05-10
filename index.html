@@ -3279,11 +3279,25 @@ if (
 
     };
 
-    const fn = R[page] || pgNotFound;
+const fn = R[page] || pgNotFound;
 
-    app.innerHTML = '';
+app.innerHTML = '';
+
+try {
 
     fn(app);
+
+} catch (err) {
+
+    console.error('ROUTE ERROR:', err);
+
+    app.innerHTML = `
+        <div style="padding:40px;color:red">
+            Route Error:
+            ${err.message}
+        </div>
+    `;
+}
 
     requestAnimationFrame(initReveal);
 
