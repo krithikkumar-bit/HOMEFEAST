@@ -4059,7 +4059,7 @@ $$('.cook-card-btn', a).forEach(btn => {
 
         console.log('CLICKED COOK:', cookId);
 
-        window.location.hash = '#cook/' + cookId;
+        nav('cook', { id: cookId });
 
     });
 
@@ -5673,10 +5673,10 @@ style="background:#ef4444;color:white">
 
         /* ── 404 ── */
         function pgNotFound(a) { a.innerHTML = `<section class="not-found"><h1>404</h1><h2>Page Not Found</h2><p>The page you are looking for doesn't exist.</p><a class="btn btn-p" data-nv="home"><i class="fas fa-home"></i> Go Home</a></section>`; updateUI() }
-        window.addEventListener('hashchange', route);
         /* ============================================================
            INIT
            ============================================================ */
+                   window.addEventListener('hashchange', route);
         document.addEventListener('DOMContentLoaded', () => {
             const navEl = $('#navbar'), stBtn = $('#scrollTop'), mobTog = $('#mobTog'), mobMenu = $('#mobMenu'), cartBtn = $('#cartBtn');
             window.addEventListener('scroll', () => { navEl.classList.toggle('scrolled', window.scrollY > 50); stBtn.classList.toggle('vis', window.scrollY > 400) }, { passive: true });
