@@ -94,7 +94,6 @@
             min-height: 100vh
         }
 
-        /* Toast */
         .toast-wrap {
             position: fixed;
             top: 20px;
@@ -148,7 +147,6 @@
             color: var(--success)
         }
 
-        /* Blobs */
         .bg-blobs {
             position: fixed;
             top: 0;
@@ -197,7 +195,6 @@
             }
         }
 
-        /* Navbar */
         .navbar {
             position: fixed;
             top: 0;
@@ -464,7 +461,6 @@
             color: var(--accent)
         }
 
-        /* Shared */
         .sec-label {
             display: inline-flex;
             align-items: center;
@@ -672,7 +668,6 @@
             color: #C62828
         }
 
-        /* Forms */
         .fg {
             margin-bottom: 16px
         }
@@ -765,7 +760,6 @@
             text-decoration: underline
         }
 
-        /* Cards */
         .card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -778,7 +772,6 @@
             box-shadow: var(--shadow-md)
         }
 
-        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -819,7 +812,6 @@
             color: var(--muted)
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 4px;
@@ -850,7 +842,6 @@
             border-bottom-color: var(--accent)
         }
 
-        /* Table */
         .tbl-wrap {
             overflow-x: auto;
             border: 1px solid var(--border);
@@ -885,7 +876,6 @@
             background: rgba(232, 93, 44, .02)
         }
 
-        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -964,7 +954,6 @@
             gap: 10px
         }
 
-        /* Filter sidebar */
         .filter-layout {
             display: grid;
             grid-template-columns: 260px 1fr;
@@ -1046,7 +1035,6 @@
             padding-left: 40px
         }
 
-        /* Cook Card */
         .cook-card {
             cursor: pointer
         }
@@ -1152,7 +1140,6 @@
             background: var(--accent-hover)
         }
 
-        /* Meal card */
         .meal-card .mc-img {
             height: 180px;
             overflow: hidden;
@@ -1244,7 +1231,6 @@
             background: var(--success)
         }
 
-        /* Cook profile */
         .cp-header {
             display: grid;
             grid-template-columns: 300px 1fr;
@@ -1350,7 +1336,6 @@
             color: var(--muted)
         }
 
-        /* Sub plans */
         .sub-plans {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1437,7 +1422,6 @@
             width: 16px
         }
 
-        /* Earnings bar */
         .earn-bar {
             height: 8px;
             background: var(--bg-deep);
@@ -1453,7 +1437,6 @@
             transition: width .8s ease
         }
 
-        /* Misc */
         .empty-state {
             text-align: center;
             padding: 60px 20px
@@ -1566,7 +1549,6 @@
             margin-bottom: 24px
         }
 
-        /* Hero */
         .hero {
             min-height: 92vh;
             display: flex;
@@ -1794,7 +1776,6 @@
             }
         }
 
-        /* Steps */
         .steps-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1875,7 +1856,6 @@
             line-height: 1.6
         }
 
-        /* Why */
         .why-sec {
             background: var(--bg-deep);
             position: relative;
@@ -1953,7 +1933,6 @@
             line-height: 1.7
         }
 
-        /* Testimonials */
         .test-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -2020,7 +1999,6 @@
             color: var(--muted)
         }
 
-        /* CTA */
         .cta-card {
             background: linear-gradient(135deg, #E85D2C, #D14A1A 50%, #B83A10);
             border-radius: 24px;
@@ -2118,7 +2096,6 @@
             animation: fc 5s ease-in-out infinite
         }
 
-        /* Footer */
         .footer {
             padding: 60px 0 0;
             background: var(--fg);
@@ -2206,7 +2183,6 @@
             color: rgba(255, 255, 255, .35)
         }
 
-        /* Cart page */
         .cart-layout {
             display: grid;
             grid-template-columns: 1fr 380px;
@@ -2376,7 +2352,6 @@
             color: var(--accent)
         }
 
-        /* Checkout */
         .checkout-layout {
             display: grid;
             grid-template-columns: 1fr 400px;
@@ -2478,7 +2453,6 @@
             font-size: .86rem
         }
 
-        /* Order detail */
         .od-header {
             display: flex;
             align-items: center;
@@ -2562,7 +2536,6 @@
             color: var(--muted)
         }
 
-        /* Profile */
         .prof-header {
             display: flex;
             align-items: center;
@@ -2608,7 +2581,6 @@
             font-size: .85rem
         }
 
-        /* Review */
         .rev-card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -2677,7 +2649,6 @@
             color: var(--warning)
         }
 
-        /* Responsive */
         @media(max-width:1024px) {
             .hero .container {
                 grid-template-columns: 1fr;
@@ -2970,9 +2941,6 @@
     </footer>
 
     <script>
-        /* ============================================================
-           HOMEFEAST — COMPLETE SPA (Customer + Cook + Admin)
-           ============================================================ */
         const API = '/api';
         const $ = (s, c = document) => c.querySelector(s);
         const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -2980,85 +2948,41 @@
         const ini = n => n ? n.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : '?';
         const tr = (t, m = 80) => (!t || t.length <= m) ? t : t.slice(0, m).trim() + '...';
 
-        /* ── Toast ── */
         function toast(msg, type = 'success') { const w = $('#toastW'), el = document.createElement('div'); el.className = `toast ${type === 'error' ? 'error' : ''}`; el.innerHTML = `<i class="fas ${type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i><span>${msg}</span>`; w.appendChild(el); requestAnimationFrame(() => el.classList.add('show')); setTimeout(() => { el.classList.add('out'); el.classList.remove('show'); setTimeout(() => el.remove(), 400) }, 3000) }
 
-        /* ── Modal ── */
         function openModal(title, bodyHTML, actions = '') { const ov = $('#modalOv'), box = $('#modalBox'); box.innerHTML = `<div class="modal-head"><h3>${title}</h3><button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button></div><div class="modal-body">${bodyHTML}</div>${actions ? `<div class="modal-foot">${actions}</div>` : ''}`; ov.classList.add('open') }
         function closeModal() { $('#modalOv').classList.remove('open') }
         $('#modalOv').addEventListener('click', e => { if (e.target === $('#modalOv')) closeModal() });
 
-        /* ── API ── */
         async function api(ep, opts = {}) { const tk = localStorage.getItem('hf_tk'); const h = { 'Content-Type': 'application/json', ...opts.headers }; if (tk) h.Authorization = `Bearer ${tk}`; try { const r = await fetch(`${API}${ep}`, { ...opts, headers: h }); const d = await r.json(); if (!r.ok) { if (r.status === 401) { doLogout(); throw new Error('Session expired') } throw new Error(d.message || 'Request failed') } return d } catch (e) { if (e.message === 'Session expired') throw e; if (e.name === 'TypeError' && e.message.includes('fetch')) throw new Error('Server unreachable'); throw e } }
 
-       let DB = {
+       let DB = { categories: [], cooks: [], menuItems: [], users: [], orders: [], subscriptions: [], reviews: [], complaints: [] };
 
-    categories: [],
-
-    cooks: [],
-
-    menuItems: [],
-
-    users: [],
-
-    orders: [],
-
-    subscriptions: [],
-
-    reviews: [],
-
-    complaints: []
-
-};
 async function loadDatabase() {
-
     try {
-
-        // LOAD COOKS
         const cooksRes = await fetch('http://localhost:5000/api/cooks');
-
         const cooksData = await cooksRes.json();
-
         DB.cooks = cooksData.data || cooksData;
 
-        // LOAD MENUS
         const menusRes = await fetch('http://localhost:5000/api/menus');
-
         const menusData = await menusRes.json();
-
         DB.menuItems = menusData.data || menusData;
 
-        // CREATE CATEGORIES
         DB.categories = [];
-
         DB.menuItems.forEach(menu => {
-
             if (!DB.categories.find(c => c.name === menu.type)) {
-
-                DB.categories.push({
-                    _id: menu.type,
-                    name: menu.type
-                });
-
+                DB.categories.push({ _id: menu.type, name: menu.type });
             }
-
         });
 
         console.log("Cooks Loaded:", DB.cooks.length);
-
         console.log("Menus Loaded:", DB.menuItems.length);
-
         route();
-
     } catch (err) {
-
         console.error("Database Load Error:", err);
-
     }
-
 }
 
-        /* ── State ── */
         let S = { user: JSON.parse(localStorage.getItem('hf_u') || 'null'), token: localStorage.getItem('hf_tk'), cart: JSON.parse(localStorage.getItem('hf_c') || '[]'), likes: new Set(JSON.parse(localStorage.getItem('hf_l') || '[]')), browseFilters: { search: '', type: 'all', cuisine: 'all', priceMax: 300, sort: 'rating' }, cookMenuTab: 'menu' };
         const save = () => { localStorage.setItem('hf_c', JSON.stringify(S.cart)); localStorage.setItem('hf_l', JSON.stringify([...S.likes])) };
         const saveU = () => { if (S.user) localStorage.setItem('hf_u', JSON.stringify(S.user)); else localStorage.removeItem('hf_u') };
@@ -3072,647 +2996,155 @@ async function loadDatabase() {
         function clearCart() { S.cart = []; save(); updateUI() }
         const stMap = { placed: { l: 'Placed', c: 'st-placed' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
 
-        /* ── Router ── */
-function nav(r, p = {}) {
-
+        function nav(r, p = {}) {
     let url = '#' + r;
-
-    if (p.id) {
-
-        url += '/' + p.id;
-
-    }
-
-    if (window.location.hash === url) {
-
-        route();
-
-        return;
-
-    }
-
+    if (p.id) { url += '/' + p.id; }
+    if (window.location.hash === url) { route(); return; }
     window.location.hash = url;
-
 }
 
 function getRoute() {
-
-    const h =
-        window.location.hash.slice(1) || 'home';
-
+    const h = window.location.hash.slice(1) || 'home';
     const p = h.split('/');
-
-    return {
-        page: p[0],
-        id: p[1] || null
-    };
-
+    return { page: p[0], id: p[1] || null };
 }
 
 function route() {
-
     const { page, id } = getRoute();
-    /* =========================
-   BLOCK NORMAL PAGES FOR COOK
-========================= */
 
-if (
-    S.user &&
-    S.user.role === 'cook' &&
-    (
-        page === 'home' ||
-        page === 'browse' ||
-        page === 'how' ||
-        page === 'about' ||
-        page === 'dashboard' ||
-        page === 'subscriptions' ||
-        page === 'profile'
-    )
-) {
+    if (S.user && S.user.role === 'cook' && (
+        page === 'home' || page === 'browse' || page === 'how' ||
+        page === 'about' || page === 'dashboard' ||
+        page === 'subscriptions' || page === 'profile'
+    )) {
+        location.hash = '#cook-dashboard';
+        return;
+    }
 
-    location.hash = '#cook-dashboard';
-    return;
-}
+    if (S.user && S.user.role === 'admin' && (
+        page === 'home' || page === 'browse' || page === 'how' ||
+        page === 'about' || page === 'cook-dashboard' ||
+        page === 'cook-menu' || page === 'cook-orders' ||
+        page === 'cook-earnings' || page === 'cook-settings'
+    )) {
+        location.hash = '#admin-dashboard';
+        return;
+    }
 
-/* =========================
-   BLOCK NORMAL PAGES FOR ADMIN
-========================= */
-
-if (
-    S.user &&
-    S.user.role === 'admin' &&
-    (
-        page === 'home' ||
-        page === 'browse' ||
-        page === 'how' ||
-        page === 'about' ||
-        page === 'cook-dashboard' ||
-        page === 'cook-menu' ||
-        page === 'cook-orders' ||
-        page === 'cook-earnings' ||
-        page === 'cook-settings'
-    )
-) {
-
-    location.hash = '#admin-dashboard';
-    return;
-}
     const app = $('#app');
-
-    // SCROLL TOP
     if (page !== 'cook') {
-
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-
-}
-
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     updateUI();
 
-    // ADMIN PROTECTION
-    if (
-        page.startsWith('admin') &&
-        (
-            !S.user ||
-            S.user.role !== 'admin'
-        )
-    ) {
-
+    if (page.startsWith('admin') && (!S.user || S.user.role !== 'admin')) {
         window.location.hash = '#home';
-
         return;
-
     }
 
-    // COOK PROTECTION
-    if (
-        page.startsWith('cook') &&
-        (
-            !S.user ||
-            S.user.role !== 'cook'
-        )
-    ) {
-
+    /* ========== FIX: Changed startsWith('cook') to startsWith('cook-') ========== */
+    /* This allows regular users to view the public cook profile page (#cook/{id})  */
+    /* while still protecting cook-only pages like #cook-dashboard, #cook-menu etc. */
+    if (page.startsWith('cook-') && (!S.user || S.user.role !== 'cook')) {
         window.location.hash = '#home';
-
         return;
-
     }
+    /* ============================================================================= */
 
-    // USER PROTECTION
-    if (
-        (
-            page === 'dashboard' ||
-            page === 'subscriptions' ||
-            page === 'orders' ||
-            page === 'profile'
-        ) &&
-        !S.user
-    ) {
-
+    if ((page === 'dashboard' || page === 'subscriptions' ||
+         page === 'orders' || page === 'profile') && !S.user) {
         window.location.hash = '#login';
-
         return;
-
     }
 
-    // ROUTES
     const R = {
-
-        home: pgHome,
-
-        browse: pgBrowse,
-
-        cook: () => pgCookProfile(id),
-
-        how: pgHow,
-
-        about: pgAbout,
-
-        login: pgLogin,
-
-        register: pgRegister,
-
-        'register-cook': () => pgRegister('cook'),
-
-        cart: pgCart,
-
-        checkout: pgCheckout,
-
-        dashboard: pgDashboard,
-
-        subscriptions: pgSubs,
-
-        orders: pgOrders,
-
-        'order-detail': () => pgOrderDetail(id),
-
-        'sub-detail': () => pgSubDetail(id),
-
-        profile: pgProfile,
-
-        'cook-dashboard': pgCookDash,
-
-        'cook-menu': pgCookMenu,
-
-        'cook-orders': pgCookOrders,
-
-        'cook-subs': pgCookSubs,
-
-        'cook-earnings': pgCookEarnings,
-
-        'cook-settings': pgCookSettings,
-
-        'admin-dashboard': pgAdminDash,
-
-        'admin-users': pgAdminUsers,
-
-        'admin-cooks': pgAdminCooks,
-
-        'admin-orders': pgAdminOrders,
-
-        'admin-categories': pgAdminCats,
-
-        'admin-complaints': pgAdminComplaints
-
+        home: pgHome, browse: pgBrowse, cook: () => pgCookProfile(id),
+        how: pgHow, about: pgAbout, login: pgLogin, register: pgRegister,
+        'register-cook': () => pgRegister('cook'), cart: pgCart, checkout: pgCheckout,
+        dashboard: pgDashboard, subscriptions: pgSubs, orders: pgOrders,
+        'order-detail': () => pgOrderDetail(id), 'sub-detail': () => pgSubDetail(id),
+        profile: pgProfile, 'cook-dashboard': pgCookDash, 'cook-menu': pgCookMenu,
+        'cook-orders': pgCookOrders, 'cook-subs': pgCookSubs,
+        'cook-earnings': pgCookEarnings, 'cook-settings': pgCookSettings,
+        'admin-dashboard': pgAdminDash, 'admin-users': pgAdminUsers,
+        'admin-cooks': pgAdminCooks, 'admin-orders': pgAdminOrders,
+        'admin-categories': pgAdminCats, 'admin-complaints': pgAdminComplaints
     };
 
-const fn = R[page] || pgNotFound;
-
-app.innerHTML = '';
-
-try {
-
-    fn(app);
-
-} catch (err) {
-
-    console.error('ROUTE ERROR:', err);
-
-    app.innerHTML = `
-        <div style="padding:40px;color:red">
-            Route Error:
-            ${err.message}
-        </div>
-    `;
-}
-
+    const fn = R[page] || pgNotFound;
+    app.innerHTML = '';
+    try { fn(app); } catch (err) {
+        console.error('ROUTE ERROR:', err);
+        app.innerHTML = `<div style="padding:40px;color:red">Route Error: ${err.message}</div>`;
+    }
     requestAnimationFrame(initReveal);
-
 }
+
         window.addEventListener('hashchange', route);
 
-        /* ── UI Updates ── */
         function updateUI() {
-
     const r = S.user?.role || 'guest';
     const auth = !!S.user;
-
     let links = {};
 
-    /* =========================
-       GUEST USER
-    ========================= */
-
     if (r === 'guest') {
-
-        links = {
-            home: 'Home',
-            browse: 'Find Tiffin',
-            how: 'How It Works',
-            about: 'About'
-        };
-
-    }
-
-    /* =========================
-       NORMAL USER
-    ========================= */
-
-    else if (r === 'user') {
-
-        links = {
-            home: 'Home',
-            browse: 'Find Tiffin',
-            how: 'How It Works',
-            about: 'About',
-            dashboard: 'Dashboard',
-            subscriptions: 'Subscriptions',
-            orders: 'My Orders',
-            profile: 'Profile'
-        };
-
-    }
-
-    /* =========================
-       COOK USER
-    ========================= */
-
-    else if (r === 'cook') {
-
-        links = {
-            'cook-dashboard': 'Dashboard',
-            'cook-menu': 'My Menu',
-            'cook-orders': 'Orders',
-            'cook-earnings': 'Earnings',
-            'cook-settings': 'Settings'
-        };
-
-    }
-
-    /* =========================
-       ADMIN USER
-    ========================= */
-
-    else if (r === 'admin') {
-
-        links = {
-            'admin-dashboard': 'Dashboard',
-            'admin-users': 'Users',
-            'admin-cooks': 'Cooks',
-            'admin-orders': 'Orders',
-            'admin-categories': 'Categories',
-            'admin-complaints': 'Complaints'
-        };
-
+        links = { home: 'Home', browse: 'Find Tiffin', how: 'How It Works', about: 'About' };
+    } else if (r === 'user') {
+        links = { home: 'Home', browse: 'Find Tiffin', how: 'How It Works', about: 'About', dashboard: 'Dashboard', subscriptions: 'Subscriptions', orders: 'My Orders', profile: 'Profile' };
+    } else if (r === 'cook') {
+        links = { 'cook-dashboard': 'Dashboard', 'cook-menu': 'My Menu', 'cook-orders': 'Orders', 'cook-earnings': 'Earnings', 'cook-settings': 'Settings' };
+    } else if (r === 'admin') {
+        links = { 'admin-dashboard': 'Dashboard', 'admin-users': 'Users', 'admin-cooks': 'Cooks', 'admin-orders': 'Orders', 'admin-categories': 'Categories', 'admin-complaints': 'Complaints' };
     }
 
     const cur = getRoute().page;
-
-    $('#navLinks').innerHTML =
-        Object.entries(links)
-            .map(([k, v]) =>
-                `<li>
-                    <a data-nv="${k}" class="${cur === k ? 'active' : ''}">
-                        ${v}
-                    </a>
-                </li>`
-            )
-            .join('');
-
-    $('#mobMenu').innerHTML =
-        Object.entries(links)
-            .map(([k, v]) =>
-                `<a data-nv="${k}">${v}</a>`
-            )
-            .join('')
-        +
-        (auth ? '' : `<a data-nv="login">Login / Register</a>`);
+    $('#navLinks').innerHTML = Object.entries(links).map(([k, v]) => `<li><a data-nv="${k}" class="${cur === k ? 'active' : ''}">${v}</a></li>`).join('');
+    $('#mobMenu').innerHTML = Object.entries(links).map(([k, v]) => `<a data-nv="${k}">${v}</a>`).join('') + (auth ? '' : `<a data-nv="login">Login / Register</a>`);
 
     if (auth) {
-
-        const fullName =
-            `${S.user.firstName || ''} ${S.user.lastName || ''}`.trim();
-
+        const fullName = `${S.user.firstName || ''} ${S.user.lastName || ''}`.trim();
         const inits = ini(fullName || 'U');
-
-        $('#authArea').innerHTML = `
-
-<div style="position:relative">
-
-    <button class="user-btn" id="uBtn">
-        ${inits}
-    </button>
-
-    <div class="user-dd" id="uDD">
-
-        <a data-nv="${r === 'cook' ? 'cook-settings' : 'profile'}">
-            <i class="fas fa-user"></i>
-            My Profile
-        </a>
-
-        ${r === 'user'
-                ?
-                `
-            <a data-nv="orders">
-                <i class="fas fa-receipt"></i>
-                My Orders
-            </a>
-
-            <a data-nv="subscriptions">
-                <i class="fas fa-repeat"></i>
-                Subscriptions
-            </a>
-            `
-                :
-                ''
-            }
-
-        <div class="dd-div"></div>
-
-        <button id="loBtn">
-            <i class="fas fa-right-from-bracket"></i>
-            Logout
-        </button>
-
-    </div>
-
-</div>
-`;
-
-        $('#uBtn')?.addEventListener('click', e => {
-
-            e.stopPropagation();
-
-            $('#uDD').classList.toggle('open');
-
-        });
-
-        document.addEventListener('click', e => {
-
-            if (!$('#authArea').contains(e.target)) {
-
-                $('#uDD')?.classList.remove('open');
-
-            }
-
-        });
-
-        $('#loBtn')?.addEventListener('click', () => {
-
-            closeMob();
-
-            doLogout();
-
-        });
-
+        $('#authArea').innerHTML = `<div style="position:relative"><button class="user-btn" id="uBtn">${inits}</button><div class="user-dd" id="uDD"><a data-nv="${r === 'cook' ? 'cook-settings' : 'profile'}"><i class="fas fa-user"></i> My Profile</a>${r === 'user' ? `<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>` : ''}<div class="dd-div"></div><button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button></div></div>`;
+        $('#uBtn')?.addEventListener('click', e => { e.stopPropagation(); $('#uDD').classList.toggle('open'); });
+        document.addEventListener('click', e => { if (!$('#authArea').contains(e.target)) $('#uDD')?.classList.remove('open'); });
+        $('#loBtn')?.addEventListener('click', () => { closeMob(); doLogout(); });
+    } else {
+        $('#authArea').innerHTML = `<button class="btn btn-p btn-sm" data-nv="login">Login</button>`;
     }
 
-    else {
-
-        $('#authArea').innerHTML =
-            `<button class="btn btn-p btn-sm" data-nv="login">
-                Login
-            </button>`;
-
-    }
-
-    const cb = $('#cartBadge');
-
-    const cc = cartCount();
-
-    cb.textContent = cc;
-
-    cb.classList.toggle('vis', cc > 0);
+    const cb = $('#cartBadge'); const cc = cartCount(); cb.textContent = cc; cb.classList.toggle('vis', cc > 0);
 
     $$('[data-nv]').forEach(el => {
-
         if (el.dataset.nvBound) return;
-
         el.dataset.nvBound = '1';
-
         el.addEventListener('click', e => {
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    closeMob();
-
-    const currentScroll = window.scrollY;
-
-    nav(el.dataset.nv);
-
-    setTimeout(() => {
-        window.scrollTo(0, currentScroll);
-    }, 50);
-
-});
-
+            e.preventDefault(); e.stopPropagation(); closeMob();
+            const currentScroll = window.scrollY;
+            nav(el.dataset.nv);
+            setTimeout(() => { window.scrollTo(0, currentScroll); }, 50);
+        });
     });
-
 }
 
         function closeMob() { $('#mobTog').classList.remove('on'); $('#mobMenu').classList.remove('open'); document.body.style.overflow = '' }
 
-        /* ── Reveal ── */
-                function initReveal() { const o = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('vis'); o.unobserve(x.target) } }) }, { threshold: .06, rootMargin: '0px 0px -30px 0px' }); $$('.reveal').forEach(el => o.observe(el)) }
+        function initReveal() { const o = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('vis'); o.unobserve(x.target) } }) }, { threshold: .06, rootMargin: '0px 0px -30px 0px' }); $$('.reveal').forEach(el => o.observe(el)) }
 
-        /* ── Cook card HTML ── */
         function cookCardHTML(ck) {
-
     const revs = DB.reviews.filter(r => r.cookId === ck._id);
-
-    const avgR = revs.length
-        ? Math.round(
-            revs.reduce((s, r) => s + r.rating, 0) /
-            revs.length * 10
-        ) / 10
-        : (ck.rating || 4.5);
-
-    const minP = Math.min(
-        ck.plans?.daily || 0,
-        ck.plans?.weekly || 0,
-        ck.plans?.monthly || 0
-    );
-
-    return `
-    
-    <div class="card cook-card" data-ck="${ck._id}">
-    
-        <div class="cook-card-img">
-
-            <img 
-                src="${ck.image || 'https://picsum.photos/600/400'}" 
-                alt="${ck.name}" 
-                loading="lazy"
-            />
-
-            <div class="cook-card-badge">
-
-                <span class="badge ${ck.status === 'approved'
-                    ? 'badge-veg'
-                    : ck.status === 'pending'
-                    ? 'badge-new'
-                    : 'badge-nv'}">
-
-                    ${ck.status}
-
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="cook-card-body">
-
-            <div class="cook-card-name">
-                ${ck.name}
-            </div>
-
-            <div class="cook-card-meta">
-
-                <span class="ra">
-                    <i class="fas fa-star"></i> ${avgR}
-                </span>
-
-                <span>
-                    <i class="fas fa-utensils"></i> ${revs.length} reviews
-                </span>
-
-                <span>
-                    <i class="fas fa-truck"></i> ${ck.totalOrders || 0} orders
-                </span>
-
-            </div>
-
-            <div class="cook-card-cuisine">
-
-                <i class="fas fa-fire" style="margin-right:4px"></i>
-
-                ${ck.cuisine}
-
-            </div>
-
-            <div class="cook-card-plans">
-
-                <span class="plan-tag">Daily</span>
-
-                <span class="plan-tag">Weekly</span>
-
-                <span class="plan-tag">Monthly</span>
-
-            </div>
-
-            <div class="cook-card-footer">
-
-                <div class="cook-card-price">
-
-                    From <strong>${fp(minP)}</strong>/day
-
-                </div>
-<button 
-    class="cook-card-btn"
-    type="button"
-    data-id="${ck._id}">
-
-    View Menu
-
-</button>
-
-            </div>
-
-        </div>
-
-    </div>
-    
-    `;
+    const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : (ck.rating || 4.5);
+    const minP = Math.min(ck.plans?.daily || 0, ck.plans?.weekly || 0, ck.plans?.monthly || 0);
+    return `<div class="card cook-card" data-ck="${ck._id}"><div class="cook-card-img"><img src="${ck.image || 'https://picsum.photos/600/400'}" alt="${ck.name}" loading="lazy"/><div class="cook-card-badge"><span class="badge ${ck.status === 'approved' ? 'badge-veg' : ck.status === 'pending' ? 'badge-new' : 'badge-nv'}">${ck.status}</span></div></div><div class="cook-card-body"><div class="cook-card-name">${ck.name}</div><div class="cook-card-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR}</span><span><i class="fas fa-utensils"></i> ${revs.length} reviews</span><span><i class="fas fa-truck"></i> ${ck.totalOrders || 0} orders</span></div><div class="cook-card-cuisine"><i class="fas fa-fire" style="margin-right:4px"></i>${ck.cuisine}</div><div class="cook-card-plans"><span class="plan-tag">Daily</span><span class="plan-tag">Weekly</span><span class="plan-tag">Monthly</span></div><div class="cook-card-footer"><div class="cook-card-price">From <strong>${fp(minP)}</strong>/day</div><button class="cook-card-btn" type="button" data-id="${ck._id}">View Menu</button></div></div></div>`;
 }
 
-        /* ── Meal card HTML ── */
         function mealCardHTML(m) {
-
     const inC = S.cart.find(c => c.mid === m._id);
-
-    return `
-    
-    <div class="card meal-card">
-
-        <div class="mc-img">
-
-            <img 
-                src="${m.image}" 
-                alt="${m.name}" 
-                loading="lazy"
-                onerror="this.src='https://via.placeholder.com/400x250?text=Food+Image'"
-            />
-
-            <span class="mc-tag badge ${m.type === 'Veg' ? 'badge-veg' : 'badge-nv'}">
-                ${m.type}
-            </span>
-
-        </div>
-
-        <div class="mc-body">
-
-            <div class="mc-name">
-                ${m.name}
-            </div>
-
-            <div class="mc-desc">
-                Fresh homemade delicious food
-            </div>
-
-            <div class="mc-foot">
-
-                <div class="mc-price">
-                    ₹${m.price}
-                </div>
-
-                <button 
-                    class="mc-add ${inC ? 'added' : ''}" 
-                    data-add="${m._id}"
-                >
-                    <i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i>
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-    
-    `;
+    return `<div class="card meal-card"><div class="mc-img"><img src="${m.image}" alt="${m.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x250?text=Food+Image'"/><span class="mc-tag badge ${m.type === 'Veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span></div><div class="mc-body"><div class="mc-name">${m.name}</div><div class="mc-desc">Fresh homemade delicious food</div><div class="mc-foot"><div class="mc-price">₹${m.price}</div><button class="mc-add ${inC ? 'added' : ''}" data-add="${m._id}"><i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i></button></div></div></div>`;
 }
 
-        /* ============================================================
-           PAGE RENDERERS
-           ============================================================ */
-
-        /* ── HOME ── */
         function pgHome(a) {
             const approvedCooks = DB.cooks.filter(c => c.status === 'approved');
-            a.innerHTML = `
-<section class="hero"><div class="container">
-<div class="hero-content">
-<div class="hero-badge"><span class="pd"></span>Now delivering in Bangalore</div>
-<h1 class="hero-title">Affordable <span class="hl">Home-Cooked</span> Tiffin at Your Door</h1>
-<p class="hero-desc">Discover verified home cooks near you. Subscribe for daily, weekly, or monthly meals — healthy, hygienic, and homemade just like your mother makes.</p>
-<div class="hero-actions"><a class="btn btn-p" data-nv="browse"><i class="fas fa-search"></i> Find Tiffin Providers</a><a class="btn btn-o" data-nv="how">How It Works</a></div>
-<div class="hero-stats"><div><div class="hero-stat-n">2,500+</div><div class="hero-stat-l">Meals Delivered</div></div><div><div class="hero-stat-n">120+</div><div class="hero-stat-l">Home Cooks</div></div><div><div class="hero-stat-n">4.8</div><div class="hero-stat-l">Avg Rating</div></div><div><div class="hero-stat-n">3 Cities</div><div class="hero-stat-l">And Growing</div></div></div>
-</div>
-<div class="hero-vis"><div class="hero-img-w"><div class="hero-circle c1"></div><div class="hero-circle c2"></div><img src="https://picsum.photos/seed/hf-hero3/600/600.jpg" alt="Home-cooked meal" class="hero-img-main"/>
+            a.innerHTML = `<section class="hero"><div class="container"><div class="hero-content"><div class="hero-badge"><span class="pd"></span>Now delivering in Bangalore</div><h1 class="hero-title">Affordable <span class="hl">Home-Cooked</span> Tiffin at Your Door</h1><p class="hero-desc">Discover verified home cooks near you. Subscribe for daily, weekly, or monthly meals — healthy, hygienic, and homemade just like your mother makes.</p><div class="hero-actions"><a class="btn btn-p" data-nv="browse"><i class="fas fa-search"></i> Find Tiffin Providers</a><a class="btn btn-o" data-nv="how">How It Works</a></div><div class="hero-stats"><div><div class="hero-stat-n">2,500+</div><div class="hero-stat-l">Meals Delivered</div></div><div><div class="hero-stat-n">120+</div><div class="hero-stat-l">Home Cooks</div></div><div><div class="hero-stat-n">4.8</div><div class="hero-stat-l">Avg Rating</div></div><div><div class="hero-stat-n">3 Cities</div><div class="hero-stat-l">And Growing</div></div></div></div><div class="hero-vis"><div class="hero-img-w"><div class="hero-circle c1"></div><div class="hero-circle c2"></div><img src="https://picsum.photos/seed/hf-hero3/600/600.jpg" alt="Home-cooked meal" class="hero-img-main"/>
 <div class="hero-fc c1"><div class="fc-icon or"><i class="fas fa-clock"></i></div><div class="fc-text"><strong>30 Min Delivery</strong><span>Fresh at your door</span></div></div>
 <div class="hero-fc c2"><div class="fc-icon gr"><i class="fas fa-leaf"></i></div><div class="fc-text"><strong>100% Homemade</strong><span>No preservatives</span></div></div>
 </div></div>
@@ -3746,9 +3178,9 @@ try {
 <section class="page-sec"><div class="container">
 <div class="reveal" style="text-align:center;margin-bottom:36px"><div class="sec-label">Testimonials</div><h2 class="sec-title">What Our Users Say</h2></div>
 <div class="test-grid">
-<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">HomeFeast has been a lifesaver for me as a PG resident. Meena Aunty\'s food tastes exactly like home. The monthly subscription is so convenient!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu1/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Rahul Sharma</div><div class="test-rl">Software Engineer, Whitefield</div></div></div></div>
-<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">As a working professional, I don\'t have time to cook. The weekly dinner subscription from Lakshmi Amma is perfect. Healthy and delicious!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu2/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Priya Patel</div><div class="test-rl">IT Professional, Koramangala</div></div></div></div>
-<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">The biryani from Nafees Bhai is the best in Bangalore. I\'ve recommended HomeFeast to all my colleagues. Great platform for home cooks too!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu3/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Amit Menon</div><div class="test-rl">MBA Student, JP Nagar</div></div></div></div>
+<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">HomeFeast has been a lifesaver for me as a PG resident. Meena Aunty's food tastes exactly like home. The monthly subscription is so convenient!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu1/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Rahul Sharma</div><div class="test-rl">Software Engineer, Whitefield</div></div></div></div>
+<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">As a working professional, I don't have time to cook. The weekly dinner subscription from Lakshmi Amma is perfect. Healthy and delicious!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu2/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Priya Patel</div><div class="test-rl">IT Professional, Koramangala</div></div></div></div>
+<div class="test-card reveal"><div class="test-q">"</div><p class="test-tx">The biryani from Nafees Bhai is the best in Bangalore. I've recommended HomeFeast to all my colleagues. Great platform for home cooks too!</p><div class="test-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i></div><div class="test-auth"><img src="https://picsum.photos/seed/tu3/80/80.jpg" alt="" class="test-av"/><div><div class="test-nm">Amit Menon</div><div class="test-rl">MBA Student, JP Nagar</div></div></div></div>
 </div></div></section>
 
 <section class="page-sec"><div class="container"><div class="cta-card reveal"><div class="cta-content"><h2 class="cta-title">Start Your Homemade Food Journey</h2><p class="cta-desc">Subscribe today and get 15% off your first month. Fresh, healthy, affordable meals delivered daily.</p><div class="cta-form" id="ctaF"><input type="email" placeholder="Enter your email" required/><button type="submit" class="btn">Get Started</button></div></div><div class="cta-vis"><img src="https://picsum.photos/seed/hf-cta3/400/400.jpg" alt="" class="cta-vis-img"/></div></div></div></section>`;
@@ -3758,965 +3190,88 @@ try {
             updateUI();
         }
 
-        /* ── BROWSE ── */
         function pgBrowse(a) {
+            const f = S.browseFilters;
+            const cooks = DB.cooks.filter(c => {
+                if (c.status !== 'approved') return false;
+                if (f.search && !c.name?.toLowerCase().includes(f.search.toLowerCase()) && !c.cuisine?.toLowerCase().includes(f.search.toLowerCase()) && !c.area?.toLowerCase().includes(f.search.toLowerCase())) return false;
+                if (f.type === 'veg') { const items = DB.menuItems.filter(m => (m.cookId === c._id || m.cook === c._id) && m.type?.toLowerCase() === 'veg'); if (!items.length) return false; }
+                if (f.type === 'non-veg') { const items = DB.menuItems.filter(m => (m.cookId === c._id || m.cook === c._id) && m.type?.toLowerCase() === 'non-veg'); if (!items.length) return false; }
+                if (f.cuisine !== 'all' && c.cuisine !== f.cuisine) return false;
+                if (f.priceMax) { const minP = Math.min(c.plans?.daily || 0, c.plans?.weekly || 0, c.plans?.monthly || 0); if (minP > f.priceMax) return false; }
+                return true;
+            });
+            const revsByCk = cid => { const r = DB.reviews.filter(x => x.cookId === cid || x.cook === cid); return r.length ? Math.round(r.reduce((s, x) => s + x.rating, 0) / r.length * 10) / 10 : 0; };
+            cooks.sort((a, b) => { if (f.sort === 'rating') return revsByCk(b._id) - revsByCk(a._id); if (f.sort === 'price_low') { const pa = Math.min(a.plans?.daily || 0, a.plans?.weekly || 0, a.plans?.monthly || 0); const pb = Math.min(b.plans?.daily || 0, b.plans?.weekly || 0, b.plans?.monthly || 0); return pa - pb; } if (f.sort === 'orders') return (b.totalOrders || 0) - (a.totalOrders || 0); return 0; });
 
-    const f = S.browseFilters;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Find Tiffin</div><h2 class="sec-title">Browse Home Cooks</h2><p class="sec-desc">${cooks.length} cook${cooks.length !== 1 ? 's' : ''} found near you</p></div><div class="filter-layout"><div class="filter-panel"><div class="filter-group"><div class="search-box"><i class="fas fa-search"></i><input class="fi" id="brSearch" placeholder="Search by name, cuisine, area..." value="${f.search}"/></div></div><div class="filter-group"><label>Meal Type</label><div class="filter-chips" id="brType"><span class="chip ${f.type === 'all' ? 'active' : ''}" data-v="all">All</span><span class="chip ${f.type === 'veg' ? 'active' : ''}" data-v="veg">Vegetarian</span><span class="chip ${f.type === 'non-veg' ? 'active' : ''}" data-v="non-veg">Non-Veg</span></div></div><div class="filter-group"><label>Cuisine</label><select class="fi" id="brCuisine"><option value="all" ${f.cuisine === 'all' ? 'selected' : ''}>All Cuisines</option>${DB.categories.map(c => `<option value="${c.name}" ${f.cuisine === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div><div class="filter-group"><label>Max Price / Day</label><div class="filter-chips" id="brPrice"><span class="chip ${f.priceMax === 0 ? 'active' : ''}" data-v="0">Any</span><span class="chip ${f.priceMax === 100 ? 'active' : ''}" data-v="100">Under 100</span><span class="chip ${f.priceMax === 150 ? 'active' : ''}" data-v="150">Under 150</span><span class="chip ${f.priceMax === 200 ? 'active' : ''}" data-v="200">Under 200</span></div></div><div class="filter-group"><label>Sort By</label><select class="fi" id="brSort"><option value="rating" ${f.sort === 'rating' ? 'selected' : ''}>Highest Rating</option><option value="price_low" ${f.sort === 'price_low' ? 'selected' : ''}>Lowest Price</option><option value="orders" ${f.sort === 'orders' ? 'selected' : ''}>Most Orders</option></select></div></div><div>${cooks.length ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">${cooks.map(c => cookCardHTML(c)).join('')}</div>` : `<div class="empty-state"><i class="fas fa-search"></i><h3>No cooks found</h3><p>Try adjusting your filters to find more options.</p></div>`}</div></div></div></section>`;
 
-    const cooks = DB.cooks.filter(c => {
+            $$('.cook-card-btn', a).forEach(btn => { btn.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); const cookId = this.dataset.id; console.log('CLICKED COOK:', cookId); window.location.hash = '#cook/' + cookId; route(); }); });
 
-        if (c.status !== 'approved') return false;
-
-        // SEARCH
-        if (
-            f.search &&
-            !c.name?.toLowerCase().includes(f.search.toLowerCase()) &&
-            !c.cuisine?.toLowerCase().includes(f.search.toLowerCase()) &&
-            !c.area?.toLowerCase().includes(f.search.toLowerCase())
-        ) {
-            return false;
+            const applyFilters = () => { S.browseFilters.search = $('#brSearch', a).value; S.browseFilters.cuisine = $('#brCuisine', a).value; S.browseFilters.sort = $('#brSort', a).value; pgBrowse(a); };
+            let searchTimer;
+            $('#brSearch', a)?.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(applyFilters, 300); });
+            $('#brCuisine', a)?.addEventListener('change', applyFilters);
+            $('#brSort', a)?.addEventListener('change', applyFilters);
+            $$('.chip', a).forEach(ch => { ch.addEventListener('click', () => { const grp = ch.parentElement.id; if (grp === 'brType') S.browseFilters.type = ch.dataset.v; if (grp === 'brPrice') S.browseFilters.priceMax = parseInt(ch.dataset.v); pgBrowse(a); }); });
         }
 
-        // VEG FILTER
-        if (f.type === 'veg') {
-
-            const items = DB.menuItems.filter(
-                m =>
-                    (m.cookId === c._id || m.cook === c._id) &&
-                    m.type?.toLowerCase() === 'veg'
-            );
-
-            if (!items.length) return false;
-        }
-
-        // NON VEG FILTER
-        if (f.type === 'non-veg') {
-
-            const items = DB.menuItems.filter(
-                m =>
-                    (m.cookId === c._id || m.cook === c._id) &&
-                    m.type?.toLowerCase() === 'non-veg'
-            );
-
-            if (!items.length) return false;
-        }
-
-        // CUISINE
-        if (
-            f.cuisine !== 'all' &&
-            c.cuisine !== f.cuisine
-        ) {
-            return false;
-        }
-
-        // PRICE FILTER
-        if (f.priceMax) {
-
-            const minP = Math.min(
-                c.plans?.daily || 0,
-                c.plans?.weekly || 0,
-                c.plans?.monthly || 0
-            );
-
-            if (minP > f.priceMax) return false;
-        }
-
-        return true;
-    });
-
-    // REVIEW FUNCTION
-    const revsByCk = cid => {
-
-        const r = DB.reviews.filter(
-            x => x.cookId === cid || x.cook === cid
-        );
-
-        return r.length
-            ? Math.round(
-                r.reduce((s, x) => s + x.rating, 0) /
-                r.length * 10
-            ) / 10
-            : 0;
-    };
-
-    // SORTING
-    cooks.sort((a, b) => {
-
-        if (f.sort === 'rating') {
-
-            return revsByCk(b._id) - revsByCk(a._id);
-        }
-
-        if (f.sort === 'price_low') {
-
-            const pa = Math.min(
-                a.plans?.daily || 0,
-                a.plans?.weekly || 0,
-                a.plans?.monthly || 0
-            );
-
-            const pb = Math.min(
-                b.plans?.daily || 0,
-                b.plans?.weekly || 0,
-                b.plans?.monthly || 0
-            );
-
-            return pa - pb;
-        }
-
-        if (f.sort === 'orders') {
-
-            return (b.totalOrders || 0) - (a.totalOrders || 0);
-        }
-
-        return 0;
-    });
-
-    a.innerHTML = `
-
-
-<section class="page-sec">
-
-<div class="container">
-
-<div style="margin-bottom:24px">
-
-<div class="sec-label">
-Find Tiffin
-</div>
-
-<h2 class="sec-title">
-Browse Home Cooks
-</h2>
-
-<p class="sec-desc">
-${cooks.length} cook${cooks.length !== 1 ? 's' : ''} found near you
-</p>
-
-</div>
-
-<div class="filter-layout">
-
-<div class="filter-panel">
-
-<div class="filter-group">
-
-<div class="search-box">
-
-<i class="fas fa-search"></i>
-
-<input
-class="fi"
-id="brSearch"
-placeholder="Search by name, cuisine, area..."
-value="${f.search}"
-/>
-
-</div>
-
-</div>
-
-<div class="filter-group">
-
-<label>Meal Type</label>
-
-<div class="filter-chips" id="brType">
-
-<span class="chip ${f.type === 'all' ? 'active' : ''}" data-v="all">
-All
-</span>
-
-<span class="chip ${f.type === 'veg' ? 'active' : ''}" data-v="veg">
-Vegetarian
-</span>
-
-<span class="chip ${f.type === 'non-veg' ? 'active' : ''}" data-v="non-veg">
-Non-Veg
-</span>
-
-</div>
-
-</div>
-
-<div class="filter-group">
-
-<label>Cuisine</label>
-
-<select class="fi" id="brCuisine">
-
-<option value="all"
-${f.cuisine === 'all' ? 'selected' : ''}>
-All Cuisines
-</option>
-
-${DB.categories.map(c => `
-<option
-value="${c.name}"
-${f.cuisine === c.name ? 'selected' : ''}>
-${c.name}
-</option>
-`).join('')}
-
-</select>
-
-</div>
-
-<div class="filter-group">
-
-<label>Max Price / Day</label>
-
-<div class="filter-chips" id="brPrice">
-
-<span class="chip ${f.priceMax === 0 ? 'active' : ''}" data-v="0">
-Any
-</span>
-
-<span class="chip ${f.priceMax === 100 ? 'active' : ''}" data-v="100">
-Under 100
-</span>
-
-<span class="chip ${f.priceMax === 150 ? 'active' : ''}" data-v="150">
-Under 150
-</span>
-
-<span class="chip ${f.priceMax === 200 ? 'active' : ''}" data-v="200">
-Under 200
-</span>
-
-</div>
-
-</div>
-
-<div class="filter-group">
-
-<label>Sort By</label>
-
-<select class="fi" id="brSort">
-
-<option value="rating"
-${f.sort === 'rating' ? 'selected' : ''}>
-Highest Rating
-</option>
-
-<option value="price_low"
-${f.sort === 'price_low' ? 'selected' : ''}>
-Lowest Price
-</option>
-
-<option value="orders"
-${f.sort === 'orders' ? 'selected' : ''}>
-Most Orders
-</option>
-
-</select>
-
-</div>
-
-</div>
-
-<div>
-
-${cooks.length
-? `
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
-
-${cooks.map(c => cookCardHTML(c)).join('')}
-
-</div>
-`
-: `
-<div class="empty-state">
-
-<i class="fas fa-search"></i>
-
-<h3>No cooks found</h3>
-
-<p>
-Try adjusting your filters to find more options.
-</p>
-
-</div>
-`
-}
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-`;
-$$('.cook-card-btn', a).forEach(btn => {
-
-    btn.addEventListener('click', function (e) {
-
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        const cookId = this.dataset.id;
-
-        console.log('CLICKED COOK:', cookId);
-
-        window.location.hash = '#cook/' + cookId;
-
-route();
-
-    });
-
-});
-
-    const applyFilters = () => {
-
-        S.browseFilters.search =
-            $('#brSearch', a).value;
-
-        S.browseFilters.cuisine =
-            $('#brCuisine', a).value;
-
-        S.browseFilters.sort =
-            $('#brSort', a).value;
-
-        pgBrowse(a);
-    };
-
-    let searchTimer;
-
-    $('#brSearch', a)?.addEventListener('input', () => {
-
-        clearTimeout(searchTimer);
-
-        searchTimer = setTimeout(
-            applyFilters,
-            300
-        );
-    });
-
-    $('#brCuisine', a)?.addEventListener(
-        'change',
-        applyFilters
-    );
-
-    $('#brSort', a)?.addEventListener(
-        'change',
-        applyFilters
-    );
-
-    $$('.chip', a).forEach(ch => {
-
-        ch.addEventListener('click', () => {
-
-            const grp = ch.parentElement.id;
-
-            if (grp === 'brType') {
-                S.browseFilters.type = ch.dataset.v;
-            }
-
-            if (grp === 'brPrice') {
-                S.browseFilters.priceMax =
-                    parseInt(ch.dataset.v);
-            }
-
-            pgBrowse(a);
-        });
-    });
-
-    /* OPEN COOK PROFILE */
-
-
-/* VIEW MENU BUTTON */
-
-
-
-}
-
-        /* ── COOK PROFILE ── */
         function pgCookProfile(id, a) {
+            if (!id) { nav('browse'); return; }
+            const app = a || $('#app');
+            const ck = DB.cooks.find(c => c._id === id);
+            if (!ck) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-utensils"></i><h3>Cook not found</h3><a class="btn btn-p" data-nv="browse">Browse Cooks</a></div></div></div>`; updateUI(); return; }
+            const items = DB.menuItems.filter(m => (m.cookId === ck._id || m.cook === ck._id) && (m.available === true || m.avail === true));
+            const revs = DB.reviews.filter(r => r.cookId === ck._id || r.cook === ck._id);
+            const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : (ck.rating || 4.5);
+            const plans = [];
+            if (ck.plans?.daily) plans.push({ type: 'daily', meal: 'Standard', price: ck.plans.daily });
+            if (ck.plans?.weekly) plans.push({ type: 'weekly', meal: 'Standard', price: ck.plans.weekly });
+            if (ck.plans?.monthly) plans.push({ type: 'monthly', meal: 'Standard', price: ck.plans.monthly });
+
+            app.innerHTML = `<section class="page-sec"><div class="container"><a class="btn btn-ghost" data-nv="browse" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Browse</a><div class="cp-header"><div style="position:relative"><div class="cp-cover"><img src="${ck.image || 'https://picsum.photos/700/300'}" alt=""/></div><div class="cp-avatar"><img src="${ck.avatar || ck.image || 'https://picsum.photos/200'}" alt=""/></div></div><div class="cp-info"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><h1 class="cp-name">${ck.name}</h1><span class="badge-st ${stMap[ck.status]?.c || ''}">${stMap[ck.status]?.l || ck.status}</span></div><div class="cp-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR} (${revs.length} reviews)</span><span><i class="fas fa-utensils"></i> ${ck.totalOrders || 0} orders</span><span><i class="fas fa-award"></i> ${ck.experience || '2 years'}</span></div><div class="cp-bio">${ck.tagline || 'Authentic homemade food'}</div><div class="cp-details"><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:4px"></i>${ck.area || 'Bangalore'}</div><div class="cp-detail-lbl">Service Area</div></div><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-clock" style="color:var(--accent);margin-right:4px"></i>Delivery</div><div class="cp-detail-lbl">${ck.deliveryTime || '11 AM - 9 PM'}</div></div></div></div></div><h3 class="sec-title" style="font-size:1.4rem;margin-bottom:20px">Subscription Plans</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">${plans.map(p => `<div class="sub-plan"><div class="sub-plan-name">${p.type.toUpperCase()} PLAN</div><div class="sub-plan-price">${fp(p.price)}</div><ul class="sub-plan-feat"><li><i class="fas fa-check"></i> Fresh Homemade Food</li><li><i class="fas fa-check"></i> Free Delivery</li><li><i class="fas fa-check"></i> Healthy Meals</li></ul><button class="btn btn-p btn-sm btn-block">Subscribe Now</button></div>`).join('')}</div><div class="tabs" id="cpTabs"><button class="tab active" data-tab="menu">Menu (${items.length})</button><button class="tab" data-tab="reviews">Reviews (${revs.length})</button></div><div id="cpTabContent"><div id="tab-menu"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.length ? items.map(m => mealCardHTML({...m, cookName: ck.name})).join('') : `<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:30px">No menu items yet.</p>`}</div></div><div id="tab-reviews" style="display:none">${revs.length ? revs.map(r => `<div class="rev-card"><div class="rev-stars">${'<i class="fas fa-star"></i>'.repeat(r.rating)}</div><p class="rev-tx">${r.comment || 'Good food'}</p></div>`).join('') : `<p style="color:var(--muted);text-align:center;padding:30px">No reviews yet.</p>`}</div></div></div></section>`;
+            updateUI();
+            $$('[data-tab]', app).forEach(t => { t.addEventListener('click', () => { $$('.tab', app).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', app).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, app).style.display = ''; }); });
+        }
+
+        function pgHow(a) { a.innerHTML = `<section class="page-sec"><div class="container"><div style="text-align:center;margin-bottom:48px"><div class="sec-label">How It Works</div><h2 class="sec-title">Getting Started is Easy</h2></div><div class="steps-grid" style="max-width:900px;margin:0 auto">${[['fa-magnifying-glass','Search','Browse verified home cooks by cuisine, location, and meal type.'],['fa-book-open','Choose','View menus, read reviews, compare pricing and subscription plans.'],['fa-repeat','Subscribe','Select daily, weekly, or monthly plans. Or order individual meals.'],['fa-bell-concierge','Enjoy','Fresh homemade food delivered to your door every day, on time.'],['fa-pause','Pause/Cancel','Need a break? Pause your subscription anytime. No hidden charges.'],['fa-headset','Support','24/7 support for any issues. We handle complaints and refunds.']].map(([ic,t,d],i) => `<div class="step-card reveal"><div class="step-num">${String(i+1).padStart(2,'0')}</div><div class="step-ic"><i class="fas ${ic}"></i></div><h3 class="step-t">${t}</h3><p class="step-d">${d}</p></div>`).join('')}</div><div style="text-align:center;margin-top:48px"><a class="btn btn-p" data-nv="browse">Find Tiffin Now <i class="fas fa-arrow-right"></i></a></div></div></section>`; updateUI() }
 
-    if (!id) {
-
-        nav('browse');
-
-        return;
-    }
-
-    const app = a || $('#app');
-
-    const ck = DB.cooks.find(c => c._id === id);
-
-    if (!ck) {
-
-        app.innerHTML = `
-        <div class="page-sec">
-            <div class="container">
-                <div class="empty-state">
-                    <i class="fas fa-utensils"></i>
-                    <h3>Cook not found</h3>
-                    <a class="btn btn-p" data-nv="browse">
-                        Browse Cooks
-                    </a>
-                </div>
-            </div>
-        </div>
-        `;
-
-        updateUI();
-
-        return;
-    }
-
-    // FIXED MENU FILTER
-    const items = DB.menuItems.filter(
-        m =>
-            (m.cookId === ck._id || m.cook === ck._id) &&
-            (m.available === true || m.avail === true)
-    );
-
-    // FIXED REVIEWS
-    const revs = DB.reviews.filter(
-        r =>
-            r.cookId === ck._id ||
-            r.cook === ck._id
-    );
-
-    const avgR = revs.length
-        ? Math.round(
-            revs.reduce((s, r) => s + r.rating, 0) /
-            revs.length * 10
-        ) / 10
-        : (ck.rating || 4.5);
-
-    // FIXED PLANS
-    const plans = [];
-
-    if (ck.plans?.daily) {
-
-        plans.push({
-            type: 'daily',
-            meal: 'Standard',
-            price: ck.plans.daily
-        });
-
-    }
-
-    if (ck.plans?.weekly) {
-
-        plans.push({
-            type: 'weekly',
-            meal: 'Standard',
-            price: ck.plans.weekly
-        });
-
-    }
-
-    if (ck.plans?.monthly) {
-
-        plans.push({
-            type: 'monthly',
-            meal: 'Standard',
-            price: ck.plans.monthly
-        });
-
-    }
-
-    app.innerHTML = `
-
-<section class="page-sec">
-
-<div class="container">
-
-<a class="btn btn-ghost"
-   data-nv="browse"
-   style="margin-bottom:16px">
-
-<i class="fas fa-arrow-left"></i>
-
-Back to Browse
-
-</a>
-
-<div class="cp-header">
-
-<div style="position:relative">
-
-<div class="cp-cover">
-
-<img
-src="${ck.image || 'https://picsum.photos/700/300'}"
-alt=""
-/>
-
-</div>
-
-<div class="cp-avatar">
-
-<img
-src="${ck.avatar || ck.image || 'https://picsum.photos/200'}"
-alt=""
-/>
-
-</div>
-
-</div>
-
-<div class="cp-info">
-
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
-
-<h1 class="cp-name">
-${ck.name}
-</h1>
-
-<span class="badge-st ${stMap[ck.status]?.c || ''}">
-
-${stMap[ck.status]?.l || ck.status}
-
-</span>
-
-</div>
-
-<div class="cp-meta">
-
-<span class="ra">
-<i class="fas fa-star"></i>
-${avgR} (${revs.length} reviews)
-</span>
-
-<span>
-<i class="fas fa-utensils"></i>
-${ck.totalOrders || 0} orders
-</span>
-
-<span>
-<i class="fas fa-award"></i>
-${ck.experience || '2 years'}
-</span>
-
-</div>
-
-<div class="cp-bio">
-
-${ck.tagline || 'Authentic homemade food'}
-
-</div>
-
-<div class="cp-details">
-
-<div class="cp-detail">
-
-<div class="cp-detail-val">
-
-<i class="fas fa-location-dot"
-style="color:var(--accent);margin-right:4px"></i>
-
-${ck.area || 'Bangalore'}
-
-</div>
-
-<div class="cp-detail-lbl">
-
-Service Area
-
-</div>
-
-</div>
-
-<div class="cp-detail">
-
-<div class="cp-detail-val">
-
-<i class="fas fa-clock"
-style="color:var(--accent);margin-right:4px"></i>
-
-Delivery
-
-</div>
-
-<div class="cp-detail-lbl">
-
-${ck.deliveryTime || '11 AM - 9 PM'}
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<h3 class="sec-title"
-style="font-size:1.4rem;margin-bottom:20px">
-
-Subscription Plans
-
-</h3>
-
-<div style="
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:14px;
-margin-bottom:24px
-">
-
-${plans.map(p => `
-
-<div class="sub-plan">
-
-<div class="sub-plan-name">
-
-${p.type.toUpperCase()} PLAN
-
-</div>
-
-<div class="sub-plan-price">
-
-${fp(p.price)}
-
-</div>
-
-<ul class="sub-plan-feat">
-
-<li>
-<i class="fas fa-check"></i>
-Fresh Homemade Food
-</li>
-
-<li>
-<i class="fas fa-check"></i>
-Free Delivery
-</li>
-
-<li>
-<i class="fas fa-check"></i>
-Healthy Meals
-</li>
-
-</ul>
-
-<button
-class="btn btn-p btn-sm btn-block">
-
-Subscribe Now
-
-</button>
-
-</div>
-
-`).join('')}
-
-</div>
-
-<div class="tabs" id="cpTabs">
-
-<button class="tab active"
-data-tab="menu">
-
-Menu (${items.length})
-
-</button>
-
-<button class="tab"
-data-tab="reviews">
-
-Reviews (${revs.length})
-
-</button>
-
-</div>
-
-<div id="cpTabContent">
-
-<div id="tab-menu">
-
-<div style="
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:16px
-">
-
-${items.length
-? items.map(m => {
-
-    const mi = {
-        ...m,
-        cookName: ck.name
-    };
-
-    return mealCardHTML(mi);
-
-}).join('')
-: `
-<p style="
-color:var(--muted);
-grid-column:1/-1;
-text-align:center;
-padding:30px
-">
-
-No menu items yet.
-
-</p>
-`
-}
-
-</div>
-
-</div>
-
-<div id="tab-reviews"
-style="display:none">
-
-${revs.length
-? revs.map(r => `
-
-<div class="rev-card">
-
-<div class="rev-stars">
-
-${'<i class="fas fa-star"></i>'.repeat(r.rating)}
-
-</div>
-
-<p class="rev-tx">
-
-${r.comment || 'Good food'}
-
-</p>
-
-</div>
-
-`).join('')
-: `
-<p style="
-color:var(--muted);
-text-align:center;
-padding:30px
-">
-
-No reviews yet.
-
-</p>
-`
-}
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-`;
-
-    updateUI();
-
-    $$('[data-tab]', app).forEach(t => {
-
-        t.addEventListener('click', () => {
-
-            $$('.tab', app).forEach(
-                x => x.classList.remove('active')
-            );
-
-            t.classList.add('active');
-
-            $$('.tabs~div>[id^="tab-"]', app)
-            .forEach(d => d.style.display = 'none');
-
-            $(`#tab-${t.dataset.tab}`, app)
-            .style.display = '';
-
-        });
-
-    });
-
-}
-
-        /* ── HOW IT WORKS ── */
-        function pgHow(a) { a.innerHTML = `<section class="page-sec"><div class="container"><div style="text-align:center;margin-bottom:48px"><div class="sec-label">How It Works</div><h2 class="sec-title">Getting Started is Easy</h2></div><div class="steps-grid" style="max-width:900px;margin:0 auto">${[['fa-magnifying-glass', 'Search', 'Browse verified home cooks by cuisine, location, and meal type.'], ['fa-book-open', 'Choose', 'View menus, read reviews, compare pricing and subscription plans.'], ['fa-repeat', 'Subscribe', 'Select daily, weekly, or monthly plans. Or order individual meals.'], ['fa-bell-concierge', 'Enjoy', 'Fresh homemade food delivered to your door every day, on time.'], ['fa-pause', 'Pause/Cancel', 'Need a break? Pause your subscription anytime. No hidden charges.'], ['fa-headset', 'Support', '24/7 support for any issues. We handle complaints and refunds.']].map(([ic, t, d], i) => `<div class="step-card reveal"><div class="step-num">${String(i + 1).padStart(2, '0')}</div><div class="step-ic"><i class="fas ${ic}"></i></div><h3 class="step-t">${t}</h3><p class="step-d">${d}</p></div>`).join('')}</div><div style="text-align:center;margin-top:48px"><a class="btn btn-p" data-nv="browse">Find Tiffin Now <i class="fas fa-arrow-right"></i></a></div></div></section>`; updateUI() }
-
-        /* ── ABOUT ── */
         function pgAbout(a) { a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:800px"><div style="text-align:center;margin-bottom:40px"><div class="sec-label">About Us</div><h2 class="sec-title">Our Mission</h2></div><div class="card" style="padding:32px;margin-bottom:24px"><p style="font-size:1rem;line-height:1.9;color:var(--fg-light)">HomeFeast was born from a simple observation: millions of people living away from home — students, working professionals, elderly — struggle to find healthy, affordable, homemade food. Restaurant deliveries are expensive, repetitive, and often unhealthy.<br><br>We built HomeFeast to bridge this gap by connecting consumers with verified home cooks who prepare fresh, hygienic, home-style meals. Our platform digitizes the entire tiffin service experience — from discovery and ordering to subscription management and delivery coordination.<br><br><strong>For consumers:</strong> Affordable daily meals with flexible subscriptions, transparent menus, and reliable delivery.<br><strong>For home cooks:</strong> A platform to showcase their culinary skills, earn income, and grow their home-based food business.<br><strong>For the community:</strong> Reduced food waste, support for local businesses, and healthier eating habits.</p></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px"><div class="card" style="padding:24px;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--accent);font-family:var(--font-d)">2,500+</div><div style="color:var(--muted);font-size:.85rem">Meals Delivered</div></div><div class="card" style="padding:24px;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--accent);font-family:var(--font-d)">120+</div><div style="color:var(--muted);font-size:.85rem">Verified Cooks</div></div><div class="card" style="padding:24px;text-align:center"><div style="font-size:2rem;font-weight:800;color:var(--accent);font-family:var(--font-d)">4.8</div><div style="color:var(--muted);font-size:.85rem">Average Rating</div></div></div></div></section>`; updateUI() }
 
-        /* ── LOGIN ── */
         function pgLogin(a) {
             if (S.user) { nav(S.user.role === 'cook' ? 'cook-dashboard' : S.user.role === 'admin' ? 'admin-dashboard' : 'dashboard'); return; }
-            a.innerHTML = `
-  <section class="page-sec" style="display:flex;align-items:center;min-height:calc(100vh - var(--nav-h))">
-    <div class="container">
-      <div class="auth-card">
-        <h2>Welcome Back</h2>
-        <p class="auth-sub">Select your login type</p>
-        <div class="role-tabs">
-          <button type="button" class="role-tab active" id="userTab">User</button>
-          <button type="button" class="role-tab" id="cookTab">Cook</button>
-          <button type="button" class="role-tab" id="adminTab">Admin</button>
-        </div>
-        <form id="loginF">
-          <input type="hidden" id="loginRole" value="user" />
-          <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="loginEmail" placeholder="you@example.com" required /></div>
-          <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="loginPassword" placeholder="Enter password" required /></div>
-          <button type="submit" class="btn btn-p btn-block" style="margin-top:8px">Login</button>
-        </form>
-        <p class="auth-ft">Don't have an account? <a data-nv="register">Register here</a></p>
-      </div>
-    </div>
-  </section>`;
+            a.innerHTML = `<section class="page-sec" style="display:flex;align-items:center;min-height:calc(100vh - var(--nav-h))"><div class="container"><div class="auth-card"><h2>Welcome Back</h2><p class="auth-sub">Select your login type</p><div class="role-tabs"><button type="button" class="role-tab active" id="userTab">User</button><button type="button" class="role-tab" id="cookTab">Cook</button><button type="button" class="role-tab" id="adminTab">Admin</button></div><form id="loginF"><input type="hidden" id="loginRole" value="user" /><div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="loginEmail" placeholder="you@example.com" required /></div><div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="loginPassword" placeholder="Enter password" required /></div><button type="submit" class="btn btn-p btn-block" style="margin-top:8px">Login</button></form><p class="auth-ft">Don't have an account? <a data-nv="register">Register here</a></p></div></div></section>`;
             updateUI();
             let currentRole = 'user';
             $('#userTab', a).onclick = () => { currentRole = 'user'; $('#loginRole', a).value = 'user'; $('#userTab', a).classList.add('active'); $('#cookTab', a).classList.remove('active'); $('#adminTab', a).classList.remove('active'); };
             $('#cookTab', a).onclick = () => { currentRole = 'cook'; $('#loginRole', a).value = 'cook'; $('#cookTab', a).classList.add('active'); $('#userTab', a).classList.remove('active'); $('#adminTab', a).classList.remove('active'); };
             $('#adminTab', a).onclick = () => { currentRole = 'admin'; $('#loginRole', a).value = 'admin'; $('#adminTab', a).classList.add('active'); $('#userTab', a).classList.remove('active'); $('#cookTab', a).classList.remove('active'); };
-
             $('#loginF', a).addEventListener('submit', async e => {
-
-    e.preventDefault();
-
-    const email = $('#loginEmail', a).value.trim();
-
-    const password = $('#loginPassword', a).value;
-
-    const btn = $('button[type=submit]', a);
-
-    btn.disabled = true;
-
-    btn.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-
-    try {
-
-        const r = await fetch(
-            'http://localhost:5000/api/auth/login',
-            {
-                method: 'POST',
-
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-
-                body: JSON.stringify({
-                    email,
-                    password,
-                    role: currentRole
-                })
-            }
-        );
-
-        const data = await r.json();
-
-        console.log("LOGIN RESPONSE:", data);
-
-        if (!r.ok) {
-
-            toast(
-                data.message || 'Login failed',
-                'error'
-            );
-
-            return;
+                e.preventDefault();
+                const email = $('#loginEmail', a).value.trim();
+                const password = $('#loginPassword', a).value;
+                const btn = $('button[type=submit]', a);
+                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                try {
+                    const r = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
+                    const data = await r.json();
+                    if (!r.ok) { toast(data.message || 'Login failed', 'error'); return; }
+                    S.user = data.user || data.data?.user;
+                    S.token = data.token || data.data?.token;
+                    localStorage.setItem('hf_tk', S.token);
+                    localStorage.setItem('hf_user', JSON.stringify(S.user));
+                    saveU(); saveT(); updateUI();
+                    toast(`Welcome ${S.user.firstName || S.user.name || 'User'}!`);
+                    if (S.user.role === 'admin') window.location.hash = '#admin-dashboard';
+                    else if (S.user.role === 'cook') window.location.hash = '#cook-dashboard';
+                    else window.location.hash = '#dashboard';
+                } catch (err) { console.error(err); toast('Server error', 'error'); } finally { btn.disabled = false; btn.innerHTML = 'Login'; }
+            });
         }
 
-        // SAVE USER
-        S.user = data.user || data.data?.user;
-
-        // SAVE TOKEN
-        S.token = data.token || data.data?.token;
-
-        localStorage.setItem(
-            'hf_tk',
-            S.token
-        );
-
-        localStorage.setItem(
-            'hf_user',
-            JSON.stringify(S.user)
-        );
-
-        saveU();
-
-        saveT();
-
-        updateUI();
-
-        toast(
-            `Welcome ${S.user.firstName || S.user.name || 'User'}!`
-        );
-
-        // ROLE BASED REDIRECT
-        if (S.user.role === 'admin') {
-
-            window.location.hash =
-                '#admin-dashboard';
-
-        }
-
-        else if (S.user.role === 'cook') {
-
-            window.location.hash =
-                '#cook-dashboard';
-
-        }
-
-        else {
-
-            window.location.hash =
-                '#dashboard';
-
-        }
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-        toast(
-            'Server error',
-            'error'
-        );
-
-    }
-
-    finally {
-
-        btn.disabled = false;
-
-        btn.innerHTML = 'Login';
-
-    }
-
-});
-        }
-        
-        /* ── REGISTER ── */
         function pgRegister(a, role) {
             const isCook = role === 'cook';
-            a.innerHTML = `
-  <section class="page-sec" style="display:flex;align-items:center;min-height:calc(100vh - var(--nav-h))">
-    <div class="container">
-      <div class="auth-card">
-        <h2>${isCook ? 'Register as Cook' : 'Create Account'}</h2>
-        <p class="auth-sub">${isCook ? 'Start your home food business with HomeFeast' : 'Join HomeFeast and start ordering homemade meals'}</p>
-        <form id="regF">
-          <div class="fr"><div class="fg"><label class="fl">Full Name</label><input class="fi" id="regName" required /></div><div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" id="regPhone" placeholder="+91" /></div></div>
-          <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="regEmail" required /></div>
-          <div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="regPassword" required minlength="6" /></div>
-          ${isCook ? `
-            <div class="fr"><div class="fg"><label class="fl">Cuisine Speciality</label><input class="fi" id="rCui" placeholder="e.g. North Indian" /></div><div class="fg"><label class="fl">Experience (years)</label><input class="fi" type="number" id="rExp" placeholder="5" /></div></div>
-            <div class="fg"><label class="fl">FSSAI License Number</label><input class="fi" id="rFss" placeholder="FSSAI-XXX" /></div>
-            <div class="fg"><label class="fl">Service Area</label><input class="fi" id="rArea" placeholder="e.g. Koramangala, HSR Layout" /></div>
-            <div class="fg"><label class="fl">Delivery Timings</label><input class="fi" id="rTim" placeholder="e.g. Lunch: 11AM-1PM | Dinner: 7PM-9PM" /></div>
-            <div class="fg"><label class="fl">Short Bio</label><textarea class="fi" id="rBio" rows="2" placeholder="Tell customers about your cooking..."></textarea></div>
-          ` : ''}
-          <button type="submit" class="btn btn-p btn-block" style="margin-top:8px">Create Account</button>
-        </form>
-        <p class="auth-ft">Already have an account? <a data-nv="login">Login here</a></p>
-      </div>
-    </div>
-  </section>`;
+            a.innerHTML = `<section class="page-sec" style="display:flex;align-items:center;min-height:calc(100vh - var(--nav-h))"><div class="container"><div class="auth-card"><h2>${isCook ? 'Register as Cook' : 'Create Account'}</h2><p class="auth-sub">${isCook ? 'Start your home food business with HomeFeast' : 'Join HomeFeast and start ordering homemade meals'}</p><form id="regF"><div class="fr"><div class="fg"><label class="fl">Full Name</label><input class="fi" id="regName" required /></div><div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" id="regPhone" placeholder="+91" /></div></div><div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="regEmail" required /></div><div class="fg"><label class="fl">Password</label><input class="fi" type="password" id="regPassword" required minlength="6" /></div>${isCook ? `<div class="fr"><div class="fg"><label class="fl">Cuisine Speciality</label><input class="fi" id="rCui" placeholder="e.g. North Indian" /></div><div class="fg"><label class="fl">Experience (years)</label><input class="fi" type="number" id="rExp" placeholder="5" /></div></div><div class="fg"><label class="fl">FSSAI License Number</label><input class="fi" id="rFss" placeholder="FSSAI-XXX" /></div><div class="fg"><label class="fl">Service Area</label><input class="fi" id="rArea" placeholder="e.g. Koramangala, HSR Layout" /></div><div class="fg"><label class="fl">Delivery Timings</label><input class="fi" id="rTim" placeholder="e.g. Lunch: 11AM-1PM | Dinner: 7PM-9PM" /></div><div class="fg"><label class="fl">Short Bio</label><textarea class="fi" id="rBio" rows="2" placeholder="Tell customers about your cooking..."></textarea></div>` : ''}<button type="submit" class="btn btn-p btn-block" style="margin-top:8px">Create Account</button></form><p class="auth-ft">Already have an account? <a data-nv="login">Login here</a></p></div></div></section>`;
             updateUI();
             $('#regF', a).addEventListener('submit', async e => {
                 e.preventDefault();
@@ -4733,87 +3288,44 @@ No reviews yet.
             });
         }
 
-        /* ── CUSTOMER DASHBOARD ── */
         function pgDashboard(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.userId === S.user._id); const mySubs = DB.subscriptions.filter(s => s.userId === S.user._id && s.status === 'active'); const totalSpent = myOrders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0) + mySubs.filter(s => s.status === 'active').reduce((s, sub) => s + sub.price, 0);
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div>
-<div class="stats-grid">
-<div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalSpent)}</div><div class="stat-lbl">Total Spent</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-star"></i></div><div><div class="stat-val">${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}</div><div class="stat-lbl">Account Status</div></div></div>
-</div>
-<div class="tabs" id="dashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="subs">Active Subs</button></div>
-<div id="tab-recent">
- ${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 5).map(o => { const ck = DB.cooks.find(c => c._id === o.cookId); return `<tr style="cursor:pointer" data-nv="order-detail" data-id="${o._id}"><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${ck?.name || 'Cook'}</td><td>${o.items.length} item${o.items.length > 1 ? 's' : ''}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Start by browsing home cooks and subscribing!</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}
-</div>
-<div id="tab-subs" style="display:none">
- ${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Cook</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th><th>Action</th></tr></thead><tbody>${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<tr><td style="font-weight:600">${ck?.name || 'Cook'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="font-weight:700;color:var(--accent)">${fp(s.price)}</td><td style="font-size:.85rem">${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td><td><button class="btn btn-o btn-sm pause-sub-btn" data-sid="${s._id}">Pause</button></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No active subscriptions</h3><p>Browse cooks and subscribe to daily homemade meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}
-</div>
-</div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalSpent)}</div><div class="stat-lbl">Total Spent</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-star"></i></div><div><div class="stat-val">${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}</div><div class="stat-lbl">Account Status</div></div></div></div><div class="tabs" id="dashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="subs">Active Subs</button></div><div id="tab-recent">${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 5).map(o => { const ck = DB.cooks.find(c => c._id === o.cookId); return `<tr style="cursor:pointer" data-nv="order-detail" data-id="${o._id}"><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${ck?.name || 'Cook'}</td><td>${o.items.length} item${o.items.length > 1 ? 's' : ''}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Start by browsing home cooks and subscribing!</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div><div id="tab-subs" style="display:none">${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Cook</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th><th>Action</th></tr></thead><tbody>${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<tr><td style="font-weight:600">${ck?.name || 'Cook'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="font-weight:700;color:var(--accent)">${fp(s.price)}</td><td style="font-size:.85rem">${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td><td><button class="btn btn-o btn-sm pause-sub-btn" data-sid="${s._id}">Pause</button></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No active subscriptions</h3><p>Browse cooks and subscribe to daily homemade meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div></div></section>`;
             updateUI();
             $$('[data-tab]', a).forEach(t => t.addEventListener('click', () => { $$('.tab', a).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', a).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, a).style.display = '' }));
             $$('tr[data-nv]', a).forEach(r => r.addEventListener('click', () => nav(r.dataset.nv, { id: r.dataset.id })));
             $$('.pause-sub-btn', a).forEach(b => b.addEventListener('click', () => { const sub = DB.subscriptions.find(s => s._id === b.dataset.sid); if (sub) { sub.status = 'paused'; sub.nextDelivery = null; toast('Subscription paused'); pgDashboard(a) } }));
         }
 
-        /* ── SUBSCRIPTIONS ── */
         function pgSubs(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return }
             const mySubs = DB.subscriptions.filter(s => s.userId === S.user._id);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">My Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscription${mySubs.length !== 1 ? 's' : ''}</h2></div>
- ${mySubs.length ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px">${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<div class="card" style="padding:20px;cursor:pointer" data-nv="sub-detail" data-id="${s._id}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px"><div style="width:42px;height:42px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--accent)">${ini(ck?.name)}</div><div><div style="font-weight:700">${ck?.name || 'Cook'}</div><div style="font-size:.78rem;color:var(--muted)">${ck?.cuisine || ''}</div></div></div><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px"><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Plan</div><div style="font-weight:700;font-size:.85rem;text-transform:capitalize">${s.plan} ${s.meal}</div></div><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Price</div><div style="font-weight:700;font-size:.85rem;color:var(--accent)">${fp(s.price)}</div></div><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Next</div><div style="font-weight:700;font-size:.85rem">${s.nextDelivery || 'Paused'}</div></div></div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.8rem;color:var(--muted)">Started: ${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}${s.endDate ? ' | Ends: ' + new Date(s.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}</span><i class="fas fa-arrow-right" style="color:var(--muted);font-size:.8rem"></i></div></div>` }).join('')}</div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions yet</h3><p>Browse home cooks and subscribe to start receiving daily meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}
-</div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">My Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscription${mySubs.length !== 1 ? 's' : ''}</h2></div>${mySubs.length ? `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px">${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<div class="card" style="padding:20px;cursor:pointer" data-nv="sub-detail" data-id="${s._id}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px"><div style="width:42px;height:42px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--accent)">${ini(ck?.name)}</div><div><div style="font-weight:700">${ck?.name || 'Cook'}</div><div style="font-size:.78rem;color:var(--muted)">${ck?.cuisine || ''}</div></div></div><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px"><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Plan</div><div style="font-weight:700;font-size:.85rem;text-transform:capitalize">${s.plan} ${s.meal}</div></div><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Price</div><div style="font-weight:700;font-size:.85rem;color:var(--accent)">${fp(s.price)}</div></div><div style="text-align:center;padding:8px;background:var(--bg-deep);border-radius:8px"><div style="font-size:.72rem;color:var(--muted)">Next</div><div style="font-weight:700;font-size:.85rem">${s.nextDelivery || 'Paused'}</div></div></div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.8rem;color:var(--muted)">Started: ${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}${s.endDate ? ' | Ends: ' + new Date(s.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}</span><i class="fas fa-arrow-right" style="color:var(--muted);font-size:.8rem"></i></div></div>` }).join('')}</div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions yet</h3><p>Browse home cooks and subscribe to start receiving daily meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div></section>`;
             updateUI();
             $$('[data-nv]', a).forEach(el => el.addEventListener('click', () => nav(el.dataset.nv, { id: el.dataset.id })));
         }
 
-        /* ── SUB DETAIL ── */
         function pgSubDetail(id, a) {
             if (!id) { nav('subscriptions'); return } const app = a || $('#app'); if (!S.user) { nav('login'); return }
             const sub = DB.subscriptions.find(s => s._id === id);
             if (!sub || sub.userId !== S.user._id) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-repeat"></i><h3>Subscription not found</h3><a class="btn btn-p" data-nv="subscriptions">Back</a></div></div></div>`; updateUI(); return }
             const ck = DB.cooks.find(c => c._id === sub.cookId);
-            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px">
-<a class="btn btn-ghost" data-nv="subscriptions" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Subscriptions</a>
-<div class="card" style="padding:28px;margin-bottom:20px">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px"><div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:var(--accent)">${ini(ck?.name)}</div><div><h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800">${ck?.name || 'Cook'}</h3><p style="font-size:.84rem;color:var(--muted)">${ck?.cuisine || ''} | ${ck?.timings || ''}</p></div></div><span class="badge-st ${stMap[sub.status]?.c || ''}" style="font-size:.85rem;padding:6px 16px">${stMap[sub.status]?.l || sub.status}</span></div>
-<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px">
-<div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Plan</div><div style="font-weight:700;text-transform:capitalize">${sub.plan} — ${sub.meal}</div></div>
-<div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Price</div><div style="font-weight:700;color:var(--accent)">${fp(sub.price)}</div></div>
-<div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Start Date</div><div style="font-weight:700">${new Date(sub.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div>
-<div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">${sub.endDate ? 'End Date' : 'Ongoing'}</div><div style="font-weight:700">${sub.endDate ? new Date(sub.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Auto-renews'}</div></div>
-</div>
-<div style="display:flex;gap:10px;flex-wrap:wrap">
- ${sub.status === 'active' ? `<button class="btn btn-o btn-sm pause-btn"><i class="fas fa-pause"></i> Pause</button><button class="btn btn-d btn-sm cancel-sub-btn"><i class="fas fa-xmark"></i> Cancel</button>` : ''}
- ${sub.status === 'paused' ? `<button class="btn btn-s btn-sm resume-btn"><i class="fas fa-play"></i> Resume</button>` : ''}
-<button class="btn btn-o btn-sm" data-nv="cook" data-id="${sub.cookId}"><i class="fas fa-utensils"></i> View Cook</button>
-</div></div>
-<div class="card" style="padding:20px"><h4 style="font-weight:700;margin-bottom:12px"><i class="fas fa-headset" style="color:var(--accent);margin-right:6px"></i>Need Help?</h4><p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Facing issues with your subscription? File a complaint and we'll resolve it.</p><button class="btn btn-o btn-sm complaint-btn"><i class="fas fa-flag"></i> File Complaint</button></div>
-</div></section>`;
+            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px"><a class="btn btn-ghost" data-nv="subscriptions" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Subscriptions</a><div class="card" style="padding:28px;margin-bottom:20px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px"><div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:var(--accent)">${ini(ck?.name)}</div><div><h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800">${ck?.name || 'Cook'}</h3><p style="font-size:.84rem;color:var(--muted)">${ck?.cuisine || ''} | ${ck?.timings || ''}</p></div></div><span class="badge-st ${stMap[sub.status]?.c || ''}" style="font-size:.85rem;padding:6px 16px">${stMap[sub.status]?.l || sub.status}</span></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px"><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Plan</div><div style="font-weight:700;text-transform:capitalize">${sub.plan} — ${sub.meal}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Price</div><div style="font-weight:700;color:var(--accent)">${fp(sub.price)}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Start Date</div><div style="font-weight:700">${new Date(sub.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">${sub.endDate ? 'End Date' : 'Ongoing'}</div><div style="font-weight:700">${sub.endDate ? new Date(sub.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Auto-renews'}</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap">${sub.status === 'active' ? `<button class="btn btn-o btn-sm pause-btn"><i class="fas fa-pause"></i> Pause</button><button class="btn btn-d btn-sm cancel-sub-btn"><i class="fas fa-xmark"></i> Cancel</button>` : ''}${sub.status === 'paused' ? `<button class="btn btn-s btn-sm resume-btn"><i class="fas fa-play"></i> Resume</button>` : ''}<button class="btn btn-o btn-sm" data-nv="cook" data-id="${sub.cookId}"><i class="fas fa-utensils"></i> View Cook</button></div></div><div class="card" style="padding:20px"><h4 style="font-weight:700;margin-bottom:12px"><i class="fas fa-headset" style="color:var(--accent);margin-right:6px"></i>Need Help?</h4><p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Facing issues with your subscription? File a complaint and we'll resolve it.</p><button class="btn btn-o btn-sm complaint-btn"><i class="fas fa-flag"></i> File Complaint</button></div></div></section>`;
             updateUI();
             $('.pause-btn', app)?.addEventListener('click', () => { sub.status = 'paused'; sub.nextDelivery = null; toast('Subscription paused'); pgSubDetail(id, app) });
             $('.resume-btn', app)?.addEventListener('click', () => { sub.status = 'active'; sub.nextDelivery = new Date(Date.now() + 86400000).toISOString().split('T')[0]; toast('Subscription resumed'); pgSubDetail(id, app) });
             $('.cancel-sub-btn', app)?.addEventListener('click', () => { openModal('Cancel Subscription', '<p>Are you sure you want to cancel this subscription? This action cannot be undone.</p>', `<button class="btn btn-o btn-sm" onclick="closeModal()">Keep It</button><button class="btn btn-d btn-sm" id="confirmCancel">Yes, Cancel</button>`); $('#confirmCancel').addEventListener('click', () => { sub.status = 'cancelled'; closeModal(); toast('Subscription cancelled'); pgSubDetail(id, app) }) });
             $('.complaint-btn', app)?.addEventListener('click', () => {
-                openModal('File a Complaint', `<div class="fg"><label class="fl">Subject</label><input class="fi" id="cpSubj" placeholder="Brief description of the issue" required/></div><div class="fg"><label class="fl">Message</label><textarea class="fi" id="cpMsg" rows="4" placeholder="Describe the issue in detail..." required></textarea></div>`,
-                    `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="submitCp">Submit</button>`);
+                openModal('File a Complaint', `<div class="fg"><label class="fl">Subject</label><input class="fi" id="cpSubj" placeholder="Brief description of the issue" required/></div><div class="fg"><label class="fl">Message</label><textarea class="fi" id="cpMsg" rows="4" placeholder="Describe the issue in detail..." required></textarea></div>`, `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="submitCp">Submit</button>`);
                 $('#submitCp').addEventListener('click', () => { const subj = $('#cpSubj').value.trim(), msg = $('#cpMsg').value.trim(); if (!subj || !msg) { toast('Please fill all fields', 'error'); return } DB.complaints.push({ _id: 'cp' + Date.now(), userId: S.user._id, subscriptionId: id, subject: subj, message: msg, status: 'open', createdAt: new Date().toISOString() }); closeModal(); toast('Complaint submitted! We will look into it.') });
             });
         }
 
-        /* ── CART ── */
         function pgCart(a) {
             if (S.cart.length === 0) { a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-bag-shopping"></i><h3>Your cart is empty</h3><p>Browse home cooks and add meals to your cart.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div></div></section>`; updateUI(); return }
             const sub = cartSub(), del = sub >= 500 ? 0 : 29, gst = Math.round(sub * .05), tot = sub + del + gst;
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Cart</div><h2 class="sec-title">${cartCount()} item${cartCount() > 1 ? 's' : ''}</h2></div>
-<div class="cart-layout"><div class="cart-items">
- ${S.cart.map(i => `<div class="cart-item"><img src="${i.img}" alt="" class="cart-item-img"/><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-chef"><i class="fas fa-user" style="margin-right:3px"></i>${i.cookName || 'Home Cook'}</div><div class="cart-item-bot"><div class="cart-item-price">${fp(i.price * i.qty)}</div><div class="cart-item-ctrls"><button class="qty-b" data-mq="${i.mid}"><i class="fas fa-minus"></i></button><span class="qty-n">${i.qty}</span><button class="qty-b" data-pq="${i.mid}"><i class="fas fa-plus"></i></button></div></div></div><button class="cart-item-rm" data-rm="${i.mid}"><i class="fas fa-trash-can"></i></button></div>`).join('')}
-<div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn btn-ghost" id="clearCart"><i class="fas fa-trash"></i> Clear</button><a class="btn btn-o btn-sm" data-nv="browse"><i class="fas fa-plus"></i> Add More</a></div>
-</div><div class="cart-summary"><h3>Order Summary</h3><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div>${del > 0 ? `<p style="font-size:.76rem;color:var(--success);margin-bottom:8px"><i class="fas fa-info-circle"></i> Add ${fp(500 - sub)} more for free delivery</p>` : ''}<div class="sum-row"><span>GST (5%)</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" data-nv="checkout"><i class="fas fa-lock"></i> Checkout</button></div></div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Cart</div><h2 class="sec-title">${cartCount()} item${cartCount() > 1 ? 's' : ''}</h2></div><div class="cart-layout"><div class="cart-items">${S.cart.map(i => `<div class="cart-item"><img src="${i.img}" alt="" class="cart-item-img"/><div class="cart-item-info"><div class="cart-item-name">${i.name}</div><div class="cart-item-chef"><i class="fas fa-user" style="margin-right:3px"></i>${i.cookName || 'Home Cook'}</div><div class="cart-item-bot"><div class="cart-item-price">${fp(i.price * i.qty)}</div><div class="cart-item-ctrls"><button class="qty-b" data-mq="${i.mid}"><i class="fas fa-minus"></i></button><span class="qty-n">${i.qty}</span><button class="qty-b" data-pq="${i.mid}"><i class="fas fa-plus"></i></button></div></div></div><button class="cart-item-rm" data-rm="${i.mid}"><i class="fas fa-trash-can"></i></button></div>`).join('')}<div style="display:flex;justify-content:space-between;margin-top:8px"><button class="btn btn-ghost" id="clearCart"><i class="fas fa-trash"></i> Clear</button><a class="btn btn-o btn-sm" data-nv="browse"><i class="fas fa-plus"></i> Add More</a></div></div><div class="cart-summary"><h3>Order Summary</h3><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div>${del > 0 ? `<p style="font-size:.76rem;color:var(--success);margin-bottom:8px"><i class="fas fa-info-circle"></i> Add ${fp(500 - sub)} more for free delivery</p>` : ''}<div class="sum-row"><span>GST (5%)</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" data-nv="checkout"><i class="fas fa-lock"></i> Checkout</button></div></div></div></section>`;
             updateUI();
             $$('[data-mq]', a).forEach(b => b.addEventListener('click', () => { updCartQ(b.dataset.mq, -1); pgCart(a) }));
             $$('[data-pq]', a).forEach(b => b.addEventListener('click', () => { updCartQ(b.dataset.pq, 1); pgCart(a) }));
@@ -4821,294 +3333,33 @@ No reviews yet.
             $('#clearCart', a)?.addEventListener('click', () => { clearCart(); pgCart(a) });
         }
 
-        /* ── CHECKOUT ── */
         function pgCheckout(a) {
-    if (!S.user) { nav('login'); return }
-    if (S.cart.length === 0) { nav('cart'); return }
-
-    const sub = cartSub(),
-        del = sub >= 500 ? 0 : 29,
-        gst = Math.round(sub * .05),
-        tot = sub + del + gst;
-
-    a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px">
-<div class="sec-label">Checkout</div>
-<h2 class="sec-title">Complete Your Order</h2>
-</div>
-
-<div class="checkout-layout">
-<div>
-
-<div class="co-card">
-<h3><span class="sn">1</span> Delivery Address</h3>
-
-<form id="coF">
-
-<div class="fr">
-
-<div class="fg">
-<label class="fl">Name</label>
-
-<input 
-class="fi" 
-id="coN" 
-value="${S.user.fullName || S.user.username || ''}" 
-required
-/>
-
-</div>
-
-<div class="fg">
-<label class="fl">Phone</label>
-
-<input 
-class="fi" 
-id="coPh" 
-value="${S.user.phone || ''}" 
-required
-/>
-
-</div>
-
-</div>
-
-<div class="fg">
-<label class="fl">Address Line 1</label>
-
-<input 
-class="fi" 
-id="coA1" 
-value="${S.user.address?.line1 || ''}" 
-placeholder="House, Building, Street" 
-required
-/>
-
-</div>
-
-<div class="fg">
-<label class="fl">Address Line 2</label>
-
-<input 
-class="fi" 
-id="coA2" 
-value="${S.user.address?.line2 || ''}" 
-placeholder="Landmark, Area"
-/>
-
-</div>
-
-<div class="fr">
-
-<div class="fg">
-<label class="fl">City</label>
-
-<input 
-class="fi" 
-id="coCity" 
-value="${S.user.address?.city || 'Bangalore'}" 
-required
-/>
-
-</div>
-
-<div class="fg">
-<label class="fl">PIN Code</label>
-
-<input 
-class="fi" 
-id="coPin" 
-value="${S.user.address?.pin || ''}" 
-required
-/>
-
-</div>
-
-</div>
-
-<div class="fg">
-<label class="fl">Notes</label>
-
-<textarea 
-class="fi" 
-id="coNotes" 
-rows="2" 
-placeholder="Delivery instructions..."
-></textarea>
-
-</div>
-
-</form>
-</div>
-
-<div class="co-card">
-<h3><span class="sn">2</span> Payment</h3>
-
-<div class="pay-opts">
-
-<label class="pay-opt active" data-pay="cod">
-<input type="radio" name="pay" value="cod" checked/>
-<div class="rc"></div>
-<i class="fas fa-money-bill-wave"></i>
-<span>Cash on Delivery</span>
-</label>
-
-<label class="pay-opt" data-pay="online">
-<input type="radio" name="pay" value="online"/>
-<div class="rc"></div>
-<i class="fas fa-credit-card"></i>
-<span>Online Payment</span>
-</label>
-
-</div>
-</div>
-
-</div>
-
-<div class="cart-summary">
-
-<h3>Summary</h3>
-
-${S.cart.map(i => `
-<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem">
-<span>${i.name} x${i.qty}</span>
-<span style="font-weight:600">${fp(i.price * i.qty)}</span>
-</div>
-`).join('')}
-
-<div style="height:1px;background:var(--border);margin:12px 0"></div>
-
-<div class="sum-row">
-<span>Subtotal</span>
-<span>${fp(sub)}</span>
-</div>
-
-<div class="sum-row ${del === 0 ? 'free' : ''}">
-<span>Delivery</span>
-<span>${del === 0 ? 'FREE' : fp(del)}</span>
-</div>
-
-<div class="sum-row">
-<span>GST</span>
-<span>${fp(gst)}</span>
-</div>
-
-<div class="sum-total">
-<span class="lb">Total</span>
-<span class="am">${fp(tot)}</span>
-</div>
-
-<button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem">
-<i class="fas fa-check-circle"></i> Place Order
-</button>
-
-</div>
-</div>
-</div>
-</section>`;
-
-    updateUI();
-
-    $$('.pay-opt', a).forEach(o =>
-        o.addEventListener('click', () => {
-            $$('.pay-opt', a).forEach(x => x.classList.remove('active'));
-            o.classList.add('active');
-            o.querySelector('input').checked = true;
-        })
-    );
-
-    $('#placeOrder', a)?.addEventListener('click', async () => {
-
-        const form = $('#coF', a);
-
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        const addr = {
-            name: $('#coN', a).value.trim(),
-            phone: $('#coPh', a).value.trim(),
-            line1: $('#coA1', a).value.trim(),
-            line2: $('#coA2', a).value.trim(),
-            city: $('#coCity', a).value.trim(),
-            pin: $('#coPin', a).value.trim(),
-            notes: $('#coNotes', a).value.trim()
-        };
-
-        const pay = $('input[name=pay]:checked', a)?.value || 'cod';
-
-        const items = S.cart.map(c => ({
-            mealId: c.mid,
-            name: c.name,
-            price: c.price,
-            qty: c.qty
-        }));
-
-        const btn = $('#placeOrder', a);
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing...';
-
-        try {
-
-            const res = await api('/orders', {
-                method: 'POST',
-                body: JSON.stringify({
-                    items,
-                    address: addr,
-                    paymentMethod: pay
-                })
+            if (!S.user) { nav('login'); return }
+            if (S.cart.length === 0) { nav('cart'); return }
+            const sub = cartSub(), del = sub >= 500 ? 0 : 29, gst = Math.round(sub * .05), tot = sub + del + gst;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Checkout</div><h2 class="sec-title">Complete Your Order</h2></div><div class="checkout-layout"><div><div class="co-card"><h3><span class="sn">1</span> Delivery Address</h3><form id="coF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="coN" value="${S.user.fullName || S.user.username || ''}" required/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="coPh" value="${S.user.phone || ''}" required/></div></div><div class="fg"><label class="fl">Address Line 1</label><input class="fi" id="coA1" value="${S.user.address?.line1 || ''}" placeholder="House, Building, Street" required/></div><div class="fg"><label class="fl">Address Line 2</label><input class="fi" id="coA2" value="${S.user.address?.line2 || ''}" placeholder="Landmark, Area"/></div><div class="fr"><div class="fg"><label class="fl">City</label><input class="fi" id="coCity" value="${S.user.address?.city || 'Bangalore'}" required/></div><div class="fg"><label class="fl">PIN Code</label><input class="fi" id="coPin" value="${S.user.address?.pin || ''}" required/></div></div><div class="fg"><label class="fl">Notes</label><textarea class="fi" id="coNotes" rows="2" placeholder="Delivery instructions..."></textarea></div></form></div><div class="co-card"><h3><span class="sn">2</span> Payment</h3><div class="pay-opts"><label class="pay-opt active" data-pay="cod"><input type="radio" name="pay" value="cod" checked/><div class="rc"></div><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></label><label class="pay-opt" data-pay="online"><input type="radio" name="pay" value="online"/><div class="rc"></div><i class="fas fa-credit-card"></i><span>Online Payment</span></label></div></div></div><div class="cart-summary"><h3>Summary</h3>${S.cart.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}<div style="height:1px;background:var(--border);margin:12px 0"></div><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div><div class="sum-row"><span>GST</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem"><i class="fas fa-check-circle"></i> Place Order</button></div></div></div></section>`;
+            updateUI();
+            $$('.pay-opt', a).forEach(o => o.addEventListener('click', () => { $$('.pay-opt', a).forEach(x => x.classList.remove('active')); o.classList.add('active'); o.querySelector('input').checked = true; }));
+            $('#placeOrder', a)?.addEventListener('click', async () => {
+                const form = $('#coF', a);
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                const addr = { name: $('#coN', a).value.trim(), phone: $('#coPh', a).value.trim(), line1: $('#coA1', a).value.trim(), line2: $('#coA2', a).value.trim(), city: $('#coCity', a).value.trim(), pin: $('#coPin', a).value.trim(), notes: $('#coNotes', a).value.trim() };
+                const pay = $('input[name=pay]:checked', a)?.value || 'cod';
+                const items = S.cart.map(c => ({ mealId: c.mid, name: c.name, price: c.price, qty: c.qty }));
+                const btn = $('#placeOrder', a); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing...';
+                try { const res = await api('/orders', { method: 'POST', body: JSON.stringify({ items, address: addr, paymentMethod: pay }) }); clearCart(); toast('Order placed successfully!'); nav('orders'); } catch (err) { console.error(err); toast('Order failed', 'error'); } finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order'; }
             });
-
-            clearCart();
-            toast('Order placed successfully!');
-            nav('orders');
-
-        } catch (err) {
-
-            console.error(err);
-            toast('Order failed', 'error');
-
-        } finally {
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
         }
-    });
-}
 
-        /* ── ORDERS ── */
         async function pgOrders(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return; }
             let myOrders = [];
-            try {
-                const res = await api('/orders');
-                myOrders = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            } catch (err) {
-                console.error(err); toast('Failed to load orders', 'error');
-            }
-            a.innerHTML = `
-  <section class="page-sec"><div class="container">
-  <div style="margin-bottom:24px"><div class="sec-label">My Orders</div><h2 class="sec-title">${myOrders.length} Order${myOrders.length !== 1 ? 's' : ''}</h2></div>
-  ${myOrders.length ? `<div style="display:flex;flex-direction:column;gap:14px">${myOrders.map(o => `
-    <div class="card" style="padding:18px;cursor:pointer" data-nv="order-detail" data-id="${o._id}">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-        <div><div style="font-weight:700;font-size:.92rem">Order #${o._id.slice(-6).toUpperCase()}</div><div style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div>
-        <span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:.86rem;color:var(--muted)">${o.items.length} item${o.items.length > 1 ? 's' : ''}</div>
-        <div style="display:flex;align-items:center;gap:14px"><span style="font-family:var(--font-d);font-weight:800;color:var(--accent)">${fp(o.total)}</span><i class="fas fa-arrow-right" style="color:var(--muted)"></i></div>
-      </div>
-    </div>
-  `).join('')}</div>` : `<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Place your first order from a home cook.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>`}
-  </div></section>`;
+            try { const res = await api('/orders'); myOrders = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); } catch (err) { console.error(err); toast('Failed to load orders', 'error'); }
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">My Orders</div><h2 class="sec-title">${myOrders.length} Order${myOrders.length !== 1 ? 's' : ''}</h2></div>${myOrders.length ? `<div style="display:flex;flex-direction:column;gap:14px">${myOrders.map(o => `<div class="card" style="padding:18px;cursor:pointer" data-nv="order-detail" data-id="${o._id}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div><div style="font-weight:700;font-size:.92rem">Order #${o._id.slice(-6).toUpperCase()}</div><div style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:.86rem;color:var(--muted)">${o.items.length} item${o.items.length > 1 ? 's' : ''}</div><div style="display:flex;align-items:center;gap:14px"><span style="font-family:var(--font-d);font-weight:800;color:var(--accent)">${fp(o.total)}</span><i class="fas fa-arrow-right" style="color:var(--muted)"></i></div></div></div>`).join('')}</div>` : `<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Place your first order from a home cook.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>`}</div></section>`;
             updateUI();
             $$('[data-nv]', a).forEach(el => { el.addEventListener('click', () => nav(el.dataset.nv, { id: el.dataset.id })); });
         }
 
-        /* ── ORDER DETAIL ── */
         function pgOrderDetail(id, a) {
             if (!id) { nav('orders'); return } const app = a || $('#app'); if (!S.user) { nav('login'); return }
             const order = DB.orders.find(o => o._id === id);
@@ -5118,406 +3369,46 @@ ${S.cart.map(i => `
             const curIdx = flow.indexOf(order.status);
             const isCancel = order.status === 'cancelled';
             const sl = { placed: 'Order Placed', confirmed: 'Confirmed', preparing: 'Preparing', on_the_way: 'On the Way', delivered: 'Delivered', cancelled: 'Cancelled' };
-            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:800px">
-<a class="btn btn-ghost" data-nv="orders" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back</a>
-<div class="od-header"><div><h2>Order #${order._id.slice(-6).toUpperCase()}</h2><p style="color:var(--muted);font-size:.86rem">${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p></div><span class="badge-st ${stMap[order.status]?.c || ''}">${stMap[order.status]?.l || order.status}</span></div>
-<div class="co-card" style="margin-bottom:20px"><h3><i class="fas fa-route" style="color:var(--accent)"></i> Status</h3>
- ${isCancel ? `<div class="timeline"><div class="tl-step done"><div class="tl-dot"><i class="fas fa-check"></i></div><div class="tl-info"><h4>Placed</h4><p>Order received</p></div></div><div class="tl-step"><div class="tl-dot" style="background:var(--danger);border-color:var(--danger);color:#fff"><i class="fas fa-xmark"></i></div><div class="tl-info"><h4 style="color:var(--danger)">Cancelled</h4></div></div></div>` : `<div class="timeline">${flow.map((s, i) => `<div class="tl-step ${i < curIdx ? 'done' : ''} ${i === curIdx ? 'current' : ''}"><div class="tl-dot">${i < curIdx ? '<i class="fas fa-check"></i>' : i + 1}</div><div class="tl-info"><h4>${sl[s]}</h4><p>${i <= curIdx ? 'Done' : 'Pending'}</p></div></div>`).join('')}</div>`}
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
-<div class="co-card"><h3><i class="fas fa-utensils" style="color:var(--accent)"></i> Items</h3>${order.items.map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}</div>
-<div>
-<div class="co-card" style="margin-bottom:18px"><h3><i class="fas fa-location-dot" style="color:var(--accent)"></i> Delivery</h3><p style="font-size:.88rem;line-height:1.7">${order.address?.name || ''}<br/>${order.address?.line1 || ''}${order.address?.line2 ? ', ' + order.address.line2 : ''}<br/>${order.address?.city || ''} - ${order.address?.pin || ''}<br/>${order.address?.phone || ''}</p></div>
-<div class="co-card"><h3><i class="fas fa-receipt" style="color:var(--accent)"></i> Payment</h3><div class="sum-row"><span>Subtotal</span><span>${fp(order.subtotal)}</span></div><div class="sum-row"><span>Delivery</span><span>${order.delivery === 0 ? 'FREE' : fp(order.delivery)}</span></div><div class="sum-row"><span>GST</span><span>${fp(order.gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(order.total)}</span></div><p style="font-size:.82rem;color:var(--muted);margin-top:8px"><i class="fas fa-${order.payment === 'cod' ? 'money-bill-wave' : 'credit-card'}"></i> ${order.payment === 'cod' ? 'Cash on Delivery' : 'Online'}</p></div>
-</div></div>
- ${order.status === 'delivered' ? `<div class="co-card"><h3><i class="fas fa-star" style="color:var(--warning)"></i> Rate this Order</h3><div class="star-sel" id="oStarSel">${[1, 2, 3, 4, 5].map(i => `<button type="button" data-s="${i}"><i class="fas fa-star"></i></button>`).join('')}</div><div class="fg"><textarea class="fi" id="oRevTxt" rows="2" placeholder="Write a review..."></textarea></div><button class="btn btn-p btn-sm" id="oRevSubmit">Submit Review</button></div>` : ''}
-</div></section>`;
+            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:800px"><a class="btn btn-ghost" data-nv="orders" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back</a><div class="od-header"><div><h2>Order #${order._id.slice(-6).toUpperCase()}</h2><p style="color:var(--muted);font-size:.86rem">${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p></div><span class="badge-st ${stMap[order.status]?.c || ''}">${stMap[order.status]?.l || order.status}</span></div><div class="co-card" style="margin-bottom:20px"><h3><i class="fas fa-route" style="color:var(--accent)"></i> Status</h3>${isCancel ? `<div class="timeline"><div class="tl-step done"><div class="tl-dot"><i class="fas fa-check"></i></div><div class="tl-info"><h4>Placed</h4><p>Order received</p></div></div><div class="tl-step"><div class="tl-dot" style="background:var(--danger);border-color:var(--danger);color:#fff"><i class="fas fa-xmark"></i></div><div class="tl-info"><h4 style="color:var(--danger)">Cancelled</h4></div></div></div>` : `<div class="timeline">${flow.map((s, i) => `<div class="tl-step ${i < curIdx ? 'done' : ''} ${i === curIdx ? 'current' : ''}"><div class="tl-dot">${i < curIdx ? '<i class="fas fa-check"></i>' : i + 1}</div><div class="tl-info"><h4>${sl[s]}</h4><p>${i <= curIdx ? 'Done' : 'Pending'}</p></div></div>`).join('')}</div>`}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px"><div class="co-card"><h3><i class="fas fa-utensils" style="color:var(--accent)"></i> Items</h3>${order.items.map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}</div><div><div class="co-card" style="margin-bottom:18px"><h3><i class="fas fa-location-dot" style="color:var(--accent)"></i> Delivery</h3><p style="font-size:.88rem;line-height:1.7">${order.address?.name || ''}<br/>${order.address?.line1 || ''}${order.address?.line2 ? ', ' + order.address.line2 : ''}<br/>${order.address?.city || ''} - ${order.address?.pin || ''}<br/>${order.address?.phone || ''}</p></div><div class="co-card"><h3><i class="fas fa-receipt" style="color:var(--accent)"></i> Payment</h3><div class="sum-row"><span>Subtotal</span><span>${fp(order.subtotal)}</span></div><div class="sum-row"><span>Delivery</span><span>${order.delivery === 0 ? 'FREE' : fp(order.delivery)}</span></div><div class="sum-row"><span>GST</span><span>${fp(order.gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(order.total)}</span></div><p style="font-size:.82rem;color:var(--muted);margin-top:8px"><i class="fas fa-${order.payment === 'cod' ? 'money-bill-wave' : 'credit-card'}"></i> ${order.payment === 'cod' ? 'Cash on Delivery' : 'Online'}</p></div></div></div>${order.status === 'delivered' ? `<div class="co-card"><h3><i class="fas fa-star" style="color:var(--warning)"></i> Rate this Order</h3><div class="star-sel" id="oStarSel">${[1,2,3,4,5].map(i => `<button type="button" data-s="${i}"><i class="fas fa-star"></i></button>`).join('')}</div><div class="fg"><textarea class="fi" id="oRevTxt" rows="2" placeholder="Write a review..."></textarea></div><button class="btn btn-p btn-sm" id="oRevSubmit">Submit Review</button></div>` : ''}</div></section>`;
             updateUI();
             let selStars = 0;
             $$('[data-s]', app).forEach(b => b.addEventListener('click', () => { selStars = parseInt(b.dataset.s); $$('[data-s]', app).forEach((x, i) => x.classList.toggle('active', i < selStars)) }));
             $('#oRevSubmit', app)?.addEventListener('click', () => { if (!selStars) { toast('Select a rating', 'error'); return } const txt = $('#oRevTxt', app).value.trim(); DB.reviews.push({ _id: 'r' + Date.now(), userId: S.user._id, cookId: order.cookId, rating: selStars, comment: txt || 'Good food!', createdAt: new Date().toISOString() }); toast('Review submitted!'); pgOrderDetail(id, app) });
         }
 
-        /* ── PROFILE ── */
         function pgProfile(a) {
             if (!S.user) { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px">
-<div style="margin-bottom:24px"><div class="sec-label">Account</div><h2 class="sec-title">My Profile</h2></div>
-<div class="prof-header"><div class="prof-av">${ini(`${S.user.firstName || ''} ${S.user.lastName || ''}`)}</div><div class="prof-info"><h2>${S.user.firstName || ''} ${S.user.lastName || ''}</h2><p>${S.user.email} | ${S.user.role}</p></div></div>
-<div class="co-card"><h3><i class="fas fa-pen" style="color:var(--accent)"></i> Edit Profile</h3><form id="profF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="pN" value="${S.user.firstName || ''} ${S.user.lastName || ''}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="pPh" value="${S.user.phone || ''}"/></div></div><div class="fg"><label class="fl">Address</label><input class="fi" id="pAddr" value="${S.user.address ? `${S.user.address.line1 || ''}${S.user.address.line2 ? ', ' + S.user.address.line2 : ''}` : ''}"/></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save</button></form></div>
-<div class="co-card"><h3><i class="fas fa-key" style="color:var(--accent)"></i> Change Password</h3><form id="passF"><div class="fg"><label class="fl">Current Password</label><input class="fi" type="password" id="curP"/></div><div class="fg"><label class="fl">New Password</label><input class="fi" type="password" id="newP" minlength="6"/></div><div class="fg"><label class="fl">Confirm</label><input class="fi" type="password" id="confP"/></div><button type="submit" class="btn btn-o btn-sm"><i class="fas fa-lock"></i> Update</button></form></div>
-</div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="margin-bottom:24px"><div class="sec-label">Account</div><h2 class="sec-title">My Profile</h2></div><div class="prof-header"><div class="prof-av">${ini(`${S.user.firstName || ''} ${S.user.lastName || ''}`)}</div><div class="prof-info"><h2>${S.user.firstName || ''} ${S.user.lastName || ''}</h2><p>${S.user.email} | ${S.user.role}</p></div></div><div class="co-card"><h3><i class="fas fa-pen" style="color:var(--accent)"></i> Edit Profile</h3><form id="profF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="pN" value="${S.user.firstName || ''} ${S.user.lastName || ''}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="pPh" value="${S.user.phone || ''}"/></div></div><div class="fg"><label class="fl">Address</label><input class="fi" id="pAddr" value="${S.user.address ? `${S.user.address.line1 || ''}${S.user.address.line2 ? ', ' + S.user.address.line2 : ''}` : ''}"/></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save</button></form></div><div class="co-card"><h3><i class="fas fa-key" style="color:var(--accent)"></i> Change Password</h3><form id="passF"><div class="fg"><label class="fl">Current Password</label><input class="fi" type="password" id="curP"/></div><div class="fg"><label class="fl">New Password</label><input class="fi" type="password" id="newP" minlength="6"/></div><div class="fg"><label class="fl">Confirm</label><input class="fi" type="password" id="confP"/></div><button type="submit" class="btn btn-o btn-sm"><i class="fas fa-lock"></i> Update</button></form></div></div></section>`;
             updateUI();
             $('#profF', a).addEventListener('submit', e => { e.preventDefault(); S.user.name = $('#pN', a).value.trim(); S.user.phone = $('#pPh', a).value.trim(); saveU(); updateUI(); toast('Profile updated!') });
             $('#passF', a).addEventListener('submit', e => { e.preventDefault(); if ($('#newP', a).value !== $('#confP', a).value) { toast('Passwords don\'t match', 'error'); return } toast('Password updated!'); $('#passF', a).reset() });
         }
 
-        /* ── COOK DASHBOARD ── */
-       function pgCookDash(a) {
+        function pgCookDash(a) {
+            if (!S.user || S.user.role !== 'cook') { nav('login'); return; }
+            const cookData = DB.cooks.find(c => c.user === S.user.id || c.userId === S.user.id || c.user === S.user._id || c.userId === S.user._id || c.email?.toLowerCase() === S.user.email?.toLowerCase());
+            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-user-slash"></i><h3>Cook Profile Not Found</h3></div></div></section>`; return; }
+            const myItems = DB.menuItems.filter(m => m.cookId === cookData._id || m.cook === cookData._id);
+            const myOrders = DB.orders.filter(o => o.cookId === cookData._id || o.cook === cookData._id);
+            const mySubs = DB.subscriptions.filter(s => (s.cookId === cookData._id || s.cook === cookData._id) && s.status === 'active');
+            const myRevs = DB.reviews.filter(r => r.cookId === cookData._id || r.cook === cookData._id);
+            const earnings = myOrders.reduce((s, o) => s + (o.total || 0), 0);
+            const pendingOrders = myOrders.filter(o => o.status === 'placed' || o.status === 'confirmed');
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Cook Dashboard</div><h2 class="sec-title">Welcome, ${S.user.firstName} ${S.user.lastName}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${myItems.length}</div><div class="stat-lbl">Menu Items</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-clock"></i></div><div><div class="stat-val">${pendingOrders.length}</div><div class="stat-lbl">Pending Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(earnings)}</div><div class="stat-lbl">Total Earnings</div></div></div></div></div></section>`;
+            updateUI();
+        }
 
-    if (!S.user || S.user.role !== 'cook') {
-        nav('login');
-        return;
-    }
-
-    const cookData = DB.cooks.find(
-    c =>
-        c.user === S.user.id ||
-        c.userId === S.user.id ||
-        c.user === S.user._id ||
-        c.userId === S.user._id ||
-        c.email?.toLowerCase() === S.user.email?.toLowerCase()
-);
-
-    if (!cookData) {
-
-        a.innerHTML = `
-<section class="page-sec">
-<div class="container">
-<div class="empty-state">
-<i class="fas fa-user-slash"></i>
-<h3>Cook Profile Not Found</h3>
-</div>
-</div>
-</section>
-`;
-
-        return;
-    }
-
-    /* ONLY THIS COOK MENU */
-
-    const myItems = DB.menuItems.filter(
-        m =>
-            m.cookId === cookData._id ||
-            m.cook === cookData._id
-    );
-
-    /* ONLY THIS COOK ORDERS */
-
-    const myOrders = DB.orders.filter(
-        o =>
-            o.cookId === cookData._id ||
-            o.cook === cookData._id
-    );
-
-    /* ONLY THIS COOK SUBSCRIPTIONS */
-
-    const mySubs = DB.subscriptions.filter(
-        s =>
-            (s.cookId === cookData._id ||
-             s.cook === cookData._id)
-            &&
-            s.status === 'active'
-    );
-
-    /* ONLY THIS COOK REVIEWS */
-
-    const myRevs = DB.reviews.filter(
-        r =>
-            r.cookId === cookData._id ||
-            r.cook === cookData._id
-    );
-
-    const earnings =
-        myOrders.reduce(
-            (s, o) => s + (o.total || 0),
-            0
-        );
-
-    const pendingOrders = myOrders.filter(
-        o =>
-            o.status === 'placed' ||
-            o.status === 'confirmed'
-    );
-
-    a.innerHTML = `
-
-<section class="page-sec">
-
-<div class="container">
-
-<div style="margin-bottom:24px">
-
-<div class="sec-label">
-Cook Dashboard
-</div>
-
-<h2 class="sec-title">
-Welcome, ${S.user.firstName} ${S.user.lastName}
-</h2>
-
-</div>
-
-<div class="stats-grid">
-
-<div class="stat-card">
-
-<div class="stat-icon"
-style="background:rgba(232,93,44,.1);color:var(--accent)">
-<i class="fas fa-utensils"></i>
-</div>
-
-<div>
-
-<div class="stat-val">
-${myItems.length}
-</div>
-
-<div class="stat-lbl">
-Menu Items
-</div>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon"
-style="background:rgba(25,118,210,.1);color:var(--info)">
-<i class="fas fa-receipt"></i>
-</div>
-
-<div>
-
-<div class="stat-val">
-${myOrders.length}
-</div>
-
-<div class="stat-lbl">
-Total Orders
-</div>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon"
-style="background:rgba(212,148,10,.1);color:var(--warning)">
-<i class="fas fa-clock"></i>
-</div>
-
-<div>
-
-<div class="stat-val">
-${pendingOrders.length}
-</div>
-
-<div class="stat-lbl">
-Pending Orders
-</div>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon"
-style="background:rgba(45,143,78,.1);color:var(--success)">
-<i class="fas fa-wallet"></i>
-</div>
-
-<div>
-
-<div class="stat-val">
-${fp(earnings)}
-</div>
-
-<div class="stat-lbl">
-Total Earnings
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-`;
-
-    updateUI();
-}
-
-        /* ── COOK MENU ── */
         function pgCookMenu(a) {
-
-    if (!S.user || S.user.role !== 'cook') {
-        nav('login');
-        return;
-    }
-
-    /* FIND CURRENT COOK */
-
-    const cookData = DB.cooks.find(
-        c =>
-            c.user === S.user._id ||
-            c.userId === S.user._id ||
-            c.email === S.user.email
-    );
-
-    if (!cookData) {
-
-        a.innerHTML = `
-<section class="page-sec">
-<div class="container">
-<h2>Cook not found</h2>
-</div>
-</section>
-`;
-
-        return;
-    }
-
-    /* ONLY THIS COOK ITEMS */
-
-    const myItems = DB.menuItems.filter(
-        m =>
-            m.cookId === cookData._id ||
-            m.cook === cookData._id
-    );
-
-    a.innerHTML = `
-
-<section class="page-sec">
-
-<div class="container">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
-">
-
-<h2 class="sec-title">
-${myItems.length} Items
-</h2>
-
-<button class="btn btn-p">
-<i class="fas fa-plus"></i>
-Add Item
-</button>
-
-</div>
-
-<div style="
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-gap:24px;
-">
-
-${myItems.map(item => `
-
-<div class="card meal-card">
-
-<div class="mc-img">
-
-<img
-src="${item.image || item.img || 'https://picsum.photos/400/300'}"
-alt="${item.name}"
-style="
-width:100%;
-height:220px;
-object-fit:cover;
-border-radius:18px 18px 0 0;
-"
-/>
-
-</div>
-
-<div class="mc-body">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:12px;
-">
-
-<span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">
-${item.type}
-</span>
-
-<strong style="color:var(--accent)">
-₹${item.price}
-</strong>
-
-</div>
-
-<h3 style="margin-bottom:10px">
-${item.name}
-</h3>
-
-<p style="
-color:var(--muted);
-margin-bottom:14px;
-">
-${item.description || item.desc || 'Fresh homemade food'}
-</p>
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-">
-
-<span style="
-color:${item.available ? 'green' : 'red'};
-font-size:14px;
-">
-● ${item.available ? 'Available' : 'Unavailable'}
-</span>
-
-<div style="display:flex;gap:10px">
-
-<button class="icon-btn">
-<i class="fas fa-eye"></i>
-</button>
-
-<button class="icon-btn">
-<i class="fas fa-pen"></i>
-</button>
-
-<button class="icon-btn"
-style="background:#ef4444;color:white">
-<i class="fas fa-trash"></i>
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-`).join('')}
-
-</div>
-
-</div>
-
-</section>
-`;
-
-}
+            if (!S.user || S.user.role !== 'cook') { nav('login'); return; }
+            const cookData = DB.cooks.find(c => c.user === S.user._id || c.userId === S.user._id || c.email === S.user.email);
+            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><h2>Cook not found</h2></div></section>`; return; }
+            const myItems = DB.menuItems.filter(m => m.cookId === cookData._id || m.cook === cookData._id);
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px"><h2 class="sec-title">${myItems.length} Items</h2><button class="btn btn-p"><i class="fas fa-plus"></i> Add Item</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px">${myItems.map(item => `<div class="card meal-card"><div class="mc-img"><img src="${item.image || item.img || 'https://picsum.photos/400/300'}" alt="${item.name}" style="width:100%;height:220px;object-fit:cover;border-radius:18px 18px 0 0"/></div><div class="mc-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${item.type}</span><strong style="color:var(--accent)">₹${item.price}</strong></div><h3 style="margin-bottom:10px">${item.name}</h3><p style="color:var(--muted);margin-bottom:14px">${item.description || item.desc || 'Fresh homemade food'}</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:${item.available ? 'green' : 'red'};font-size:14px">● ${item.available ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:10px"><button class="icon-btn"><i class="fas fa-eye"></i></button><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn" style="background:#ef4444;color:white"><i class="fas fa-trash"></i></button></div></div></div></div>`).join('')}</div></div></section>`;
+        }
 
         function showMealModal(meal, onSave) {
             const isEdit = !!meal;
-            openModal(isEdit ? 'Edit Menu Item' : 'Add Menu Item', `
-<div class="fg"><label class="fl">Dish Name</label><input class="fi" id="mName" value="${meal?.name || ''}" required/></div>
-<div class="fr"><div class="fg"><label class="fl">Type</label><select class="fi" id="mType"><option value="veg" ${meal?.type === 'veg' ? 'selected' : ''}>Vegetarian</option><option value="non-veg" ${meal?.type === 'non-veg' ? 'selected' : ''}>Non-Vegetarian</option></select></div><div class="fg"><label class="fl">Price</label><input class="fi" type="number" id="mPrice" value="${meal?.price || ''}" required/></div></div>
-<div class="fg"><label class="fl">Category</label><select class="fi" id="mCat">${DB.categories.map(c => `<option value="${c._id}" ${meal?.category === c._id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
-<div class="fg"><label class="fl">Description</label><textarea class="fi" id="mDesc" rows="2">${meal?.desc || ''}</textarea></div>
-<div class="fg"><label class="fl">Image URL</label><input class="fi" id="mImg" value="${meal?.img || ''}" placeholder="https://..."/></div>`,
-                `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="saveMealBtn">${isEdit ? 'Update' : 'Add'}</button>`);
+            openModal(isEdit ? 'Edit Menu Item' : 'Add Menu Item', `<div class="fg"><label class="fl">Dish Name</label><input class="fi" id="mName" value="${meal?.name || ''}" required/></div><div class="fr"><div class="fg"><label class="fl">Type</label><select class="fi" id="mType"><option value="veg" ${meal?.type === 'veg' ? 'selected' : ''}>Vegetarian</option><option value="non-veg" ${meal?.type === 'non-veg' ? 'selected' : ''}>Non-Vegetarian</option></select></div><div class="fg"><label class="fl">Price</label><input class="fi" type="number" id="mPrice" value="${meal?.price || ''}" required/></div></div><div class="fg"><label class="fl">Category</label><select class="fi" id="mCat">${DB.categories.map(c => `<option value="${c._id}" ${meal?.category === c._id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label class="fl">Description</label><textarea class="fi" id="mDesc" rows="2">${meal?.desc || ''}</textarea></div><div class="fg"><label class="fl">Image URL</label><input class="fi" id="mImg" value="${meal?.img || ''}" placeholder="https://..."/></div>`, `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="saveMealBtn">${isEdit ? 'Update' : 'Add'}</button>`);
             $('#saveMealBtn').addEventListener('click', () => {
                 const name = $('#mName').value.trim(); const price = parseInt($('#mPrice').value); if (!name || !price) { toast('Fill required fields', 'error'); return }
                 const data = { name, type: $('#mType').value, price, category: $('#mCat').value, desc: $('#mDesc').value.trim(), img: $('#mImg').value.trim() || `https://picsum.photos/seed/meal-${Date.now()}/500/400.jpg`, avail: true, cookId: S.user._id };
@@ -5526,13 +3417,10 @@ style="background:#ef4444;color:white">
             });
         }
 
-        /* ── COOK ORDERS ── */
         function pgCookOrders(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.cookId === S.user._id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Orders</div><h2 class="sec-title">${myOrders.length} Orders</h2></div>
- ${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${myOrders.map(o => { const u = DB.users.find(x => x._id === o.userId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || 'User'}</td><td>${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${o.status === 'placed' ? `<button class="btn btn-s btn-sm acc-o" data-oid="${o._id}">Accept</button>` : o.status === 'confirmed' ? `<button class="btn btn-p btn-sm prep-o" data-oid="${o._id}">Start Prep</button>` : o.status === 'preparing' ? `<button class="btn btn-i btn-sm disp-o" data-oid="${o._id}">Out for Delivery</button>` : o.status === 'on_the_way' ? `<button class="btn btn-s btn-sm del-o" data-oid="${o._id}">Delivered</button>` : '—'}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>'}
-</div></section>`; updateUI();
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Orders</div><h2 class="sec-title">${myOrders.length} Orders</h2></div>${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${myOrders.map(o => { const u = DB.users.find(x => x._id === o.userId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || 'User'}</td><td>${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${o.status === 'placed' ? `<button class="btn btn-s btn-sm acc-o" data-oid="${o._id}">Accept</button>` : o.status === 'confirmed' ? `<button class="btn btn-p btn-sm prep-o" data-oid="${o._id}">Start Prep</button>` : o.status === 'preparing' ? `<button class="btn btn-i btn-sm disp-o" data-oid="${o._id}">Out for Delivery</button>` : o.status === 'on_the_way' ? `<button class="btn btn-s btn-sm del-o" data-oid="${o._id}">Delivered</button>` : '—'}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>'}</div></section>`; updateUI();
             const updateO = (id, st) => { const o = DB.orders.find(x => x._id === id); if (o) { o.status = st; o.updatedAt = new Date().toISOString(); toast(`Order ${st}`); pgCookOrders(a) } };
             $$('.acc-o', a).forEach(b => b.addEventListener('click', () => updateO(b.dataset.oid, 'confirmed')));
             $$('.prep-o', a).forEach(b => b.addEventListener('click', () => updateO(b.dataset.oid, 'preparing')));
@@ -5540,16 +3428,12 @@ style="background:#ef4444;color:white">
             $$('.del-o', a).forEach(b => b.addEventListener('click', () => updateO(b.dataset.oid, 'delivered')));
         }
 
-        /* ── COOK SUBS ── */
         function pgCookSubs(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const mySubs = DB.subscriptions.filter(s => s.cookId === S.user._id);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscriptions</h2></div>
- ${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Plan</th><th>Meal</th><th>Price</th><th>Start</th><th>Next Delivery</th><th>Status</th></tr></thead><tbody>${mySubs.map(s => { const u = DB.users.find(x => x._id === s.userId); return `<tr><td style="font-weight:600">${u?.name || 'User'}</td><td style="text-transform:capitalize">${s.plan}</td><td style="text-transform:capitalize">${s.meal}</td><td style="color:var(--accent);font-weight:700">${fp(s.price)}</td><td style="font-size:.8rem">${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions</h3></div>'}
-</div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscriptions</h2></div>${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Plan</th><th>Meal</th><th>Price</th><th>Start</th><th>Next Delivery</th><th>Status</th></tr></thead><tbody>${mySubs.map(s => { const u = DB.users.find(x => x._id === s.userId); return `<tr><td style="font-weight:600">${u?.name || 'User'}</td><td style="text-transform:capitalize">${s.plan}</td><td style="text-transform:capitalize">${s.meal}</td><td style="color:var(--accent);font-weight:700">${fp(s.price)}</td><td style="font-size:.8rem">${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions</h3></div>'}</div></section>`; updateUI()
         }
 
-        /* ── COOK EARNINGS ── */
         function pgCookEarnings(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.cookId === S.user._id && o.status === 'delivered');
@@ -5558,127 +3442,66 @@ style="background:#ef4444;color:white">
             const subEarnings = mySubs.reduce((s, sub) => s + sub.price, 0);
             const totalEarnings = orderEarnings + subEarnings;
             const maxEarn = 10000;
-            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px">
-<div style="margin-bottom:24px"><div class="sec-label">Earnings</div><h2 class="sec-title">${fp(totalEarnings)} Total</h2></div>
-<div class="stats-grid" style="grid-template-columns:1fr 1fr">
-<div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${fp(orderEarnings)}</div><div class="stat-lbl">Order Earnings (${myOrders.length} orders)</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${fp(subEarnings)}</div><div class="stat-lbl">Subscription Earnings (${mySubs.length} active)</div></div></div>
-</div>
-<div class="co-card" style="margin-top:20px"><h3><i class="fas fa-chart-bar" style="color:var(--accent)"></i> Earnings Breakdown</h3>
-<div style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:4px"><span>One-time Orders</span><span style="font-weight:700">${fp(orderEarnings)}</span></div><div class="earn-bar"><div class="earn-bar-fill" style="width:${Math.min(orderEarnings / maxEarn * 100, 100)}%"></div></div></div>
-<div><div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:4px"><span>Subscriptions</span><span style="font-weight:700">${fp(subEarnings)}</span></div><div class="earn-bar"><div class="earn-bar-fill" style="width:${Math.min(subEarnings / maxEarn * 100, 100)}%;background:var(--success)"></div></div></div>
-</div>
-<div class="co-card" style="margin-top:20px"><h3><i class="fas fa-receipt" style="color:var(--accent)"></i> Recent Delivered Orders</h3>
- ${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Items</th><th>Earning</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 10).map(o => `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${o.items.map(i => i.name).join(', ')}</td><td style="color:var(--accent);font-weight:700">${fp(o.subtotal)}</td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>`).join('')}</tbody></table></div>` : '<p style="color:var(--muted);text-align:center;padding:20px">No delivered orders yet</p>'}
-</div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px"><div style="margin-bottom:24px"><div class="sec-label">Earnings</div><h2 class="sec-title">${fp(totalEarnings)} Total</h2></div><div class="stats-grid" style="grid-template-columns:1fr 1fr"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${fp(orderEarnings)}</div><div class="stat-lbl">Order Earnings (${myOrders.length} orders)</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${fp(subEarnings)}</div><div class="stat-lbl">Subscription Earnings (${mySubs.length} active)</div></div></div></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-chart-bar" style="color:var(--accent)"></i> Earnings Breakdown</h3><div style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:4px"><span>One-time Orders</span><span style="font-weight:700">${fp(orderEarnings)}</span></div><div class="earn-bar"><div class="earn-bar-fill" style="width:${Math.min(orderEarnings / maxEarn * 100, 100)}%"></div></div></div><div><div style="display:flex;justify-content:space-between;font-size:.88rem;margin-bottom:4px"><span>Subscriptions</span><span style="font-weight:700">${fp(subEarnings)}</span></div><div class="earn-bar"><div class="earn-bar-fill" style="width:${Math.min(subEarnings / maxEarn * 100, 100)}%;background:var(--success)"></div></div></div></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-receipt" style="color:var(--accent)"></i> Recent Delivered Orders</h3>${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Items</th><th>Earning</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 10).map(o => `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${o.items.map(i => i.name).join(', ')}</td><td style="color:var(--accent);font-weight:700">${fp(o.subtotal)}</td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>`).join('')}</tbody></table></div>` : '<p style="color:var(--muted);text-align:center;padding:20px">No delivered orders yet</p>'}</div></div></section>`;
             updateUI();
             requestAnimationFrame(() => { $$('.earn-bar-fill', a).forEach(el => { const w = el.style.width; el.style.width = '0'; requestAnimationFrame(() => el.style.width = w) }) });
         }
 
-        /* ── COOK SETTINGS ── */
         function pgCookSettings(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const cook = DB.cooks.find(c => c._id === S.user._id) || S.user;
-            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px">
-<div style="margin-bottom:24px"><div class="sec-label">Settings</div><h2 class="sec-title">Cook Profile</h2></div>
-<div class="co-card"><h3><i class="fas fa-user" style="color:var(--accent)"></i> Basic Info</h3><form id="ckSetF">
-<div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="ckN" value="${S.user.name}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ckPh" value="${S.user.phone || ''}"/></div></div>
-<div class="fg"><label class="fl">Cuisine</label><input class="fi" id="ckCui" value="${cook.cuisine || ''}"/></div>
-<div class="fg"><label class="fl">Service Area</label><input class="fi" id="ckArea" value="${cook.serviceArea || ''}"/></div>
-<div class="fg"><label class="fl">Timings</label><input class="fi" id="ckTim" value="${cook.timings || ''}"/></div>
-<div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ckBio" rows="2">${cook.bio || ''}</textarea></div>
-<button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save Changes</button></form></div>
-<div class="co-card" style="margin-top:20px"><h3><i class="fas fa-tags" style="color:var(--accent)"></i> Subscription Plans</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:16px">Set your daily, weekly, and monthly pricing.</p>
-<div id="plansEditor">${[{ type: 'daily', label: 'Daily' }, { type: 'weekly', label: 'Weekly' }, { type: 'monthly', label: 'Monthly' }].map(pt => `<div style="margin-bottom:16px;padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-weight:700;font-size:.9rem;margin-bottom:10px">${pt.label}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="fg" style="margin:0"><label class="fl">Lunch Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="lunch" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'lunch')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Dinner Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="dinner" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'dinner')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Both Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="both" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'both')?.price || ''}" placeholder="0"/></div></div></div>`).join('')}</div>
-<button class="btn btn-p btn-sm" id="savePlans" style="margin-top:12px"><i class="fas fa-save"></i> Save Plans</button></div>
-</div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="margin-bottom:24px"><div class="sec-label">Settings</div><h2 class="sec-title">Cook Profile</h2></div><div class="co-card"><h3><i class="fas fa-user" style="color:var(--accent)"></i> Basic Info</h3><form id="ckSetF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="ckN" value="${S.user.name}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ckPh" value="${S.user.phone || ''}"/></div></div><div class="fg"><label class="fl">Cuisine</label><input class="fi" id="ckCui" value="${cook.cuisine || ''}"/></div><div class="fg"><label class="fl">Service Area</label><input class="fi" id="ckArea" value="${cook.serviceArea || ''}"/></div><div class="fg"><label class="fl">Timings</label><input class="fi" id="ckTim" value="${cook.timings || ''}"/></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ckBio" rows="2">${cook.bio || ''}</textarea></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save Changes</button></form></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-tags" style="color:var(--accent)"></i> Subscription Plans</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:16px">Set your daily, weekly, and monthly pricing.</p><div id="plansEditor">${[{ type: 'daily', label: 'Daily' }, { type: 'weekly', label: 'Weekly' }, { type: 'monthly', label: 'Monthly' }].map(pt => `<div style="margin-bottom:16px;padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-weight:700;font-size:.9rem;margin-bottom:10px">${pt.label}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="fg" style="margin:0"><label class="fl">Lunch Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="lunch" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'lunch')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Dinner Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="dinner" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'dinner')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Both Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="both" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'both')?.price || ''}" placeholder="0"/></div></div></div>`).join('')}</div><button class="btn btn-p btn-sm" id="savePlans" style="margin-top:12px"><i class="fas fa-save"></i> Save Plans</button></div></div></section>`;
             updateUI();
             $('#ckSetF', a)?.addEventListener('submit', e => { e.preventDefault(); S.user.name = $('#ckN', a).value.trim(); S.user.phone = $('#ckPh', a).value.trim(); const ck = DB.cooks.find(c => c._id === S.user._id); if (ck) { ck.cuisine = $('#ckCui', a).value.trim(); ck.serviceArea = $('#ckArea', a).value.trim(); ck.timings = $('#ckTim', a).value.trim(); ck.bio = $('#ckBio', a).value.trim() } saveU(); updateUI(); toast('Settings saved!') });
             $('#savePlans', a)?.addEventListener('click', () => { const ck = DB.cooks.find(c => c._id === S.user._id); if (!ck) return; ck.plans = []; $$('.plan-price', a).forEach(inp => { const v = parseInt(inp.value); if (v > 0) ck.plans.push({ type: inp.dataset.pt, meal: inp.dataset.meal, price: v }) }); toast('Plans saved!') });
         }
 
-        /* ============================================================
-           ADMIN PAGES
-           ============================================================ */
-
-        /* ── ADMIN DASHBOARD ── */
         function pgAdminDash(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return; }
             const totalUsers = DB.users.length; const totalCooks = DB.cooks.length; const totalOrders = DB.orders.length;
             const pendingCooks = DB.cooks.filter(c => c.status === 'pending').length;
             const totalRevenue = DB.orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0);
-            a.innerHTML = `
-  <section class="page-sec"><div class="container">
-    <div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Dashboard Overview</h2></div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-users"></i></div><div><div class="stat-val">${totalUsers}</div><div class="stat-lbl">Users</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${totalCooks}</div><div class="stat-lbl">Cooks ${pendingCooks ? `<span style="color:var(--warning);font-size:.8rem">(${pendingCooks} pending)</span>` : ''}</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${totalOrders}</div><div class="stat-lbl">Orders</div></div></div>
-      <div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalRevenue)}</div><div class="stat-lbl">Revenue</div></div></div>
-    </div>
-  </div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Dashboard Overview</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-users"></i></div><div><div class="stat-val">${totalUsers}</div><div class="stat-lbl">Users</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${totalCooks}</div><div class="stat-lbl">Cooks ${pendingCooks ? `<span style="color:var(--warning);font-size:.8rem">(${pendingCooks} pending)</span>` : ''}</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${totalOrders}</div><div class="stat-lbl">Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalRevenue)}</div><div class="stat-lbl">Revenue</div></div></div></div></div></section>`;
             updateUI();
         }
 
-        /* ── ADMIN USERS ── */
         function pgAdminUsers(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Users (${DB.users.length})</h2></div>
-<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Orders</th></tr></thead><tbody>${DB.users.map(u => `<tr><td style="font-weight:600">${u.name}</td><td style="font-size:.85rem">${u.email}</td><td>${u.phone || '—'}</td><td><span class="badge ${u.role === 'admin' ? 'badge-pop' : u.role === 'cook' ? 'badge-new' : 'badge-veg'}">${u.role}</span></td><td>${DB.orders.filter(o => o.userId === u._id).length}</td></tr>`).join('')}</tbody></table></div></div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Users (${DB.users.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Orders</th></tr></thead><tbody>${DB.users.map(u => `<tr><td style="font-weight:600">${u.name}</td><td style="font-size:.85rem">${u.email}</td><td>${u.phone || '—'}</td><td><span class="badge ${u.role === 'admin' ? 'badge-pop' : u.role === 'cook' ? 'badge-new' : 'badge-veg'}">${u.role}</span></td><td>${DB.orders.filter(o => o.userId === u._id).length}</td></tr>`).join('')}</tbody></table></div></div></section>`; updateUI()
         }
 
-        /* ── ADMIN COOKS ── */
         function pgAdminCooks(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `
-  <section class="page-sec"><div class="container">
-    <div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div>
-    <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-      ${DB.cooks.map(c => {
-                const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0;
-                return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '—'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '—'}</td><td>${c.totalOrders}</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>`;
-            }).join('')}
-    </tbody></table></div>
-  </div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>${DB.cooks.map(c => { const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0; return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '—'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '—'}</td><td>${c.totalOrders}</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>` }).join('')}</tbody></table></div></div></section>`;
             updateUI();
             $$('.appr-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'approved'; toast(`${c.name} approved`); pgAdminCooks(a) } }));
             $$('.rej-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'rejected'; toast(`${c.name} deactivated`); pgAdminCooks(a) } }));
         }
 
-        /* ── ADMIN ORDERS ── */
         function pgAdminOrders(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
             const sorted = [...DB.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">All Orders (${sorted.length})</h2></div>
-<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${sorted.map(o => { const u = DB.users.find(x => x._id === o.userId); const ck = DB.cooks.find(x => x._id === o.cookId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || '—'}</td><td>${ck?.name || '—'}</td><td style="font-size:.82rem">${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div></div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">All Orders (${sorted.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${sorted.map(o => { const u = DB.users.find(x => x._id === o.userId); const ck = DB.cooks.find(x => x._id === o.cookId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || '—'}</td><td>${ck?.name || '—'}</td><td style="font-size:.82rem">${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div></div></section>`; updateUI()
         }
 
-        /* ── ADMIN CATEGORIES ── */
         function pgAdminCats(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px"><div><div class="sec-label">Admin</div><h2 class="sec-title">Categories</h2></div><button class="btn btn-p btn-sm" id="addCatBtn"><i class="fas fa-plus"></i> Add</button></div>
-<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Meals</th><th>Action</th></tr></thead><tbody>${DB.categories.map(c => `<tr><td style="font-weight:600">${c.name}</td><td>${DB.menuItems.filter(m => m.category === c._id).length}</td><td><button class="btn btn-d btn-sm del-cat" data-cid="${c._id}"><i class="fas fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px"><div><div class="sec-label">Admin</div><h2 class="sec-title">Categories</h2></div><button class="btn btn-p btn-sm" id="addCatBtn"><i class="fas fa-plus"></i> Add</button></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Meals</th><th>Action</th></tr></thead><tbody>${DB.categories.map(c => `<tr><td style="font-weight:600">${c.name}</td><td>${DB.menuItems.filter(m => m.category === c._id).length}</td><td><button class="btn btn-d btn-sm del-cat" data-cid="${c._id}"><i class="fas fa-trash"></i></button></td></tr>`).join('')}</tbody></table></div></div></section>`;
             updateUI();
             $('#addCatBtn', a)?.addEventListener('click', () => { openModal('Add Category', `<div class="fg"><label class="fl">Category Name</label><input class="fi" id="catName" required/></div>`, `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="saveCat">Add</button>`); $('#saveCat').addEventListener('click', () => { const n = $('#catName').value.trim(); if (!n) { toast('Enter name', 'error'); return } DB.categories.push({ _id: 'c' + Date.now(), name: n }); closeModal(); toast('Category added'); pgAdminCats(a) }) });
             $$('.del-cat', a).forEach(b => b.addEventListener('click', () => { DB.categories = DB.categories.filter(c => c._id !== b.dataset.cid); toast('Category deleted'); pgAdminCats(a) }));
         }
 
-        /* ── ADMIN COMPLAINTS ── */
         function pgAdminComplaints(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Complaints (${DB.complaints.length})</h2></div>
- ${DB.complaints.length ? `<div style="display:flex;flex-direction:column;gap:14px">${DB.complaints.map(cp => { const u = DB.users.find(x => x._id === cp.userId); return `<div class="card" style="padding:18px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div><div style="font-weight:700">${cp.subject}</div><div style="font-size:.8rem;color:var(--muted)">${u?.name || 'User'} | ${new Date(cp.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}${cp.orderId ? ' | Order #' + cp.orderId.slice(-6).toUpperCase() : ''}${cp.subscriptionId ? ' | Sub #' + cp.subscriptionId.slice(-6).toUpperCase() : ''}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge-st ${stMap[cp.status]?.c || ''}">${stMap[cp.status]?.l || cp.status}</span>${cp.status === 'open' ? `<button class="btn btn-s btn-sm resolve-cp2" data-cpid="${cp._id}">Resolve</button>` : ''}</div></div><p style="font-size:.88rem;color:var(--fg-light)">${cp.message}</p></div>` }).join('')}</div>` : '<div class="empty-state"><i class="fas fa-check-circle"></i><h3>No complaints</h3></div>'}
-</div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Complaints (${DB.complaints.length})</h2></div>${DB.complaints.length ? `<div style="display:flex;flex-direction:column;gap:14px">${DB.complaints.map(cp => { const u = DB.users.find(x => x._id === cp.userId); return `<div class="card" style="padding:18px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div><div style="font-weight:700">${cp.subject}</div><div style="font-size:.8rem;color:var(--muted)">${u?.name || 'User'} | ${new Date(cp.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}${cp.orderId ? ' | Order #' + cp.orderId.slice(-6).toUpperCase() : ''}${cp.subscriptionId ? ' | Sub #' + cp.subscriptionId.slice(-6).toUpperCase() : ''}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge-st ${stMap[cp.status]?.c || ''}">${stMap[cp.status]?.l || cp.status}</span>${cp.status === 'open' ? `<button class="btn btn-s btn-sm resolve-cp2" data-cpid="${cp._id}">Resolve</button>` : ''}</div></div><p style="font-size:.88rem;color:var(--fg-light)">${cp.message}</p></div>` }).join('')}</div>` : '<div class="empty-state"><i class="fas fa-check-circle"></i><h3>No complaints</h3></div>'}</div></section>`;
             updateUI();
             $$('.resolve-cp2', a).forEach(b => b.addEventListener('click', () => { const cp = DB.complaints.find(x => x._id === b.dataset.cpid); if (cp) { cp.status = 'resolved'; toast('Resolved'); pgAdminComplaints(a) } }));
         }
 
-        /* ── 404 ── */
         function pgNotFound(a) { a.innerHTML = `<section class="not-found"><h1>404</h1><h2>Page Not Found</h2><p>The page you are looking for doesn't exist.</p><a class="btn btn-p" data-nv="home"><i class="fas fa-home"></i> Go Home</a></section>`; updateUI() }
-        /* ============================================================
-           INIT
-           ============================================================ */
-                   window.addEventListener('hashchange', route);
+
+        window.addEventListener('hashchange', route);
         document.addEventListener('DOMContentLoaded', () => {
             const navEl = $('#navbar'), stBtn = $('#scrollTop'), mobTog = $('#mobTog'), mobMenu = $('#mobMenu'), cartBtn = $('#cartBtn');
             window.addEventListener('scroll', () => { navEl.classList.toggle('scrolled', window.scrollY > 50); stBtn.classList.toggle('vis', window.scrollY > 400) }, { passive: true });
@@ -5687,7 +3510,6 @@ style="background:#ef4444;color:white">
             cartBtn.addEventListener('click', () => nav('cart'));
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeMob(); closeModal() } });
 
-            // Demo logins
             $$('[data-demo]').forEach(b => b.addEventListener('click', () => {
                 const t = b.dataset.demo;
                 if (t === 'guest') { doLogout(); return }
@@ -5696,18 +3518,12 @@ style="background:#ef4444;color:white">
                 const routes = { user: 'dashboard', cook: 'cook-dashboard', admin: 'admin-dashboard' }; nav(routes[t]); toast(`Logged in as ${S.user.name} (${S.user.role})`);
             }));
 
-            // Footer links
             $$('[data-nv]', $('#footerEl')).forEach(el => { el.addEventListener('click', () => { nav(el.dataset.nv); }); });
 
             updateUI();
-
-            if (!window.location.hash) {
-                window.location.hash = '#home';
-            }
-
+            if (!window.location.hash) window.location.hash = '#home';
             loadDatabase();
         });
     </script>
 </body>
-
 </html>
