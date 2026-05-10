@@ -3073,10 +3073,25 @@ async function loadDatabase() {
         const stMap = { placed: { l: 'Placed', c: 'st-placed' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
 
         /* ── Router ── */
-       function nav(r, p = {}) {
+function nav(route, params = {}) {
 
-    window.location.hash =
-        '#' + r + (p.id ? '/' + p.id : '');
+    let url = '#' + route;
+
+    if (params.id) {
+
+        url += '/' + params.id;
+
+    }
+
+    if (window.location.hash === url) {
+
+        route();
+
+        return;
+
+    }
+
+    window.location.hash = url;
 
 }
 
@@ -5639,7 +5654,7 @@ style="background:#ef4444;color:white">
 
         /* ── 404 ── */
         function pgNotFound(a) { a.innerHTML = `<section class="not-found"><h1>404</h1><h2>Page Not Found</h2><p>The page you are looking for doesn't exist.</p><a class="btn btn-p" data-nv="home"><i class="fas fa-home"></i> Go Home</a></section>`; updateUI() }
-
+        window.addEventListener('hashchange', route);
         /* ============================================================
            INIT
            ============================================================ */
