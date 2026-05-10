@@ -34,7 +34,7 @@ const cookUsers = await User.create([
   firstName:'Meera',
   lastName:'Sharma',
   email:'meera@homefeast.com',
-  password:hashedPassword,
+  password:'meera123',
   role:'cook',
   status:'Active'
 },
@@ -106,7 +106,7 @@ const cookUsers = await User.create([
   firstName:'Ritu',
   lastName:'Agarwal',
   email:'ritu@homefeast.com',
-  password:'ritu123',
+  password:'ritu1234',
   role:'cook',
   status:'Active'
 },
