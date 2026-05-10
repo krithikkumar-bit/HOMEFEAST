@@ -4457,7 +4457,7 @@ No reviews yet.
             if (!S.user || S.user.role !== 'user') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.userId === S.user._id); const mySubs = DB.subscriptions.filter(s => s.userId === S.user._id && s.status === 'active'); const totalSpent = myOrders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0) + mySubs.filter(s => s.status === 'active').reduce((s, sub) => s + sub.price, 0);
             a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2 class="sec-title">Welcome, ${S.user.name}</h2></div>
+<div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div>
 <div class="stats-grid">
 <div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div>
 <div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
@@ -4873,49 +4873,306 @@ ${S.cart.map(i => `
 
         /* ── COOK DASHBOARD ── */
         function pgCookDash(a) {
-            if (!S.user || S.user.role !== 'cook') { nav('login'); return }
-            if (S.user.status === 'pending') { a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-clock" style="color:var(--warning)"></i><h3>Registration Pending</h3><p>Your cook registration is under admin review. You'll be notified once approved.</p></div></div></section>`; updateUI(); return }
-            if (S.user.status === 'rejected') { a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-circle-xmark" style="color:var(--danger)"></i><h3>Registration Rejected</h3><p>Your cook registration was not approved. Please contact support for more details.</p></div></div></section>`; updateUI(); return }
-            const myItems = DB.menuItems.filter(m => m.cookId === S.user._id);
-            const myOrders = DB.orders.filter(o => o.cookId === S.user._id);
-            const mySubs = DB.subscriptions.filter(s => s.cookId === S.user._id && s.status === 'active');
-            const myRevs = DB.reviews.filter(r => r.cookId === S.user._id);
-            const earnings = myOrders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.subtotal, 0) + mySubs.reduce((s, sub) => s + sub.price, 0);
-            const pendingOrders = myOrders.filter(o => o.status === 'placed' || o.status === 'confirmed');
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="margin-bottom:24px"><div class="sec-label">Cook Dashboard</div><h2 class="sec-title">Welcome, ${S.user.name}</h2></div>
-<div class="stats-grid">
-<div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${myItems.length}</div><div class="stat-lbl">Menu Items</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-clock"></i></div><div><div class="stat-val">${pendingOrders.length}</div><div class="stat-lbl">Pending Orders</div></div></div>
-<div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(earnings)}</div><div class="stat-lbl">Total Earnings</div></div></div>
-</div>
- ${pendingOrders.length ? `<div class="co-card" style="margin-bottom:24px"><h3><i class="fas fa-bell" style="color:var(--warning)"></i> Pending Orders</h3>${pendingOrders.map(o => `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:600;font-size:.9rem">Order #${o._id.slice(-6).toUpperCase()}</div><div style="font-size:.8rem;color:var(--muted)">${o.items.map(i => i.name).join(', ')} — ${fp(o.total)}</div></div><div style="display:flex;gap:8px"><button class="btn btn-s btn-sm accept-ord" data-oid="${o._id}"><i class="fas fa-check"></i> Accept</button><button class="btn btn-d btn-sm reject-ord" data-oid="${o._id}"><i class="fas fa-xmark"></i> Reject</button></div></div>`).join('')}</div>` : ''}
-<div class="tabs" id="ckDashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="activeSubs">Active Subs (${mySubs.length})</button><button class="tab" data-tab="revs">Reviews (${myRevs.length})</button></div>
-<div id="tab-recent"><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 8).map(o => `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No orders yet</td></tr>'}</tbody></table></div></div>
-<div id="tab-activeSubs" style="display:none"><div class="tbl-wrap"><table><thead><tr><th>User</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th></tr></thead><tbody>${mySubs.map(s => { const u = DB.users.find(x => x._id === s.userId); return `<tr><td style="font-weight:600">${u?.name || 'User'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="color:var(--accent);font-weight:700">${fp(s.price)}</td><td>${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td></tr>` }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">No active subscriptions</td></tr>'}</tbody></table></div></div>
-<div id="tab-revs" style="display:none">${myRevs.length ? myRevs.map(r => { const u = DB.users.find(x => x._id === r.userId); return `<div class="rev-card"><div class="rev-head"><div class="rev-av">${ini(u?.name)}</div><div><div class="rev-nm">${u?.name || 'User'}</div><div class="rev-dt">${new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div></div><div class="rev-stars" style="margin-left:auto">${'<i class="fas fa-star"></i>'.repeat(r.rating)}${'<i class="far fa-star"></i>'.repeat(5 - r.rating)}</div></div><p class="rev-tx">${r.comment}</p></div>` }).join('') : '<p style="color:var(--muted);text-align:center;padding:30px">No reviews yet</p>'}</div>
-</div></section>`;
-            updateUI();
-            $$('[data-tab]', a).forEach(t => t.addEventListener('click', () => { $$('.tab', a).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', a).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, a).style.display = '' }));
-            $$('.accept-ord', a).forEach(b => b.addEventListener('click', () => { const o = DB.orders.find(x => x._id === b.dataset.oid); if (o) { o.status = 'confirmed'; o.updatedAt = new Date().toISOString(); toast('Order accepted'); pgCookDash(a) } }));
-            $$('.reject-ord', a).forEach(b => b.addEventListener('click', () => { const o = DB.orders.find(x => x._id === b.dataset.oid); if (o) { o.status = 'cancelled'; o.updatedAt = new Date().toISOString(); toast('Order rejected'); pgCookDash(a) } }));
-        }
 
-        /* ── COOK MENU ── */
-        function pgCookMenu(a) {
-            if (!S.user || S.user.role !== 'cook') { nav('login'); return }
-            const items = DB.menuItems.filter(m => m.cookId === S.user._id);
-            a.innerHTML = `<section class="page-sec"><div class="container">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px"><div><div class="sec-label">My Menu</div><h2 class="sec-title">${items.length} Items</h2></div><button class="btn btn-p btn-sm" id="addMealBtn"><i class="fas fa-plus"></i> Add Item</button></div>
- ${items.length ? `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.map(m => `<div class="card" style="padding:16px"><div style="height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px"><img src="${m.img}" alt="${m.name}" style="width:100%;height:100%;object-fit:cover"/></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="badge ${m.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span><span style="font-weight:700;color:var(--accent)">${fp(m.price)}</span></div><h4 style="font-weight:700;font-size:.95rem;margin-bottom:4px">${m.name}</h4><p style="font-size:.8rem;color:var(--muted);margin-bottom:12px">${tr(m.desc, 50)}</p><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:.8rem;color:${m.avail ? 'var(--success)' : 'var(--danger)'}"><i class="fas fa-circle" style="font-size:.5rem;vertical-align:middle"></i> ${m.avail ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:6px"><button class="btn btn-o btn-sm toggle-avail" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-${m.avail ? 'eye-slash' : 'eye'}"></i></button><button class="btn btn-o btn-sm edit-meal" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-pen"></i></button><button class="btn btn-d btn-sm del-meal" data-mid="${m._id}" style="padding:6px 10px"><i class="fas fa-trash"></i></button></div></div></div>`).join('')}</div>` : '<div class="empty-state"><i class="fas fa-utensils"></i><h3>No menu items yet</h3><p>Add your first dish to start receiving orders.</p></div>'}
-</div></section>`;
-            updateUI();
-            $('#addMealBtn', a)?.addEventListener('click', () => showMealModal(null, () => pgCookMenu(a)));
-            $$('.edit-meal', a).forEach(b => b.addEventListener('click', () => { const m = DB.menuItems.find(x => x._id === b.dataset.mid); if (m) showMealModal(m, () => pgCookMenu(a)) }));
-            $$('.del-meal', a).forEach(b => b.addEventListener('click', () => { const idx = DB.menuItems.findIndex(x => x._id === b.dataset.mid); if (idx > -1) { DB.menuItems.splice(idx, 1); toast('Item deleted'); pgCookMenu(a) } }));
-            $$('.toggle-avail', a).forEach(b => b.addEventListener('click', () => { const m = DB.menuItems.find(x => x._id === b.dataset.mid); if (m) { m.avail = !m.avail; toast(m.avail ? 'Marked available' : 'Marked unavailable'); pgCookMenu(a) } }));
-        }
+    if (!S.user || S.user.role !== 'cook') {
+        nav('login');
+        return;
+    }
+
+    if (S.user.status === 'pending') {
+
+        a.innerHTML = `
+<section class="page-sec">
+<div class="container">
+<div class="empty-state">
+<i class="fas fa-clock" style="color:var(--warning)"></i>
+<h3>Registration Pending</h3>
+<p>Your cook registration is under admin review.</p>
+</div>
+</div>
+</section>
+`;
+
+        updateUI();
+        return;
+    }
+
+    if (S.user.status === 'rejected') {
+
+        a.innerHTML = `
+<section class="page-sec">
+<div class="container">
+<div class="empty-state">
+<i class="fas fa-circle-xmark" style="color:var(--danger)"></i>
+<h3>Registration Rejected</h3>
+<p>Your cook registration was rejected.</p>
+</div>
+</div>
+</section>
+`;
+
+        updateUI();
+        return;
+    }
+
+    /* ===================================
+       FIND CURRENT COOK
+    =================================== */
+
+    const cookData = DB.cooks.find(
+        c =>
+            c.user === S.user._id ||
+            c.userId === S.user._id ||
+            c.email === S.user.email
+    );
+
+    if (!cookData) {
+
+        a.innerHTML = `
+<section class="page-sec">
+<div class="container">
+<div class="empty-state">
+<i class="fas fa-user-slash"></i>
+<h3>Cook Profile Not Found</h3>
+</div>
+</div>
+</section>
+`;
+
+        return;
+    }
+
+    /* ===================================
+       FILTER ONLY THIS COOK DATA
+    =================================== */
+
+    const myItems = DB.menuItems.filter(
+        m =>
+            m.cookId === cookData._id ||
+            m.cook === cookData._id
+    );
+
+    const myOrders = DB.orders.filter(
+        o =>
+            o.cookId === cookData._id ||
+            o.cook === cookData._id
+    );
+
+    const mySubs = DB.subscriptions.filter(
+        s =>
+            (s.cookId === cookData._id ||
+             s.cook === cookData._id)
+            &&
+            s.status === 'active'
+    );
+
+    const myRevs = DB.reviews.filter(
+        r =>
+            r.cookId === cookData._id ||
+            r.cook === cookData._id
+    );
+
+    const earnings =
+        myOrders
+            .filter(o => o.status === 'delivered')
+            .reduce((s, o) => s + (o.total || 0), 0)
+
+        +
+
+        mySubs.reduce((s, sub) => s + (sub.price || 0), 0);
+
+    const pendingOrders = myOrders.filter(
+        o =>
+            o.status === 'placed' ||
+            o.status === 'confirmed'
+    );
+
+    /* ===================================
+       HTML
+    =================================== */
+
+    a.innerHTML = `
+
+<section class="page-sec">
+
+<div class="container">
+
+<div style="margin-bottom:24px">
+
+<div class="sec-label">
+Cook Dashboard
+</div>
+
+<h2 class="sec-title">
+Welcome, ${cookData.name}
+</h2>
+
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+<div class="stat-icon"
+style="background:rgba(232,93,44,.1);color:var(--accent)">
+<i class="fas fa-utensils"></i>
+</div>
+
+<div>
+<div class="stat-val">
+${myItems.length}
+</div>
+
+<div class="stat-lbl">
+Menu Items
+</div>
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon"
+style="background:rgba(25,118,210,.1);color:var(--info)">
+<i class="fas fa-receipt"></i>
+</div>
+
+<div>
+<div class="stat-val">
+${myOrders.length}
+</div>
+
+<div class="stat-lbl">
+Total Orders
+</div>
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon"
+style="background:rgba(212,148,10,.1);color:var(--warning)">
+<i class="fas fa-clock"></i>
+</div>
+
+<div>
+<div class="stat-val">
+${pendingOrders.length}
+</div>
+
+<div class="stat-lbl">
+Pending Orders
+</div>
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-icon"
+style="background:rgba(45,143,78,.1);color:var(--success)">
+<i class="fas fa-wallet"></i>
+</div>
+
+<div>
+<div class="stat-val">
+${fp(earnings)}
+</div>
+
+<div class="stat-lbl">
+Total Earnings
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="tabs" id="ckDashTabs">
+
+<button class="tab active" data-tab="recent">
+Recent Orders
+</button>
+
+<button class="tab" data-tab="activeSubs">
+Active Subs (${mySubs.length})
+</button>
+
+<button class="tab" data-tab="revs">
+Reviews (${myRevs.length})
+</button>
+
+</div>
+
+<div id="tab-recent">
+
+<div class="tbl-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Items</th>
+<th>Total</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+${myOrders.length ?
+
+myOrders.slice(0,8).map(o => `
+
+<tr>
+
+<td style="font-weight:600">
+#${o._id.slice(-6).toUpperCase()}
+</td>
+
+<td>
+${o.items?.map(i => i.name).join(', ') || 'Items'}
+</td>
+
+<td style="font-weight:700;color:var(--accent)">
+${fp(o.total || 0)}
+</td>
+
+<td>
+${o.status}
+</td>
+
+<td>
+${new Date(o.createdAt).toLocaleDateString()}
+</td>
+
+</tr>
+
+`).join('')
+
+:
+
+`
+<tr>
+<td colspan="5"
+style="text-align:center;padding:30px;color:var(--muted)">
+No orders yet
+</td>
+</tr>
+`
+
+}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+`;
+
+    updateUI();
+}
 
         function showMealModal(meal, onSave) {
             const isEdit = !!meal;
