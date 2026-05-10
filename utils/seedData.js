@@ -13,6 +13,7 @@ const seed = async () => {
     await connectDB();
 
     console.log('  Clearing data...');
+    const hashedPassword = await bcrypt.hash('123456', 10);
 
     await Menu.deleteMany({});
     await Cook.deleteMany({});
@@ -26,8 +27,6 @@ const seed = async () => {
   role: 'admin',
   status: 'Active'
 });
-
-const hashedPassword = await bcrypt.hash('123456',10);
 
 const cookUsers = await User.create([
 
