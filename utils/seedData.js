@@ -3,6 +3,8 @@ require('dotenv').config({ path: './.env' });
 const mongoose = require('mongoose');
 const Cook = require('../models/Cook');
 const Menu = require('../models/Menu');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 const connectDB = require('../config/db');
 
 const seed = async () => {
@@ -11,45 +13,215 @@ const seed = async () => {
     await connectDB();
 
     console.log('  Clearing data...');
+    const hashedPassword = await bcrypt.hash('123456', 10);
 
     await Menu.deleteMany({});
     await Cook.deleteMany({});
+    await User.deleteMany({});
+
+    await User.create({
+  firstName: 'Admin',
+  lastName: 'HomeFeast',
+  email: 'admin@homefeast.com',
+  password: hashedPassword,
+  role: 'admin',
+  status: 'Active'
+});
+
+const hashedPassword = await bcrypt.hash('123456',10);
+
+const cookUsers = await User.create([
+
+{
+  firstName:'Meera',
+  lastName:'Sharma',
+  email:'meera@homefeast.com',
+  password:hashedPassword,
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Lakshmi',
+  lastName:'Iyer',
+  email:'lakshmi@homefeast.com',
+  password:'lakshmi123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Rashida',
+  lastName:'Begum',
+  email:'rashida@homefeast.com',
+  password:'rashida123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Shanti',
+  lastName:'Patel',
+  email:'shanti@homefeast.com',
+  password:'shanti123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Ananya',
+  lastName:'Das',
+  email:'ananya@homefeast.com',
+  password:'ananya123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Maria',
+  lastName:'DSouza',
+  email:'maria@homefeast.com',
+  password:'maria123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Suresh',
+  lastName:'Anna',
+  email:'suresh@homefeast.com',
+  password:'suresh123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Meghana',
+  lastName:'Iyer',
+  email:'meghana@homefeast.com',
+  password:'meghana123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Ritu',
+  lastName:'Agarwal',
+  email:'ritu@homefeast.com',
+  password:'ritu123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Kiran',
+  lastName:'Kumar',
+  email:'kiran@homefeast.com',
+  password:'kiran123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Pooja',
+  lastName:'Sharma',
+  email:'pooja@homefeast.com',
+  password:'pooja123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Nafees',
+  lastName:'Bhai',
+  email:'nafees@homefeast.com',
+  password:'nafees123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Geetha',
+  lastName:'Rao',
+  email:'geetha@homefeast.com',
+  password:'geetha123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Arjun',
+  lastName:'Chef',
+  email:'arjun@homefeast.com',
+  password:'arjun123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Sujatha',
+  lastName:'Khanna',
+  email:'sujatha@homefeast.com',
+  password:'sujatha123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Venkatesh',
+  lastName:'Rao',
+  email:'venkatesh@homefeast.com',
+  password:'venkatesh123',
+  role:'cook',
+  status:'Active'
+},
+
+{
+  firstName:'Amina',
+  lastName:'Pathan',
+  email:'amina@homefeast.com',
+  password:'amina123',
+  role:'cook',
+  status:'Active'
+}
+
+]);
 
     const cooks = await Cook.create([
 
-      { name:'Meera Sharma', tagline:'Authentic North Indian home cooking', cuisine:'North Indian', area:'Koramangala, HSR Layout', image:'https://www.shutterstock.com/image-photo/attractive-indian-asian-young-female-260nw-2452543125.jpg', avatar:'https://www.shutterstock.com/image-photo/attractive-indian-asian-young-female-260nw-2452543125.jpg', types:['Veg','Non-Veg'], experience:'6 years', deliveryTime:'11:30 AM - 1:00 PM / 7:00 PM - 8:30 PM', plans:{daily:180,weekly:1100,monthly:4000}, rating:4.8, reviewCount:124, verified:true, status:'approved', totalEarnings:86400 },
+      { user:cookUsers[0]._id,name:'Meera Sharma', tagline:'Authentic North Indian home cooking', cuisine:'North Indian', area:'Koramangala, HSR Layout', image:'https://www.shutterstock.com/image-photo/attractive-indian-asian-young-female-260nw-2452543125.jpg', avatar:'https://www.shutterstock.com/image-photo/attractive-indian-asian-young-female-260nw-2452543125.jpg', types:['Veg','Non-Veg'], experience:'6 years', deliveryTime:'11:30 AM - 1:00 PM / 7:00 PM - 8:30 PM', plans:{daily:180,weekly:1100,monthly:4000}, rating:4.8, reviewCount:124, verified:true, status:'approved', totalEarnings:86400 },
 
-      { name:'Lakshmi Iyer', tagline:'Traditional South Indian meals', cuisine:'South Indian', area:'JP Nagar, Jayanagar', image:'https://t3.ftcdn.net/jpg/04/97/22/82/360_F_497228249_JxEWAs13JA8kQNNobOx6JtYT23FrdvlE.jpg', avatar:'https://t3.ftcdn.net/jpg/04/97/22/82/360_F_497228249_JxEWAs13JA8kQNNobOx6JtYT23FrdvlE.jpg', types:['Veg'], experience:'8 years', deliveryTime:'12:00 PM - 1:30 PM / 7:30 PM - 9:00 PM', plans:{daily:150,weekly:900,monthly:3400}, rating:4.9, reviewCount:98, verified:true, status:'approved', totalEarnings:61200 },
+      { user:cookUsers[1]._id,name:'Lakshmi Iyer', tagline:'Traditional South Indian meals', cuisine:'South Indian', area:'JP Nagar, Jayanagar', image:'https://t3.ftcdn.net/jpg/04/97/22/82/360_F_497228249_JxEWAs13JA8kQNNobOx6JtYT23FrdvlE.jpg', avatar:'https://t3.ftcdn.net/jpg/04/97/22/82/360_F_497228249_JxEWAs13JA8kQNNobOx6JtYT23FrdvlE.jpg', types:['Veg'], experience:'8 years', deliveryTime:'12:00 PM - 1:30 PM / 7:30 PM - 9:00 PM', plans:{daily:150,weekly:900,monthly:3400}, rating:4.9, reviewCount:98, verified:true, status:'approved', totalEarnings:61200 },
 
-      { name:'Rashida Begum', tagline:'Mughlai delicacies made with love', cuisine:'Mughlai', area:'Indiranagar, Domlur', image:'https://thumbs.dreamstime.com/b/woman-cooking-kitchen-23391361.jpg', avatar:'https://thumbs.dreamstime.com/b/woman-cooking-kitchen-23391361.jpg', types:['Non-Veg'], experience:'5 years', deliveryTime:'12:30 PM - 2:00 PM / 7:30 PM - 9:00 PM', plans:{daily:220,weekly:1350,monthly:5000}, rating:4.7, reviewCount:76, verified:true, status:'approved', totalEarnings:52800 },
+      { user:cookUsers[2]._id,name:'Rashida Begum', tagline:'Mughlai delicacies made with love', cuisine:'Mughlai', area:'Indiranagar, Domlur', image:'https://thumbs.dreamstime.com/b/woman-cooking-kitchen-23391361.jpg', avatar:'https://thumbs.dreamstime.com/b/woman-cooking-kitchen-23391361.jpg', types:['Non-Veg'], experience:'5 years', deliveryTime:'12:30 PM - 2:00 PM / 7:30 PM - 9:00 PM', plans:{daily:220,weekly:1350,monthly:5000}, rating:4.7, reviewCount:76, verified:true, status:'approved', totalEarnings:52800 },
 
-      { name:'Shanti Patel', tagline:'Pure Gujarati thali experience', cuisine:'Gujarati', area:'Whitefield, ITPL', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcziK3Dvq-vYRJnyjlMc6KsasPjZ6RSJqwzw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcziK3Dvq-vYRJnyjlMc6KsasPjZ6RSJqwzw&s', types:['Veg'], experience:'4 years', deliveryTime:'11:00 AM - 12:30 PM', plans:{daily:160,weekly:950,monthly:3600}, rating:4.6, reviewCount:63, verified:true, status:'approved', totalEarnings:36000 },
+      { user:cookUsers[3]._id,name:'Shanti Patel', tagline:'Pure Gujarati thali experience', cuisine:'Gujarati', area:'Whitefield, ITPL', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcziK3Dvq-vYRJnyjlMc6KsasPjZ6RSJqwzw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcziK3Dvq-vYRJnyjlMc6KsasPjZ6RSJqwzw&s', types:['Veg'], experience:'4 years', deliveryTime:'11:00 AM - 12:30 PM', plans:{daily:160,weekly:950,monthly:3600}, rating:4.6, reviewCount:63, verified:true, status:'approved', totalEarnings:36000 },
 
-      { name:'Ananya Das', tagline:'Homely Bengali meals', cuisine:'Bengali', area:'Marathahalli, Sarjapur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs2AMda-SpfceXQqQuNHD-BpkBOD7z1wWg_A&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs2AMda-SpfceXQqQuNHD-BpkBOD7z1wWg_A&s', types:['Veg','Non-Veg'], experience:'5 years', deliveryTime:'12:30 PM - 2:00 PM / 7:30 PM - 9:00 PM', plans:{daily:190,weekly:1150,monthly:4200}, rating:4.7, reviewCount:87, verified:true, status:'approved', totalEarnings:50400 },
+      { user:cookUsers[4]._id,name:'Ananya Das', tagline:'Homely Bengali meals', cuisine:'Bengali', area:'Marathahalli, Sarjapur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs2AMda-SpfceXQqQuNHD-BpkBOD7z1wWg_A&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs2AMda-SpfceXQqQuNHD-BpkBOD7z1wWg_A&s', types:['Veg','Non-Veg'], experience:'5 years', deliveryTime:'12:30 PM - 2:00 PM / 7:30 PM - 9:00 PM', plans:{daily:190,weekly:1150,monthly:4200}, rating:4.7, reviewCount:87, verified:true, status:'approved', totalEarnings:50400 },
 
-      { name:"Maria D'Souza", tagline:'Anglo-Indian comfort food', cuisine:'Anglo-Indian', area:'MG Road, Brigade Road', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ87Livx4JN4tVHZkfZxgZNlgDM6LnXqr2aIQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ87Livx4JN4tVHZkfZxgZNlgDM6LnXqr2aIQ&s', types:['Veg','Non-Veg'], experience:'3 years', deliveryTime:'12:00 PM - 1:30 PM / 7:00 PM - 8:30 PM', plans:{daily:200,weekly:1200,monthly:4500}, rating:4.5, reviewCount:41, verified:false, status:'pending', totalEarnings:0 },
+      { user:cookUsers[5]._id,name:"Maria D'Souza", tagline:'Anglo-Indian comfort food', cuisine:'Anglo-Indian', area:'MG Road, Brigade Road', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ87Livx4JN4tVHZkfZxgZNlgDM6LnXqr2aIQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ87Livx4JN4tVHZkfZxgZNlgDM6LnXqr2aIQ&s', types:['Veg','Non-Veg'], experience:'3 years', deliveryTime:'12:00 PM - 1:30 PM / 7:00 PM - 8:30 PM', plans:{daily:200,weekly:1200,monthly:4500}, rating:4.5, reviewCount:41, verified:true, status:'pending', totalEarnings:0 },
 
-      { name:'Suresh Anna', tagline:'Authentic Karnataka Meals', cuisine:'South Indian', area:'BTM Layout', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7VV73TiDNyspOKJbh5OW1u0ydosqD1bVOxQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7VV73TiDNyspOKJbh5OW1u0ydosqD1bVOxQ&s', types:['Veg'], experience:'10 years', deliveryTime:'20 mins', plans:{daily:140,weekly:850,monthly:3200}, rating:4.8, reviewCount:110, verified:true, status:'approved', totalEarnings:72000 },
+      { user:cookUsers[6]._id,name:'Suresh Anna', tagline:'Authentic Karnataka Meals', cuisine:'South Indian', area:'BTM Layout', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7VV73TiDNyspOKJbh5OW1u0ydosqD1bVOxQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7VV73TiDNyspOKJbh5OW1u0ydosqD1bVOxQ&s', types:['Veg'], experience:'10 years', deliveryTime:'20 mins', plans:{daily:140,weekly:850,monthly:3200}, rating:4.8, reviewCount:110, verified:true, status:'approved', totalEarnings:72000 },
 
-      { name:'meghana iyer', tagline:'Special Hyderabadi Dum Biryani', cuisine:'Hyderabadi', area:'Electronic City', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwuW7IMI-d3YmAhiguPqG_VoYFA4FjTMQClg&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwuW7IMI-d3YmAhiguPqG_VoYFA4FjTMQClg&s', types:['Non-Veg'], experience:'9 years', deliveryTime:'35 mins', plans:{daily:250,weekly:1450,monthly:5400}, rating:4.9, reviewCount:132, verified:true, status:'approved', totalEarnings:95000 },
+      { user:cookUsers[7]._id,name:'meghana iyer', tagline:'Special Hyderabadi Dum Biryani', cuisine:'Hyderabadi', area:'Electronic City', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwuW7IMI-d3YmAhiguPqG_VoYFA4FjTMQClg&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwuW7IMI-d3YmAhiguPqG_VoYFA4FjTMQClg&s', types:['Non-Veg'], experience:'9 years', deliveryTime:'35 mins', plans:{daily:250,weekly:1450,monthly:5400}, rating:4.9, reviewCount:132, verified:true, status:'approved', totalEarnings:95000 },
 
-      { name:'Ritu Agarwal', tagline:'Pure Rajasthani Homemade Food', cuisine:'Rajasthani', area:'HSR Layout', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFRbUt7tqRqJwKd5TgE6smT79liBursSY_Aw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFRbUt7tqRqJwKd5TgE6smT79liBursSY_Aw&s', types:['Veg'], experience:'7 years', deliveryTime:'30 mins', plans:{daily:170,weekly:1000,monthly:3900}, rating:4.6, reviewCount:64, verified:true, status:'approved', totalEarnings:46000 },
+      { user:cookUsers[8]._id,name:'Ritu Agarwal', tagline:'Pure Rajasthani Homemade Food', cuisine:'Rajasthani', area:'HSR Layout', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFRbUt7tqRqJwKd5TgE6smT79liBursSY_Aw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFRbUt7tqRqJwKd5TgE6smT79liBursSY_Aw&s', types:['Veg'], experience:'7 years', deliveryTime:'30 mins', plans:{daily:170,weekly:1000,monthly:3900}, rating:4.6, reviewCount:64, verified:true, status:'approved', totalEarnings:46000 },
 
-      { name:'Kiran Kumar', tagline:'Spicy Andhra Meals', cuisine:'Andhra', area:'Yelahanka', image:'https://www.shutterstock.com/image-photo/imagine-candid-indian-guy-cooking-260nw-2536946505.jpg', avatar:'https://www.shutterstock.com/image-photo/imagine-candid-indian-guy-cooking-260nw-2536946505.jpg', types:['Veg','Non-Veg'], experience:'8 years', deliveryTime:'28 mins', plans:{daily:190,weekly:1120,monthly:4300}, rating:4.7, reviewCount:82, verified:true, status:'approved', totalEarnings:61000 },
+      { user:cookUsers[9]._id,name:'Kiran Kumar', tagline:'Spicy Andhra Meals', cuisine:'Andhra', area:'Yelahanka', image:'https://www.shutterstock.com/image-photo/imagine-candid-indian-guy-cooking-260nw-2536946505.jpg', avatar:'https://www.shutterstock.com/image-photo/imagine-candid-indian-guy-cooking-260nw-2536946505.jpg', types:['Veg','Non-Veg'], experience:'8 years', deliveryTime:'28 mins', plans:{daily:190,weekly:1120,monthly:4300}, rating:4.7, reviewCount:82, verified:true, status:'approved', totalEarnings:61000 },
 
-      { name:'Pooja ', tagline:'Healthy  Homemade Food', cuisine:'Jain Food', area:'Banashankari', image:'https://static.vecteezy.com/system/resources/thumbnails/071/890/142/small/a-woman-is-cooking-in-the-kitchen-with-a-pot-on-the-stove-photo.jpg', avatar:'https://static.vecteezy.com/system/resources/thumbnails/071/890/142/small/a-woman-is-cooking-in-the-kitchen-with-a-pot-on-the-stove-photo.jpg', types:['Veg'], experience:'6 years', deliveryTime:'22 mins', plans:{daily:150,weekly:880,monthly:3300}, rating:4.5, reviewCount:58, verified:true, status:'approved', totalEarnings:41000 },
+      { user:cookUsers[10]._id,name:'Pooja ', tagline:'Healthy  Homemade Food', cuisine:'Jain Food', area:'Banashankari', image:'https://static.vecteezy.com/system/resources/thumbnails/071/890/142/small/a-woman-is-cooking-in-the-kitchen-with-a-pot-on-the-stove-photo.jpg', avatar:'https://static.vecteezy.com/system/resources/thumbnails/071/890/142/small/a-woman-is-cooking-in-the-kitchen-with-a-pot-on-the-stove-photo.jpg', types:['Veg'], experience:'6 years', deliveryTime:'22 mins', plans:{daily:150,weekly:880,monthly:3300}, rating:4.5, reviewCount:58, verified:true, status:'approved', totalEarnings:41000 },
 
-      { name:'Nafees Bhai', tagline:'Bangalore Famous Biryani', cuisine:'Biryani', area:'Domlur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTza-wkWbMtXT5xp2wJoUw5WE5hQUWORO9vOw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTza-wkWbMtXT5xp2wJoUw5WE5hQUWORO9vOw&s', types:['Non-Veg'], experience:'12 years', deliveryTime:'40 mins', plans:{daily:260,weekly:1600,monthly:5900}, rating:4.9, reviewCount:160, verified:true, status:'approved', totalEarnings:120000 },
+      { user:cookUsers[11]._id,name:'Nafees Bhai', tagline:'Bangalore Famous Biryani', cuisine:'Biryani', area:'Domlur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTza-wkWbMtXT5xp2wJoUw5WE5hQUWORO9vOw&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTza-wkWbMtXT5xp2wJoUw5WE5hQUWORO9vOw&s', types:['Non-Veg'], experience:'12 years', deliveryTime:'40 mins', plans:{daily:260,weekly:1600,monthly:5900}, rating:4.9, reviewCount:160, verified:true, status:'approved', totalEarnings:120000 },
 
-      { name:'Geetha Rao', tagline:'Traditional Karnataka Meals', cuisine:'Karnataka Meals', area:'Malleshwaram', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTov8nnnfCPZ7HA4z9SkRG6PjLju6FxNsaxmQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTov8nnnfCPZ7HA4z9SkRG6PjLju6FxNsaxmQ&s', types:['Veg'], experience:'11 years', deliveryTime:'25 mins', plans:{daily:180,weekly:1020,monthly:4000}, rating:4.8, reviewCount:102, verified:true, status:'approved', totalEarnings:83000 },
+      { user:cookUsers[12]._id,name:'Geetha Rao', tagline:'Traditional Karnataka Meals', cuisine:'Karnataka Meals', area:'Malleshwaram', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTov8nnnfCPZ7HA4z9SkRG6PjLju6FxNsaxmQ&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTov8nnnfCPZ7HA4z9SkRG6PjLju6FxNsaxmQ&s', types:['Veg'], experience:'11 years', deliveryTime:'25 mins', plans:{daily:180,weekly:1020,monthly:4000}, rating:4.8, reviewCount:102, verified:true, status:'approved', totalEarnings:83000 },
 
-      { name:'Arjun Chef', tagline:'Continental and Italian Dishes', cuisine:'Continental', area:'Bellandur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaFVRcogEQ7fre-aSfWnSLqkzwbv877FcA4A&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaFVRcogEQ7fre-aSfWnSLqkzwbv877FcA4A&s', types:['Veg','Non-Veg'], experience:'5 years', deliveryTime:'32 mins', plans:{daily:240,weekly:1450,monthly:5600}, rating:4.6, reviewCount:71, verified:true, status:'approved', totalEarnings:50000 },
+      { user:cookUsers[13]._id,name:'Arjun Chef', tagline:'Continental and Italian Dishes', cuisine:'Continental', area:'Bellandur', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaFVRcogEQ7fre-aSfWnSLqkzwbv877FcA4A&s', avatar:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaFVRcogEQ7fre-aSfWnSLqkzwbv877FcA4A&s', types:['Veg','Non-Veg'], experience:'5 years', deliveryTime:'32 mins', plans:{daily:240,weekly:1450,monthly:5600}, rating:4.6, reviewCount:71, verified:true, status:'approved', totalEarnings:50000 },
 
-      { name:'Sujatha Khanna', tagline:'Authentic Lucknowi Cuisine', cuisine:'Lucknowi', area:'Frazer Town', image:'https://media.istockphoto.com/id/1451694385/photo/woman-in-the-kitchen-stock-photo.jpg?s=612x612&w=0&k=20&c=HiAh3mSyUIf_JG3kpUhkbt8_YJHWDG82rJ2Rd564Muw=', avatar:'https://media.istockphoto.com/id/1451694385/photo/woman-in-the-kitchen-stock-photo.jpg?s=612x612&w=0&k=20&c=HiAh3mSyUIf_JG3kpUhkbt8_YJHWDG82rJ2Rd564Muw=', types:['Non-Veg'], experience:'9 years', deliveryTime:'30 mins', plans:{daily:230,weekly:1380,monthly:5200}, rating:4.8, reviewCount:118, verified:true, status:'approved', totalEarnings:91000 },
+      { user:cookUsers[14]._id,name:'Sujatha Khanna', tagline:'Authentic Lucknowi Cuisine', cuisine:'Lucknowi', area:'Frazer Town', image:'https://media.istockphoto.com/id/1451694385/photo/woman-in-the-kitchen-stock-photo.jpg?s=612x612&w=0&k=20&c=HiAh3mSyUIf_JG3kpUhkbt8_YJHWDG82rJ2Rd564Muw=', avatar:'https://media.istockphoto.com/id/1451694385/photo/woman-in-the-kitchen-stock-photo.jpg?s=612x612&w=0&k=20&c=HiAh3mSyUIf_JG3kpUhkbt8_YJHWDG82rJ2Rd564Muw=', types:['Non-Veg'], experience:'9 years', deliveryTime:'30 mins', plans:{daily:230,weekly:1380,monthly:5200}, rating:4.8, reviewCount:118, verified:true, status:'approved', totalEarnings:91000 },
 
-      { name:'Venkatesh Rao', tagline:'Healthy Veg Meals', cuisine:'Veg Meals', area:'Rajajinagar', image:'', avatar:'', types:['Veg'], experience:'7 years', deliveryTime:'20 mins', plans:{daily:145,weekly:860,monthly:3100}, rating:4.4, reviewCount:52, verified:true, status:'approved', totalEarnings:37000 },
+      { user:cookUsers[15]._id,name:'Venkatesh Rao', tagline:'Healthy Veg Meals', cuisine:'Veg Meals', area:'Rajajinagar', image:'', avatar:'', types:['Veg'], experience:'7 years', deliveryTime:'20 mins', plans:{daily:145,weekly:860,monthly:3100}, rating:4.4, reviewCount:52, verified:true, status:'approved', totalEarnings:37000 },
 
-      { name:'Amina Pathan', tagline:'Special Mughlai Dishes', cuisine:'Mughlai', area:'Shivajinagar', image:'https://media.gettyimages.com/id/2148138865/photo/senior-woman-cutting-fresh-vegetables-for-dinner-stock-photo.jpg?s=612x612&w=gi&k=20&c=1sE_fyG3MROyx1Nb9r4wlpX2WsDX7nfsKPu62ipxUgs=', avatar:'https://media.gettyimages.com/id/2148138865/photo/senior-woman-cutting-fresh-vegetables-for-dinner-stock-photo.jpg?s=612x612&w=gi&k=20&c=1sE_fyG3MROyx1Nb9r4wlpX2WsDX7nfsKPu62ipxUgs=', types:['Non-Veg'], experience:'8 years', deliveryTime:'34 mins', plans:{daily:210,weekly:1280,monthly:4700}, rating:4.7, reviewCount:89, verified:true, status:'approved', totalEarnings:64000 }
+      { user:cookUsers[16]._id,name:'Amina Pathan', tagline:'Special Mughlai Dishes', cuisine:'Mughlai', area:'Shivajinagar', image:'https://media.gettyimages.com/id/2148138865/photo/senior-woman-cutting-fresh-vegetables-for-dinner-stock-photo.jpg?s=612x612&w=gi&k=20&c=1sE_fyG3MROyx1Nb9r4wlpX2WsDX7nfsKPu62ipxUgs=', avatar:'https://media.gettyimages.com/id/2148138865/photo/senior-woman-cutting-fresh-vegetables-for-dinner-stock-photo.jpg?s=612x612&w=gi&k=20&c=1sE_fyG3MROyx1Nb9r4wlpX2WsDX7nfsKPu62ipxUgs=', types:['Non-Veg'], experience:'8 years', deliveryTime:'34 mins', plans:{daily:210,weekly:1280,monthly:4700}, rating:4.7, reviewCount:89, verified:true, status:'approved', totalEarnings:64000 }
 
     ]);
 
