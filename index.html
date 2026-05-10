@@ -3622,14 +3622,14 @@ try {
                     From <strong>${fp(minP)}</strong>/day
 
                 </div>
-<a 
-    href="#cook/${ck._id}"
+<button 
     class="cook-card-btn"
-    onclick="event.stopPropagation()">
+    type="button"
+    data-id="${ck._id}">
 
     View Menu
 
-</a>
+</button>
 
             </div>
 
@@ -3874,6 +3874,7 @@ try {
 
     a.innerHTML = `
 
+
 <section class="page-sec">
 
 <div class="container">
@@ -4046,6 +4047,23 @@ Try adjusting your filters to find more options.
 
 </section>
 `;
+$$('.cook-card-btn', a).forEach(btn => {
+
+    btn.addEventListener('click', function (e) {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        const cookId = this.dataset.id;
+
+        console.log('CLICKED COOK:', cookId);
+
+        window.location.hash = '#cook/' + cookId;
+
+    });
+
+});
 
     const applyFilters = () => {
 
