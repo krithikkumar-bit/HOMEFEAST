@@ -3654,51 +3654,407 @@ Try adjusting your filters to find more options.
 
         /* ── COOK PROFILE ── */
         function pgCookProfile(id, a) {
-            if (!id) { nav('browse'); return } const app = a || $('#app');
-            const ck = DB.cooks.find(c => c._id === id);
-            if (!ck) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-utensils"></i><h3>Cook not found</h3><a class="btn btn-p" data-nv="browse">Browse Cooks</a></div></div></div>`; updateUI(); return }
-            const items = DB.menuItems.filter(m => m.cookId === ck._id && m.avail);
-            const revs = DB.reviews.filter(r => r.cookId === ck._id);
-            const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : ck.rating;
-            const plans = { daily: ck.plans.filter(p => p.type === 'daily'), weekly: ck.plans.filter(p => p.type === 'weekly'), monthly: ck.plans.filter(p => p.type === 'monthly') };
 
-            app.innerHTML = `<section class="page-sec"><div class="container">
-<a class="btn btn-ghost" data-nv="browse" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Browse</a>
+    if (!id) {
+
+        nav('browse');
+
+        return;
+    }
+
+    const app = a || $('#app');
+
+    const ck = DB.cooks.find(c => c._id === id);
+
+    if (!ck) {
+
+        app.innerHTML = `
+        <div class="page-sec">
+            <div class="container">
+                <div class="empty-state">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Cook not found</h3>
+                    <a class="btn btn-p" data-nv="browse">
+                        Browse Cooks
+                    </a>
+                </div>
+            </div>
+        </div>
+        `;
+
+        updateUI();
+
+        return;
+    }
+
+    // FIXED MENU FILTER
+    const items = DB.menuItems.filter(
+        m =>
+            (m.cookId === ck._id || m.cook === ck._id) &&
+            (m.available === true || m.avail === true)
+    );
+
+    // FIXED REVIEWS
+    const revs = DB.reviews.filter(
+        r =>
+            r.cookId === ck._id ||
+            r.cook === ck._id
+    );
+
+    const avgR = revs.length
+        ? Math.round(
+            revs.reduce((s, r) => s + r.rating, 0) /
+            revs.length * 10
+        ) / 10
+        : (ck.rating || 4.5);
+
+    // FIXED PLANS
+    const plans = [];
+
+    if (ck.plans?.daily) {
+
+        plans.push({
+            type: 'daily',
+            meal: 'Standard',
+            price: ck.plans.daily
+        });
+
+    }
+
+    if (ck.plans?.weekly) {
+
+        plans.push({
+            type: 'weekly',
+            meal: 'Standard',
+            price: ck.plans.weekly
+        });
+
+    }
+
+    if (ck.plans?.monthly) {
+
+        plans.push({
+            type: 'monthly',
+            meal: 'Standard',
+            price: ck.plans.monthly
+        });
+
+    }
+
+    app.innerHTML = `
+
+<section class="page-sec">
+
+<div class="container">
+
+<a class="btn btn-ghost"
+   data-nv="browse"
+   style="margin-bottom:16px">
+
+<i class="fas fa-arrow-left"></i>
+
+Back to Browse
+
+</a>
+
 <div class="cp-header">
-<div style="position:relative"><div class="cp-cover"><img src="https://picsum.photos/seed/cover-${ck._id}/700/300.jpg" alt=""/></div><div class="cp-avatar"><img src="https://picsum.photos/seed/av-${ck._id}/200/200.jpg" alt=""/></div></div>
-<div class="cp-info">
-<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><h1 class="cp-name">${ck.name}</h1><span class="badge-st ${stMap[ck.status]?.c || ''}">${stMap[ck.status]?.l || ck.status}</span></div>
-<div class="cp-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR} (${revs.length} reviews)</span><span><i class="fas fa-utensils"></i> ${ck.totalOrders} orders</span><span><i class="fas fa-award"></i> ${ck.experience}</span></div>
-<div class="cp-bio">${ck.bio}</div>
-<div class="cp-details"><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:4px"></i>${ck.serviceArea.split(',').length} Areas</div><div class="cp-detail-lbl">${ck.serviceArea}</div></div><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-clock" style="color:var(--accent);margin-right:4px"></i>Delivery</div><div class="cp-detail-lbl">${ck.timings}</div></div><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-certificate" style="color:var(--accent);margin-right:4px"></i>FSSAI</div><div class="cp-detail-lbl">${ck.fssai}</div></div></div>
-</div></div>
 
-<h3 class="sec-title" style="font-size:1.4rem;margin-bottom:20px">Subscription Plans</h3>
- ${Object.entries(plans).map(([type, pls]) => pls.length ? `<h4 style="font-size:.95rem;font-weight:700;margin-bottom:12px;text-transform:capitalize">${type} Plans</h4><div style="display:grid;grid-template-columns:repeat(${type === 'daily' ? 2 : type === 'weekly' ? 2 : 3},1fr);gap:14px;margin-bottom:24px">${pls.map(p => { const dailyPrice = p.price / (type === 'daily' ? 1 : type === 'weekly' ? 7 : 30); const saveAmt = type === 'daily' ? 0 : Math.round((120 - dailyPrice) * 30); return `<div class="sub-plan ${type === 'monthly' && p.meal === 'both' ? 'pop' : ''}"><div class="sub-plan-name" style="text-transform:capitalize">${p.meal} ${type}</div><div class="sub-plan-meals">${type === 'daily' ? '1 meal' : type === 'weekly' ? '7 meals' : '30 meals'} ${p.meal === 'both' ? '(Lunch + Dinner)' : ''}</div><div class="sub-plan-price">${fp(p.price)}</div><div class="sub-plan-save">${saveAmt > 0 ? `Save ${fp(saveAmt)}/month vs daily` : 'Flexible, no commitment'}</div><ul class="sub-plan-feat"><li><i class="fas fa-check"></i> ${type === 'daily' ? 'Order any day' : 'Fixed schedule'}</li><li><i class="fas fa-check"></i> ${fp(dailyPrice)}/meal avg</li><li><i class="fas fa-check"></i> Pause anytime</li><li><i class="fas fa-check"></i> Free delivery</li></ul><button class="btn btn-p btn-sm btn-block sub-sub-btn" data-plan='${JSON.stringify({ ...p, cookId: ck._id, cookName: ck.name })}'>Subscribe Now</button></div>` }).join('')}</div>` : '').join('')}
+<div style="position:relative">
 
-<div class="tabs" id="cpTabs"><button class="tab active" data-tab="menu">Menu (${items.length})</button><button class="tab" data-tab="reviews">Reviews (${revs.length})</button></div>
-<div id="cpTabContent">
-<div id="tab-menu"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.length ? items.map(m => { const mi = { ...m, cookName: ck.name }; return mealCardHTML(mi) }).join('') : '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:30px">No menu items yet.</p>'}</div></div>
-<div id="tab-reviews" style="display:none">${revs.length ? revs.map(r => { const u = DB.users.find(x => x._id === r.userId) || DB.cooks.find(x => x._id === r.userId); return `<div class="rev-card"><div class="rev-head"><div class="rev-av">${ini(u?.name)}</div><div><div class="rev-nm">${u?.name || 'User'}</div><div class="rev-dt">${new Date(r.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}</div></div></div><div class="rev-stars">${'<i class="fas fa-star"></i>'.repeat(r.rating)}${'<i class="far fa-star"></i>'.repeat(5 - r.rating)}</div><p class="rev-tx">${r.comment}</p></div>` }).join('') : '<p style="color:var(--muted);text-align:center;padding:30px">No reviews yet.</p>'}</div>
+<div class="cp-cover">
+
+<img
+src="${ck.image || 'https://picsum.photos/700/300'}"
+alt=""
+/>
+
 </div>
-</div></section>`;
 
-            updateUI();
-            $$('[data-tab]', app).forEach(t => t.addEventListener('click', () => { $$('.tab', app).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', app).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, app).style.display = '' }));
-            $$('[data-add]', app).forEach(b => b.addEventListener('click', () => { const m = DB.menuItems.find(x => x._id === b.dataset.add); if (m) addCart({ ...m, cookName: ck.name }) }));
-            $$('.sub-sub-btn', app).forEach(b => b.addEventListener('click', () => {
-                if (!S.user) { nav('login'); toast('Please login to subscribe', 'error'); return }
-                if (S.user.role !== 'user') { toast('Only customers can subscribe', 'error'); return }
-                const p = JSON.parse(b.dataset.plan);
-                openModal('Confirm Subscription', `<p style="margin-bottom:12px">You are about to subscribe to:</p><div style="background:var(--bg-deep);padding:16px;border-radius:var(--radius-sm);margin-bottom:16px"><strong>${p.cookName}</strong><br><span style="text-transform:capitalize">${p.type} ${p.meal}</span><br><strong style="color:var(--accent);font-size:1.2rem">${fp(p.price)}</strong></div><div class="fg"><label class="fl">Delivery Address</label><textarea class="fi" id="subAddr" rows="2" placeholder="Enter your delivery address">${S.user.address ? S.user.address.line1 + ', ' + S.user.address.line2 : 'Flat/House no, Building, Area'}</textarea></div>`,
-                    `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="confirmSubBtn">Confirm Subscription</button>`);
-                $('#confirmSubBtn').addEventListener('click', () => {
-                    const addr = $('#subAddr').value.trim(); if (!addr) { toast('Please enter delivery address', 'error'); return }
-                    DB.subscriptions.push({ _id: 's' + Date.now(), userId: S.user._id, cookId: p.cookId, plan: p.type, meal: p.meal, price: p.price, status: 'active', startDate: new Date().toISOString().split('T')[0], endDate: p.type === 'daily' ? null : p.type === 'weekly' ? new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0] : new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0], nextDelivery: new Date(Date.now() + 86400000).toISOString().split('T')[0], address: addr });
-                    closeModal(); toast('Subscription created successfully!'); if (S.user.role === 'user') nav('subscriptions')
-                });
-            }));
-        }
+<div class="cp-avatar">
+
+<img
+src="${ck.avatar || ck.image || 'https://picsum.photos/200'}"
+alt=""
+/>
+
+</div>
+
+</div>
+
+<div class="cp-info">
+
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+
+<h1 class="cp-name">
+${ck.name}
+</h1>
+
+<span class="badge-st ${stMap[ck.status]?.c || ''}">
+
+${stMap[ck.status]?.l || ck.status}
+
+</span>
+
+</div>
+
+<div class="cp-meta">
+
+<span class="ra">
+<i class="fas fa-star"></i>
+${avgR} (${revs.length} reviews)
+</span>
+
+<span>
+<i class="fas fa-utensils"></i>
+${ck.totalOrders || 0} orders
+</span>
+
+<span>
+<i class="fas fa-award"></i>
+${ck.experience || '2 years'}
+</span>
+
+</div>
+
+<div class="cp-bio">
+
+${ck.tagline || 'Authentic homemade food'}
+
+</div>
+
+<div class="cp-details">
+
+<div class="cp-detail">
+
+<div class="cp-detail-val">
+
+<i class="fas fa-location-dot"
+style="color:var(--accent);margin-right:4px"></i>
+
+${ck.area || 'Bangalore'}
+
+</div>
+
+<div class="cp-detail-lbl">
+
+Service Area
+
+</div>
+
+</div>
+
+<div class="cp-detail">
+
+<div class="cp-detail-val">
+
+<i class="fas fa-clock"
+style="color:var(--accent);margin-right:4px"></i>
+
+Delivery
+
+</div>
+
+<div class="cp-detail-lbl">
+
+${ck.deliveryTime || '11 AM - 9 PM'}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<h3 class="sec-title"
+style="font-size:1.4rem;margin-bottom:20px">
+
+Subscription Plans
+
+</h3>
+
+<div style="
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+margin-bottom:24px
+">
+
+${plans.map(p => `
+
+<div class="sub-plan">
+
+<div class="sub-plan-name">
+
+${p.type.toUpperCase()} PLAN
+
+</div>
+
+<div class="sub-plan-price">
+
+${fp(p.price)}
+
+</div>
+
+<ul class="sub-plan-feat">
+
+<li>
+<i class="fas fa-check"></i>
+Fresh Homemade Food
+</li>
+
+<li>
+<i class="fas fa-check"></i>
+Free Delivery
+</li>
+
+<li>
+<i class="fas fa-check"></i>
+Healthy Meals
+</li>
+
+</ul>
+
+<button
+class="btn btn-p btn-sm btn-block">
+
+Subscribe Now
+
+</button>
+
+</div>
+
+`).join('')}
+
+</div>
+
+<div class="tabs" id="cpTabs">
+
+<button class="tab active"
+data-tab="menu">
+
+Menu (${items.length})
+
+</button>
+
+<button class="tab"
+data-tab="reviews">
+
+Reviews (${revs.length})
+
+</button>
+
+</div>
+
+<div id="cpTabContent">
+
+<div id="tab-menu">
+
+<div style="
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px
+">
+
+${items.length
+? items.map(m => {
+
+    const mi = {
+        ...m,
+        cookName: ck.name
+    };
+
+    return mealCardHTML(mi);
+
+}).join('')
+: `
+<p style="
+color:var(--muted);
+grid-column:1/-1;
+text-align:center;
+padding:30px
+">
+
+No menu items yet.
+
+</p>
+`
+}
+
+</div>
+
+</div>
+
+<div id="tab-reviews"
+style="display:none">
+
+${revs.length
+? revs.map(r => `
+
+<div class="rev-card">
+
+<div class="rev-stars">
+
+${'<i class="fas fa-star"></i>'.repeat(r.rating)}
+
+</div>
+
+<p class="rev-tx">
+
+${r.comment || 'Good food'}
+
+</p>
+
+</div>
+
+`).join('')
+: `
+<p style="
+color:var(--muted);
+text-align:center;
+padding:30px
+">
+
+No reviews yet.
+
+</p>
+`
+}
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+`;
+
+    updateUI();
+
+    $$('[data-tab]', app).forEach(t => {
+
+        t.addEventListener('click', () => {
+
+            $$('.tab', app).forEach(
+                x => x.classList.remove('active')
+            );
+
+            t.classList.add('active');
+
+            $$('.tabs~div>[id^="tab-"]', app)
+            .forEach(d => d.style.display = 'none');
+
+            $(`#tab-${t.dataset.tab}`, app)
+            .style.display = '';
+
+        });
+
+    });
+
+}
 
         /* ── HOW IT WORKS ── */
         function pgHow(a) { a.innerHTML = `<section class="page-sec"><div class="container"><div style="text-align:center;margin-bottom:48px"><div class="sec-label">How It Works</div><h2 class="sec-title">Getting Started is Easy</h2></div><div class="steps-grid" style="max-width:900px;margin:0 auto">${[['fa-magnifying-glass', 'Search', 'Browse verified home cooks by cuisine, location, and meal type.'], ['fa-book-open', 'Choose', 'View menus, read reviews, compare pricing and subscription plans.'], ['fa-repeat', 'Subscribe', 'Select daily, weekly, or monthly plans. Or order individual meals.'], ['fa-bell-concierge', 'Enjoy', 'Fresh homemade food delivered to your door every day, on time.'], ['fa-pause', 'Pause/Cancel', 'Need a break? Pause your subscription anytime. No hidden charges.'], ['fa-headset', 'Support', '24/7 support for any issues. We handle complaints and refunds.']].map(([ic, t, d], i) => `<div class="step-card reveal"><div class="step-num">${String(i + 1).padStart(2, '0')}</div><div class="step-ic"><i class="fas ${ic}"></i></div><h3 class="step-t">${t}</h3><p class="step-d">${d}</p></div>`).join('')}</div><div style="text-align:center;margin-top:48px"><a class="btn btn-p" data-nv="browse">Find Tiffin Now <i class="fas fa-arrow-right"></i></a></div></div></section>`; updateUI() }
