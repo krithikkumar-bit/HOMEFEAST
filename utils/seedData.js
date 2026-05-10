@@ -13,7 +13,6 @@ const seed = async () => {
     await connectDB();
 
     console.log('  Clearing data...');
-    const hashedPassword = await bcrypt.hash('123456', 10);
 
     await Menu.deleteMany({});
     await Cook.deleteMany({});
