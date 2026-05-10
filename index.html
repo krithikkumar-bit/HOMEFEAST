@@ -3229,36 +3229,77 @@ function route() {
 
         /* ── UI Updates ── */
         function updateUI() {
-            const r = S.user?.role || 'guest'; const auth = !!S.user;
-            const links = { home: 'Home', browse: 'Find Tiffin', how: 'How It Works', about: 'About' };
-            if (r === 'user') { links.dashboard = 'Dashboard'; links.subscriptions = 'Subscriptions'; links.orders = 'My Orders'; links.profile = 'Profile' }
-            if (r === 'cook') { links['cook-dashboard'] = 'Dashboard'; links['cook-menu'] = 'My Menu'; links['cook-orders'] = 'Orders'; links['cook-earnings'] = 'Earnings'; links['cook-settings'] = 'Settings' }
-            if (r === 'admin') { links['admin-dashboard'] = 'Dashboard'; links['admin-users'] = 'Users'; links['admin-cooks'] = 'Cooks'; links['admin-orders'] = 'Orders'; links['admin-categories'] = 'Categories'; links['admin-complaints'] = 'Complaints' }
-            const cur = getRoute().page;
-            $('#navLinks').innerHTML = Object.entries(links).map(([k, v]) => `<li><a data-nv="${k}" class="${cur === k ? 'active' : ''}">${v}</a></li>`).join('');
-            $('#mobMenu').innerHTML = Object.entries(links).map(([k, v]) => `<a data-nv="${k}">${v}</a>`).join('') + (auth ? '' : `<a data-nv="login">Login / Register</a>`);
-            if (auth) {
-                const fullName = `${S.user.firstName || ''} ${S.user.lastName || ''}`.trim();
-                const inits = ini(fullName || 'U');
-                $('#authArea').innerHTML = `
-  <div style="position:relative">
-    <button class="user-btn" id="uBtn">${inits}</button>
-    <div class="user-dd" id="uDD">
-      <a data-nv="${r === 'cook' ? 'cook-settings' : 'profile'}"><i class="fas fa-user"></i> My Profile</a>
-      ${r === 'user' ? `<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>` : ''}
-      <div class="dd-div"></div>
-      <button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button>
-    </div>
-  </div>`;
-                $('#uBtn')?.addEventListener('click', e => { e.stopPropagation(); $('#uDD').classList.toggle('open'); });
-                document.addEventListener('click', e => { if (!$('#authArea').contains(e.target)) { $('#uDD')?.classList.remove('open'); } });
-                $('#loBtn')?.addEventListener('click', () => { closeMob(); doLogout(); });
-            } else {
-                $('#authArea').innerHTML = `<button class="btn btn-p btn-sm" data-nv="login">Login</button>`;
-            }
-            const cb = $('#cartBadge'); const cc = cartCount(); cb.textContent = cc; cb.classList.toggle('vis', cc > 0);
-            $$('[data-nv]').forEach(el => { if (el.dataset.nvBound) return; el.dataset.nvBound = '1'; el.addEventListener('click', e => { e.preventDefault(); closeMob(); nav(el.dataset.nv) }) });
-        }
+
+    const navLinks = $('#navLinks');
+
+    /* =========================
+       USER NOT LOGGED IN
+    ========================= */
+
+    if (!S.user) {
+
+        navLinks.innerHTML = `
+            <a href="#home">Home</a>
+            <a href="#browse">Find Tiffin</a>
+            <a href="#how">How It Works</a>
+            <a href="#about">About</a>
+        `;
+
+        return;
+    }
+
+    /* =========================
+       COOK NAVBAR
+    ========================= */
+
+    if (S.user.role === 'cook') {
+
+        navLinks.innerHTML = `
+            <a href="#cook-dashboard">Dashboard</a>
+            <a href="#cook-menu">My Menu</a>
+            <a href="#cook-orders">Orders</a>
+            <a href="#cook-earnings">Earnings</a>
+            <a href="#cook-settings">Settings</a>
+        `;
+
+    }
+
+    /* =========================
+       ADMIN NAVBAR
+    ========================= */
+
+    else if (S.user.role === 'admin') {
+
+        navLinks.innerHTML = `
+            <a href="#admin-dashboard">Dashboard</a>
+            <a href="#admin-users">Users</a>
+            <a href="#admin-cooks">Cooks</a>
+            <a href="#admin-orders">Orders</a>
+            <a href="#admin-complaints">Complaints</a>
+        `;
+
+    }
+
+    /* =========================
+       NORMAL USER NAVBAR
+    ========================= */
+
+    else {
+
+        navLinks.innerHTML = `
+            <a href="#home">Home</a>
+            <a href="#browse">Find Tiffin</a>
+            <a href="#how">How It Works</a>
+            <a href="#about">About</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#subscriptions">Subscriptions</a>
+            <a href="#orders">My Orders</a>
+            <a href="#profile">Profile</a>
+        `;
+
+    }
+
+}
 
         function closeMob() { $('#mobTog').classList.remove('on'); $('#mobMenu').classList.remove('open'); document.body.style.overflow = '' }
 
