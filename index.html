@@ -3230,7 +3230,60 @@ async function loadDatabase() {
 }
 
         /* ── Meal card HTML ── */
-        function mealCardHTML(m) { const inC = S.cart.find(c => c.mid === m._id); return `<div class="card meal-card"><div class="mc-img"><img src="${m.img}" alt="${m.name}" loading="lazy"/><span class="mc-tag badge ${m.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span></div><div class="mc-body"><div class="mc-name">${m.name}</div><div class="mc-desc">${tr(m.desc)}</div><div class="mc-foot"><div class="mc-price">${fp(m.price)}</div><button class="mc-add ${inC ? 'added' : ''}" data-add="${m._id}"><i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i></button></div></div></div>` }
+        function mealCardHTML(m) {
+
+    const inC = S.cart.find(c => c.mid === m._id);
+
+    return `
+    
+    <div class="card meal-card">
+
+        <div class="mc-img">
+
+            <img 
+                src="${m.image}" 
+                alt="${m.name}" 
+                loading="lazy"
+                onerror="this.src='https://via.placeholder.com/400x250?text=Food+Image'"
+            />
+
+            <span class="mc-tag badge ${m.type === 'Veg' ? 'badge-veg' : 'badge-nv'}">
+                ${m.type}
+            </span>
+
+        </div>
+
+        <div class="mc-body">
+
+            <div class="mc-name">
+                ${m.name}
+            </div>
+
+            <div class="mc-desc">
+                Fresh homemade delicious food
+            </div>
+
+            <div class="mc-foot">
+
+                <div class="mc-price">
+                    ₹${m.price}
+                </div>
+
+                <button 
+                    class="mc-add ${inC ? 'added' : ''}" 
+                    data-add="${m._id}"
+                >
+                    <i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+    `;
+}
 
         /* ============================================================
            PAGE RENDERERS
