@@ -3145,10 +3145,14 @@ if (
     const app = $('#app');
 
     // SCROLL TOP
+    if (page !== 'cook') {
+
     window.scrollTo({
         top: 0,
-        behavior: 'instant'
+        behavior: 'smooth'
     });
+
+}
 
     updateUI();
 
