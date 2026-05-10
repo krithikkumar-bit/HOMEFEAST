@@ -3608,13 +3608,14 @@ if (
                     From <strong>${fp(minP)}</strong>/day
 
                 </div>
-<button 
+<a 
+    href="#cook/${ck._id}"
     class="cook-card-btn"
-    type="button">
+    onclick="event.stopPropagation()">
 
     View Menu
 
-</button>
+</a>
 
             </div>
 
@@ -4092,21 +4093,7 @@ Try adjusting your filters to find more options.
 
 /* VIEW MENU BUTTON */
 
-$$('.cook-card-btn', a).forEach(btn => {
 
-    btn.addEventListener('click', e => {
-
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        nav('cook', {
-            id: btn.closest('.cook-card').dataset.ck
-        });
-
-    });
-
-});
 
 }
 
