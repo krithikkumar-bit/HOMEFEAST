@@ -3,11 +3,14 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-const errorHandler = require('./middleware/errorHandler');
-const connectDB = require('./config/db');
+const errorHandler =
+require('./middleware/errorHandler');
+
+const connectDB =
+require('./config/db');
 
 require('dotenv').config({
-  path: './.env'
+  path:'./.env'
 });
 
 /* =========================
@@ -18,16 +21,21 @@ connectDB();
 
 const app = express();
 
+
 /* =========================
    CORS
 ========================= */
 
 app.use(
   cors({
-    origin: 'http://localhost:5000',
-    credentials: true
+    origin:[
+      'http://localhost:5000',
+      'http://127.0.0.1:5000'
+    ],
+    credentials:true
   })
 );
+
 
 /* =========================
    BODY PARSER
@@ -35,17 +43,18 @@ app.use(
 
 app.use(
   express.json({
-    limit: '10mb'
+    limit:'10mb'
   })
 );
 
 app.use(
   express.urlencoded({
-    extended: true
+    extended:true
   })
 );
 
 app.use(cookieParser());
+
 
 /* =========================
    STATIC FILES
@@ -57,17 +66,23 @@ app.use(
   )
 );
 
+
 /* =========================
    FRONTEND
 ========================= */
 
-app.get('/', (req, res) => {
+app.get('/',
+(req,res)=>{
 
   res.sendFile(
-    path.join(__dirname, 'index.html')
+    path.join(
+      __dirname,
+      'index.html'
+    )
   );
 
 });
+
 
 /* =========================
    API ROUTES
@@ -87,8 +102,6 @@ app.use(
   '/api/cooks',
   require('./routes/cooks')
 );
-
-/* ===== MENU ROUTE ADDED ===== */
 
 app.use(
   '/api/menus',
@@ -115,69 +128,101 @@ app.use(
   require('./routes/admin')
 );
 
+
+/* ===== CATEGORY ROUTE ADDED ===== */
+
+app.use(
+  '/api/categories',
+  require('./routes/categories')
+);
+
+
 /* =========================
    HEALTH CHECK
 ========================= */
 
-app.get('/api/health', (req, res) => {
+app.get(
+  '/api/health',
+  (req,res)=>{
 
-  res.json({
-    success: true,
-    message: 'HomeFeast API is running'
-  });
+    res.json({
+      success:true,
+      message:
+      'HomeFeast API is running'
+    });
 
-});
+  }
+);
+
 
 /* =========================
    SPA FALLBACK
 ========================= */
 
-app.get('*', (req, res, next) => {
+app.get('*',
+(req,res,next)=>{
 
-  if (req.path.startsWith('/api')) {
-
+  if(
+    req.path.startsWith(
+      '/api'
+    )
+  ){
     return next();
   }
 
   res.sendFile(
-    path.join(__dirname, 'index.html')
+    path.join(
+      __dirname,
+      'index.html'
+    )
   );
 
 });
+
 
 /* =========================
    404 API
 ========================= */
 
-app.use((req, res) => {
+app.use(
+  (req,res)=>{
 
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} not found`
-  });
+    res.status(404).json({
+      success:false,
+      message:
+      `Route ${req.originalUrl} not found`
+    });
 
-});
+  }
+);
+
 
 /* =========================
    GLOBAL ERROR HANDLER
 ========================= */
 
-app.use(errorHandler);
+app.use(
+  errorHandler
+);
+
 
 /* =========================
    SERVER
 ========================= */
 
 const PORT =
-  process.env.PORT || 5000;
+process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(
+  PORT,
+  ()=>{
 
-  console.log(`
+    console.log(`
 =================================
  HomeFeast Server Running
  http://localhost:${PORT}
 =================================
-  `);
+    `);
 
-});
+  }
+);

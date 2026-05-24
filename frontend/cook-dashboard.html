@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cook Dashboard</title>
+</head>
+<body>
+
+<h2>Cook Dashboard</h2>
+
+<button onclick="loadMenus()">
+View Menu
+</button>
+
+<div id="menus"></div>
+
+<script>
+
+async function loadMenus(){
+
+ const token=
+ localStorage.getItem('token');
+
+ const res=
+ await fetch(
+ '/api/cooks/my/menu',
+ {
+  headers:{
+   Authorization:
+   `Bearer ${token}`
+  }
+ });
+
+ const data=
+ await res.json();
+
+ let html='';
+
+ data.data.forEach(item=>{
+
+  html+=`
+   <div>
+    <h3>${item.name}</h3>
+    <p>₹${item.price}</p>
+    <button
+    onclick=
+    "editMenu('${item._id}')">
+    Edit
+    </button>
+   </div>
+  `;
+ });
+
+ document.getElementById(
+ 'menus'
+ ).innerHTML=html;
+}
+
+loadMenus();
+
+</script>
+
+</body>
+</html>

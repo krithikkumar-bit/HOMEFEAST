@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+</head>
+<body>
+
+<h2>Admin KPI</h2>
+
+<div id="stats"></div>
+
+<script>
+
+async function loadStats(){
+
+ const token=
+ localStorage.getItem('token');
+
+ const res=
+ await fetch(
+ '/api/admin/kpi',
+ {
+  headers:{
+   Authorization:
+   `Bearer ${token}`
+  }
+ });
+
+ const data=
+ await res.json();
+
+ document.getElementById(
+ 'stats'
+ ).innerHTML=`
+  <h3>
+  Users:
+  ${data.data.users}
+  </h3>
+
+  <h3>
+  Cooks:
+  ${data.data.cooks}
+  </h3>
+
+  <h3>
+  Active Subs:
+  ${data.data.activeSubscriptions}
+  </h3>
+
+  <h3>
+  Conversion:
+  ${data.data.conversionRate}%
+  </h3>
+ `;
+}
+
+loadStats();
+
+</script>
+
+</body>
+</html>

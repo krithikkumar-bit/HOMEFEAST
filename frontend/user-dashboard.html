@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Dashboard</title>
+<link rel="stylesheet"
+href="style.css">
+</head>
+<body>
+
+<h2>My Orders</h2>
+
+<div id="orders"></div>
+
+<script>
+async function loadOrders(){
+
+ const token=
+ localStorage.getItem('token');
+
+ const res=await fetch(
+ '/api/orders/my',
+ {
+  headers:{
+   Authorization:
+   `Bearer ${token}`
+  }
+ });
+
+ const data=
+ await res.json();
+
+ let html='';
+
+ data.data.forEach(order=>{
+  html+=`
+   <div class="card">
+    <h3>${order.cook.name}</h3>
+    <p>Status:
+    ${order.status}</p>
+    <p>Amount:
+    ₹${order.totalAmount}</p>
+   </div>
+  `;
+ });
+
+ document.getElementById(
+ 'orders'
+ ).innerHTML=html;
+}
+
+loadOrders();
+</script>
+
+</body>
+</html>
