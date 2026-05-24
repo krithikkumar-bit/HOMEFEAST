@@ -3216,23 +3216,121 @@ function route() {
             $$('.chip', a).forEach(ch => { ch.addEventListener('click', () => { const grp = ch.parentElement.id; if (grp === 'brType') S.browseFilters.type = ch.dataset.v; if (grp === 'brPrice') S.browseFilters.priceMax = parseInt(ch.dataset.v); pgBrowse(a); }); });
         }
 
-        function pgCookProfile(id, a) {
-            if (!id) { nav('browse'); return; }
-            const app = a || $('#app');
-            const ck = DB.cooks.find(c => c._id === id);
-            if (!ck) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-utensils"></i><h3>Cook not found</h3><a class="btn btn-p" data-nv="browse">Browse Cooks</a></div></div></div>`; updateUI(); return; }
-            const items = DB.menuItems.filter(m => (m.cookId === ck._id || m.cook === ck._id) && (m.available === true || m.avail === true));
-            const revs = DB.reviews.filter(r => r.cookId === ck._id || r.cook === ck._id);
-            const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : (ck.rating || 4.5);
-            const plans = [];
-            if (ck.plans?.daily) plans.push({ type: 'daily', meal: 'Standard', price: ck.plans.daily });
-            if (ck.plans?.weekly) plans.push({ type: 'weekly', meal: 'Standard', price: ck.plans.weekly });
-            if (ck.plans?.monthly) plans.push({ type: 'monthly', meal: 'Standard', price: ck.plans.monthly });
+       function pgCookProfile(id, a) {
+    if (!id) { nav('browse'); return; }
+    const app = a || $('#app');
+    const ck = DB.cooks.find(c => c._id === id);
+    if (!ck) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-utensils"></i><h3>Cook not found</h3><a class="btn btn-p" data-nv="browse">Browse Cooks</a></div></div></div>`; updateUI(); return; }
+    const items = DB.menuItems.filter(m => (m.cookId === ck._id || m.cook === ck._id) && (m.available === true || m.avail === true));
+    const revs = DB.reviews.filter(r => r.cookId === ck._id || r.cook === ck._id);
+    const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : (ck.rating || 4.5);
+    const plans = [];
+    if (ck.plans?.daily) plans.push({ type: 'daily', meal: 'Standard', price: ck.plans.daily });
+    if (ck.plans?.weekly) plans.push({ type: 'weekly', meal: 'Standard', price: ck.plans.weekly });
+    if (ck.plans?.monthly) plans.push({ type: 'monthly', meal: 'Standard', price: ck.plans.monthly });
 
-            app.innerHTML = `<section class="page-sec"><div class="container"><a class="btn btn-ghost" data-nv="browse" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Browse</a><div class="cp-header"><div style="position:relative"><div class="cp-cover"><img src="${ck.image || 'https://picsum.photos/700/300'}" alt=""/></div><div class="cp-avatar"><img src="${ck.avatar || ck.image || 'https://picsum.photos/200'}" alt=""/></div></div><div class="cp-info"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><h1 class="cp-name">${ck.name}</h1><span class="badge-st ${stMap[ck.status]?.c || ''}">${stMap[ck.status]?.l || ck.status}</span></div><div class="cp-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR} (${revs.length} reviews)</span><span><i class="fas fa-utensils"></i> ${ck.totalOrders || 0} orders</span><span><i class="fas fa-award"></i> ${ck.experience || '2 years'}</span></div><div class="cp-bio">${ck.tagline || 'Authentic homemade food'}</div><div class="cp-details"><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:4px"></i>${ck.area || 'Bangalore'}</div><div class="cp-detail-lbl">Service Area</div></div><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-clock" style="color:var(--accent);margin-right:4px"></i>Delivery</div><div class="cp-detail-lbl">${ck.deliveryTime || '11 AM - 9 PM'}</div></div></div></div></div><h3 class="sec-title" style="font-size:1.4rem;margin-bottom:20px">Subscription Plans</h3><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">${plans.map(p => `<div class="sub-plan"><div class="sub-plan-name">${p.type.toUpperCase()} PLAN</div><div class="sub-plan-price">${fp(p.price)}</div><ul class="sub-plan-feat"><li><i class="fas fa-check"></i> Fresh Homemade Food</li><li><i class="fas fa-check"></i> Free Delivery</li><li><i class="fas fa-check"></i> Healthy Meals</li></ul><button class="btn btn-p btn-sm btn-block">Subscribe Now</button></div>`).join('')}</div><div class="tabs" id="cpTabs"><button class="tab active" data-tab="menu">Menu (${items.length})</button><button class="tab" data-tab="reviews">Reviews (${revs.length})</button></div><div id="cpTabContent"><div id="tab-menu"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.length ? items.map(m => mealCardHTML({...m, cookName: ck.name})).join('') : `<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:30px">No menu items yet.</p>`}</div></div><div id="tab-reviews" style="display:none">${revs.length ? revs.map(r => `<div class="rev-card"><div class="rev-stars">${'<i class="fas fa-star"></i>'.repeat(r.rating)}</div><p class="rev-tx">${r.comment || 'Good food'}</p></div>`).join('') : `<p style="color:var(--muted);text-align:center;padding:30px">No reviews yet.</p>`}</div></div></div></section>`;
-            updateUI();
-            $$('[data-tab]', app).forEach(t => { t.addEventListener('click', () => { $$('.tab', app).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', app).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, app).style.display = ''; }); });
-        }
+    app.innerHTML = `<section class="page-sec"><div class="container"><a class="btn btn-ghost" data-nv="browse" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Browse</a><div class="cp-header"><div style="position:relative"><div class="cp-cover"><img src="${ck.image || 'https://picsum.photos/700/300'}" alt=""/></div><div class="cp-avatar"><img src="${ck.avatar || ck.image || 'https://picsum.photos/200'}" alt=""/></div></div><div class="cp-info"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><h1 class="cp-name">${ck.name}</h1><span class="badge-st ${stMap[ck.status]?.c || ''}">${stMap[ck.status]?.l || ck.status}</span></div><div class="cp-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR} (${revs.length} reviews)</span><span><i class="fas fa-utensils"></i> ${ck.totalOrders || 0} orders</span><span><i class="fas fa-award"></i> ${ck.experience || '2 years'}</span></div><div class="cp-bio">${ck.tagline || 'Authentic homemade food'}</div><div class="cp-details"><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-location-dot" style="color:var(--accent);margin-right:4px"></i>${ck.area || 'Bangalore'}</div><div class="cp-detail-lbl">Service Area</div></div><div class="cp-detail"><div class="cp-detail-val"><i class="fas fa-clock" style="color:var(--accent);margin-right:4px"></i>Delivery</div><div class="cp-detail-lbl">${ck.deliveryTime || '11 AM - 9 PM'}</div></div></div></div></div>
+
+    <h3 class="sec-title" style="font-size:1.4rem;margin-bottom:20px">Subscription Plans</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+    ${plans.map(p => `<div class="sub-plan">
+        <div class="sub-plan-name">${p.type.toUpperCase()} PLAN</div>
+        <div class="sub-plan-price">${fp(p.price)}</div>
+        <ul class="sub-plan-feat">
+            <li><i class="fas fa-check"></i> Fresh Homemade Food</li>
+            <li><i class="fas fa-check"></i> Free Delivery</li>
+            <li><i class="fas fa-check"></i> Healthy Meals</li>
+        </ul>
+        <button class="btn btn-p btn-sm btn-block sub-btn" data-plan-type="${p.type}" data-plan-meal="${p.meal}" data-plan-price="${p.price}" data-cook-id="${ck._id}" data-cook-name="${ck.name}">Subscribe Now</button>
+    </div>`).join('')}
+    ${plans.length === 0 ? '<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:30px">No subscription plans available yet.</p>' : ''}
+    </div>
+
+    <div class="tabs" id="cpTabs"><button class="tab active" data-tab="menu">Menu (${items.length})</button><button class="tab" data-tab="reviews">Reviews (${revs.length})</button></div>
+    <div id="cpTabContent">
+        <div id="tab-menu"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${items.length ? items.map(m => mealCardHTML({...m, cookName: ck.name})).join('') : `<p style="color:var(--muted);grid-column:1/-1;text-align:center;padding:30px">No menu items yet.</p>`}</div></div>
+        <div id="tab-reviews" style="display:none">${revs.length ? revs.map(r => `<div class="rev-card"><div class="rev-stars">${'<i class="fas fa-star"></i>'.repeat(r.rating)}</div><p class="rev-tx">${r.comment || 'Good food'}</p></div>`).join('') : `<p style="color:var(--muted);text-align:center;padding:30px">No reviews yet.</p>`}</div>
+    </div></div></section>`;
+
+    updateUI();
+
+    // ✅ FIX: Add click listeners to Subscribe buttons
+    $$('.sub-btn', app).forEach(btn => {
+        btn.addEventListener('click', function() {
+            const planType = this.dataset.planType;
+            const planMeal = this.dataset.planMeal;
+            const planPrice = parseInt(this.dataset.planPrice);
+            const cookId = this.dataset.cookId;
+            const cookName = this.dataset.cookName;
+
+            // Check if user is logged in
+            if (!S.user) {
+                toast('Please login to subscribe', 'error');
+                nav('login');
+                return;
+            }
+
+            // Check if user is a regular user (not cook/admin)
+            if (S.user.role !== 'user') {
+                toast('Only customers can subscribe to meal plans', 'error');
+                return;
+            }
+
+            // Check if already subscribed to this cook
+            const existingSub = DB.subscriptions.find(
+                s => s.userId === S.user._id && (s.cookId === cookId || s.cook === cookId) && s.status === 'active'
+            );
+            if (existingSub) {
+                toast('You already have an active subscription with this cook', 'error');
+                return;
+            }
+
+            // Confirm subscription via modal
+            openModal(
+                'Confirm Subscription',
+                `<div style="text-align:center;padding:10px 0">
+                    <div style="font-size:2.5rem;color:var(--accent);margin-bottom:12px"><i class="fas fa-repeat"></i></div>
+                    <h3 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:8px">${cookName}</h3>
+                    <p style="color:var(--muted);margin-bottom:16px">${planType.charAt(0).toUpperCase() + planType.slice(1)} ${planMeal} Plan</p>
+                    <div style="font-family:var(--font-d);font-size:2rem;font-weight:800;color:var(--accent);margin-bottom:4px">${fp(planPrice)}</div>
+                    <p style="font-size:.82rem;color:var(--muted)">${planType === 'daily' ? 'Per day' : planType === 'weekly' ? 'Per week (7 days)' : 'Per month (30 days)'}</p>
+                </div>`,
+                `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="confirmSubBtn"><i class="fas fa-check"></i> Confirm Subscription</button>`
+            );
+
+            document.getElementById('confirmSubBtn').addEventListener('click', () => {
+                // Create subscription
+                const newSub = {
+                    _id: 'sub' + Date.now(),
+                    userId: S.user._id,
+                    cookId: cookId,
+                    cook: cookId,
+                    plan: planType,
+                    meal: planMeal,
+                    price: planPrice,
+                    status: 'active',
+                    startDate: new Date().toISOString(),
+                    endDate: null,
+                    nextDelivery: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                    createdAt: new Date().toISOString()
+                };
+                DB.subscriptions.push(newSub);
+                closeModal();
+                toast(`Subscribed to ${cookName}'s ${planType} plan successfully!`);
+            });
+        });
+    });
+
+    // Tab switching
+    $$('[data-tab]', app).forEach(t => {
+        t.addEventListener('click', () => {
+            $$('.tab', app).forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            $$('.tabs~div>[id^="tab-"]', app).forEach(d => d.style.display = 'none');
+            $(`#tab-${t.dataset.tab}`, app).style.display = '';
+        });
+    });
+}
 
         function pgHow(a) { a.innerHTML = `<section class="page-sec"><div class="container"><div style="text-align:center;margin-bottom:48px"><div class="sec-label">How It Works</div><h2 class="sec-title">Getting Started is Easy</h2></div><div class="steps-grid" style="max-width:900px;margin:0 auto">${[['fa-magnifying-glass','Search','Browse verified home cooks by cuisine, location, and meal type.'],['fa-book-open','Choose','View menus, read reviews, compare pricing and subscription plans.'],['fa-repeat','Subscribe','Select daily, weekly, or monthly plans. Or order individual meals.'],['fa-bell-concierge','Enjoy','Fresh homemade food delivered to your door every day, on time.'],['fa-pause','Pause/Cancel','Need a break? Pause your subscription anytime. No hidden charges.'],['fa-headset','Support','24/7 support for any issues. We handle complaints and refunds.']].map(([ic,t,d],i) => `<div class="step-card reveal"><div class="step-num">${String(i+1).padStart(2,'0')}</div><div class="step-ic"><i class="fas ${ic}"></i></div><h3 class="step-t">${t}</h3><p class="step-d">${d}</p></div>`).join('')}</div><div style="text-align:center;margin-top:48px"><a class="btn btn-p" data-nv="browse">Find Tiffin Now <i class="fas fa-arrow-right"></i></a></div></div></section>`; updateUI() }
 
