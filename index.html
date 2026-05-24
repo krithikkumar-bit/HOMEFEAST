@@ -2990,7 +2990,53 @@ async function loadDatabase() {
         function doLogout() { S.user = null; S.token = null; S.cart = []; saveU(); saveT(); localStorage.removeItem('hf_c'); updateUI(); nav('home'); toast('Logged out') }
         function cartCount() { return S.cart.reduce((s, c) => s + c.qty, 0) }
         function cartSub() { return S.cart.reduce((s, c) => s + c.price * c.qty, 0) }
-        function addCart(meal, qty = 1) { const ex = S.cart.find(c => c.mid === meal._id); if (ex) ex.qty += qty; else S.cart.push({ mid: meal._id, name: meal.name, price: meal.price, img: meal.img, cookId: meal.cookId, cookName: meal.cookName, qty }); save(); updateUI(); toast(`${meal.name} added to cart`) }
+        function addCart(meal, qty = 1) {
+    const ex = S.cart.find(c => c.mid === meal._id);
+    if (ex) {
+        ex.qty += qty;
+    } else {
+        S.cart.push({
+            mid: meal._id,
+            name: meal.name,
+            price: meal.price,
+            img: meal.img || meal.image,           // ✅ handles both property names
+            cookId: meal.cookId || meal.cook,       // ✅ handles both property names
+            cookName: meal.cookName || 'Home Cook', // ✅ fallback
+            qty
+        });
+    }
+    save();
+    updateUI();
+    toast(`${meal.name} added to cart`);
+}
+function bindAddToCart(app, cookName, cookId) {
+    $$('[data-add]', app).forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const mealId = this.dataset.add;
+            const meal = DB.menuItems.find(m => m._id === mealId);
+            if (!meal) {
+                toast('Item not found', 'error');
+                return;
+            }
+            // Build a complete meal object with correct property names
+            addCart({
+                ...meal,
+                cookName: cookName || meal.cookName || 'Home Cook',
+                cookId: cookId || meal.cookId || meal.cook
+            });
+            // Update button appearance to show "added"
+            this.classList.add('added');
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            // Revert after 1.5 seconds so they can add more quantity
+            setTimeout(() => {
+                this.classList.remove('added');
+                this.innerHTML = '<i class="fas fa-plus"></i>';
+            }, 1500);
+        });
+    });
+}
         function rmCart(mid) { S.cart = S.cart.filter(c => c.mid !== mid); save(); updateUI() }
         function updCartQ(mid, d) { const i = S.cart.find(c => c.mid === mid); if (!i) return; i.qty += d; if (i.qty < 1) rmCart(mid); else { save(); updateUI() } }
         function clearCart() { S.cart = []; save(); updateUI() }
@@ -3216,7 +3262,7 @@ function route() {
             $$('.chip', a).forEach(ch => { ch.addEventListener('click', () => { const grp = ch.parentElement.id; if (grp === 'brType') S.browseFilters.type = ch.dataset.v; if (grp === 'brPrice') S.browseFilters.priceMax = parseInt(ch.dataset.v); pgBrowse(a); }); });
         }
 
-       function pgCookProfile(id, a) {
+function pgCookProfile(id, a) {
     if (!id) { nav('browse'); return; }
     const app = a || $('#app');
     const ck = DB.cooks.find(c => c._id === id);
@@ -3254,6 +3300,9 @@ function route() {
 
     updateUI();
 
+    // ✅ FIX: Bind add-to-cart buttons for meal cards
+    bindAddToCart(app, ck.name, ck._id);
+
     // ✅ FIX: Add click listeners to Subscribe buttons
     $$('.sub-btn', app).forEach(btn => {
         btn.addEventListener('click', function() {
@@ -3263,20 +3312,17 @@ function route() {
             const cookId = this.dataset.cookId;
             const cookName = this.dataset.cookName;
 
-            // Check if user is logged in
             if (!S.user) {
                 toast('Please login to subscribe', 'error');
                 nav('login');
                 return;
             }
 
-            // Check if user is a regular user (not cook/admin)
             if (S.user.role !== 'user') {
                 toast('Only customers can subscribe to meal plans', 'error');
                 return;
             }
 
-            // Check if already subscribed to this cook
             const existingSub = DB.subscriptions.find(
                 s => s.userId === S.user._id && (s.cookId === cookId || s.cook === cookId) && s.status === 'active'
             );
@@ -3285,7 +3331,6 @@ function route() {
                 return;
             }
 
-            // Confirm subscription via modal
             openModal(
                 'Confirm Subscription',
                 `<div style="text-align:center;padding:10px 0">
@@ -3299,7 +3344,6 @@ function route() {
             );
 
             document.getElementById('confirmSubBtn').addEventListener('click', () => {
-                // Create subscription
                 const newSub = {
                     _id: 'sub' + Date.now(),
                     userId: S.user._id,
