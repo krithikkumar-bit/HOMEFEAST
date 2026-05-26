@@ -136,6 +136,11 @@ app.use(
   require('./routes/categories')
 );
 
+app.use(
+'/api/notifications',
+require('./routes/notifications')
+);
+
 
 /* =========================
    HEALTH CHECK
@@ -153,6 +158,7 @@ app.get(
 
   }
 );
+
 
 
 /* =========================

@@ -21,6 +21,7 @@ router.get('/', async (req, res, next) => {
       price,
       plan,
       area,
+      city,
       page = 1,
       limit = 12
     } = req.query;
@@ -29,6 +30,7 @@ router.get('/', async (req, res, next) => {
       status: 'approved'
     };
 
+    // SEARCH
     if (search) {
       filter.$or = [
         {
@@ -48,39 +50,102 @@ router.get('/', async (req, res, next) => {
             $regex: search,
             $options: 'i'
           }
+        },
+        {
+          city: {
+            $regex: search,
+            $options: 'i'
+          }
+        },
+        {
+          serviceArea: {
+            $elemMatch: {
+              $regex: search,
+              $options: 'i'
+            }
+          }
         }
       ];
     }
 
-    if (type && type !== 'all')
-      filter.types = type;
-
-    if (cuisine && cuisine !== 'all')
-      filter.cuisine = cuisine;
-
-    if (price === 'budget')
-      filter['plans.daily'] = { $lt: 150 };
-
-    if (price === 'mid')
-      filter['plans.daily'] = {
-        $gte: 150,
-        $lte: 200
+    // MEAL TYPE FILTER
+    if (type && type !== 'all') {
+      filter.types = {
+        $in: [type]
       };
+    }
 
-    if (price === 'premium')
-      filter['plans.daily'] = { $gt: 200 };
+    // CUISINE FILTER
+    if (cuisine && cuisine !== 'all') {
+      filter.cuisine = {
+        $regex: cuisine,
+        $options: 'i'
+      };
+    }
 
-    // PLAN FILTER
+    // PRICE FILTER
+    if (price) {
+
+      if (price === 'budget') {
+        filter['plans.daily'] = {
+          $lt: 150
+        };
+      }
+
+      if (price === 'mid') {
+        filter['plans.daily'] = {
+          $gte: 150,
+          $lte: 250
+        };
+      }
+
+      if (price === 'premium') {
+        filter['plans.daily'] = {
+          $gt: 250
+        };
+      }
+    }
+
+    // MEAL PLAN FILTER
     if (plan && plan !== 'all') {
-      filter[`plans.${plan.toLowerCase()}`] = {
+
+      filter[
+        `plans.${plan.toLowerCase()}`
+      ] = {
         $gt: 0
       };
     }
 
-    // AREA FILTER
+    // AREA + SERVICE AREA FILTER
     if (area) {
-      filter.area = {
-        $regex: area,
+
+      filter.$and = filter.$and || [];
+
+      filter.$and.push({
+        $or: [
+          {
+            area: {
+              $regex: area,
+              $options: 'i'
+            }
+          },
+          {
+            serviceArea: {
+              $elemMatch: {
+                $regex: area,
+                $options: 'i'
+              }
+            }
+          }
+        ]
+      });
+    }
+
+    // CITY FILTER
+    if (city) {
+
+      filter.city = {
+        $regex: city,
         $options: 'i'
       };
     }
@@ -94,7 +159,8 @@ router.get('/', async (req, res, next) => {
         .skip(skip)
         .limit(parseInt(limit))
         .sort({
-          rating: -1
+          rating: -1,
+          createdAt: -1
         });
 
     const total =
@@ -102,6 +168,7 @@ router.get('/', async (req, res, next) => {
 
     res.json({
       success: true,
+      page: parseInt(page),
       count: cooks.length,
       total,
       data: cooks
