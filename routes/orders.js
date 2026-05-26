@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { protect } =
-require('../middleware/auth');
+const {
+  protect,
+  authorize
+} = require('../middleware/auth');
 
 const Order =
 require('../models/Order');
@@ -10,316 +12,232 @@ require('../models/Order');
 const Cook =
 require('../models/Cook');
 
-const Subscription =
-require('../models/Subscription');
 
-const {
-  generateOrderId,
-  getSubscriptionEndDate
-} = require('../utils/helpers');
+// ====================================
+// USER PLACE ORDER
+// ====================================
 
+router.post(
+'/',
+protect,
+authorize('user'),
+async(req,res,next)=>{
 
-/* =========================
-   GET ALL ORDERS
-========================= */
+try{
 
-router.get('/',
-async (req,res,next)=>{
+const order =
+await Order.create({
+...req.body,
+user:req.user.id
+});
 
-  try{
+res.status(201).json({
+success:true,
+data:order
+});
 
-    const orders =
-    await Order.find()
-      .populate('cook')
-      .populate('user');
-
-    res.json({
-      success:true,
-      data:orders
-    });
-
-  }catch(err){
-    next(err);
-  }
-
+}catch(err){
+next(err);
+}
 });
 
 
-/* =========================
-   USER ORDER HISTORY
-   GET /api/orders/my
-========================= */
+// ====================================
+// USER ORDER HISTORY
+// ====================================
 
-router.get('/my',
+router.get(
+'/my',
+protect,
+authorize('user'),
+async(req,res,next)=>{
+
+try{
+
+const orders =
+await Order.find({
+user:req.user.id
+})
+.populate('cook')
+.sort({
+createdAt:-1
+});
+
+res.json({
+success:true,
+count:orders.length,
+data:orders
+});
+
+}catch(err){
+next(err);
+}
+});
+
+
+// ====================================
+// SINGLE ORDER
+// ====================================
+
+router.get(
+'/:id',
 protect,
 async(req,res,next)=>{
 
-  try{
+try{
 
-    const orders =
-    await Order.find({
-      user:req.user.id
-    })
-    .populate(
-      'cook',
-      'name cuisine area avatar'
-    )
-    .sort({
-      createdAt:-1
-    });
+const order =
+await Order.findById(
+req.params.id
+)
+.populate('user')
+.populate('cook');
 
-    res.json({
-      success:true,
-      count:orders.length,
-      data:orders
-    });
+if(!order){
+return res.status(404).json({
+success:false,
+message:'Order not found'
+});
+}
 
-  }catch(err){
-    next(err);
-  }
+res.json({
+success:true,
+data:order
+});
 
+}catch(err){
+next(err);
+}
 });
 
 
-/* =========================
-   CREATE ORDER
-========================= */
+// ====================================
+// COOK ORDERS DASHBOARD
+// ====================================
 
-router.post('/',
+router.get(
+'/cook/my',
 protect,
+authorize('cook'),
 async(req,res,next)=>{
 
-  try{
+try{
 
-    const {
-      cookId,
-      plan,
-      meal,
-      mealPreference,
-      deliveryAddress
-    } = req.body;
+const cook =
+await Cook.findOne({
+user:req.user.id
+});
 
-    const cook =
-    await Cook.findById(cookId);
+if(!cook){
+return res.status(404).json({
+success:false,
+message:'Cook not found'
+});
+}
 
-    if(!cook){
+const orders =
+await Order.find({
+cook:cook._id
+})
+.populate(
+'user',
+'firstName lastName email'
+)
+.sort({
+createdAt:-1
+});
 
-      return res.status(404).json({
-        success:false,
-        message:'Cook not found'
-      });
+res.json({
+success:true,
+count:orders.length,
+data:orders
+});
 
-    }
-
-    if(cook.status !== 'approved'){
-
-      return res.status(400).json({
-        success:false,
-        message:'Cook not approved'
-      });
-
-    }
-
-    const amount =
-    cook.plans?.[
-      plan?.toLowerCase()
-    ] || 0;
-
-    const orderId =
-    await generateOrderId(Order);
-
-    const startDate =
-    new Date(
-      Date.now() +
-      24*60*60*1000
-    );
-
-    const endDate =
-    plan !== 'Daily'
-      ? getSubscriptionEndDate(plan)
-      : undefined;
-
-    const order =
-    await Order.create({
-
-      orderId,
-
-      user:req.user.id,
-
-      cook:cookId,
-
-      meal,
-
-      plan,
-
-      amount,
-
-      status:'Pending',
-
-      deliveryAddress:
-        deliveryAddress ||
-        req.user.address,
-
-      mealPreference:
-        mealPreference ||
-        ['lunch'],
-
-      startDate,
-
-      endDate
-    });
-
-    // Daily order auto active
-    if(plan === 'Daily'){
-
-      order.status='Active';
-
-      await order.save();
-
-      cook.totalEarnings += amount;
-
-      await cook.save();
-
-    }
-
-    res.status(201).json({
-
-      success:true,
-
-      message:
-      plan === 'Daily'
-        ? 'Daily meal ordered!'
-        : 'Subscription request sent.',
-
-      data:order
-
-    });
-
-  }catch(err){
-
-    next(err);
-
-  }
-
+}catch(err){
+next(err);
+}
 });
 
 
-/* =========================
-   GET SINGLE ORDER
-========================= */
+// ====================================
+// COOK UPDATE ORDER STATUS
+// ====================================
 
-router.get('/:id',
+router.put(
+'/:id/status',
 protect,
+authorize('cook','admin'),
 async(req,res,next)=>{
 
-  try{
+try{
 
-    const order =
-    await Order.findById(
-      req.params.id
-    )
-    .populate('cook')
-    .populate('user');
+const order =
+await Order.findById(
+req.params.id
+);
 
-    if(!order){
+if(!order){
+return res.status(404).json({
+success:false,
+message:'Order not found'
+});
+}
 
-      return res.status(404).json({
-        success:false,
-        message:'Order not found'
-      });
+order.status =
+req.body.status ||
+order.status;
 
-    }
+await order.save();
 
-    // Security check
-    if(
-      order.user._id.toString()
-      !==
-      req.user.id
-    ){
+res.json({
+success:true,
+message:'Order updated',
+data:order
+});
 
-      return res.status(403).json({
-        success:false,
-        message:'Unauthorized'
-      });
-
-    }
-
-    res.json({
-      success:true,
-      data:order
-    });
-
-  }catch(err){
-
-    next(err);
-
-  }
-
+}catch(err){
+next(err);
+}
 });
 
 
-/* =========================
-   CANCEL ORDER
-========================= */
+// ====================================
+// ADMIN ALL ORDERS
+// ====================================
 
-router.put('/:id/cancel',
+router.get(
+'/',
 protect,
+authorize('admin'),
 async(req,res,next)=>{
 
-  try{
+try{
 
-    const order =
-    await Order.findOne({
-
-      _id:req.params.id,
-
-      user:req.user.id
-
-    });
-
-    if(!order){
-
-      return res.status(404).json({
-        success:false,
-        message:'Order not found'
-      });
-
-    }
-
-    order.status =
-    'Cancelled';
-
-    await order.save();
-
-    await Subscription.updateMany(
-
-      {
-        user:order.user,
-        cook:order.cook
-      },
-
-      {
-        status:'Cancelled'
-      }
-
-    );
-
-    res.json({
-
-      success:true,
-
-      message:'Order cancelled',
-
-      data:order
-
-    });
-
-  }catch(err){
-
-    next(err);
-
-  }
-
+const orders =
+await Order.find()
+.populate(
+'user',
+'firstName lastName email'
+)
+.populate('cook')
+.sort({
+createdAt:-1
 });
+
+res.json({
+success:true,
+count:orders.length,
+data:orders
+});
+
+}catch(err){
+next(err);
+}
+});
+
+
+// ====================================
+// EXPORT
+// ====================================
 
 module.exports = router;

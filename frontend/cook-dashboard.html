@@ -1,61 +1,352 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
 <title>Cook Dashboard</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
 </head>
-<body>
+<body class="bg-light">
 
-<h2>Cook Dashboard</h2>
+<div class="container py-4">
 
-<button onclick="loadMenus()">
-View Menu
-</button>
+<h2 class="mb-4">
+Cook Dashboard
+</h2>
 
-<div id="menus"></div>
+<div class="row g-3 mb-4">
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Total Subs</h6>
+<h3 id="totalSubs">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Pending</h6>
+<h3 id="pendingSubs">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Active</h6>
+<h3 id="activeSubs">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Earnings</h6>
+<h3>
+₹
+<span id="earnings">
+0
+</span>
+</h3>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- SUBSCRIPTIONS -->
+
+<div class="card mb-4 shadow-sm">
+
+<div class="card-header">
+Pending Subscription Requests
+</div>
+
+<div class="card-body">
+
+<table
+class="table table-bordered">
+
+<thead>
+<tr>
+<th>User</th>
+<th>Plan</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="subsTable">
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+<!-- ORDERS -->
+
+<div class="card shadow-sm">
+
+<div class="card-header">
+Orders
+</div>
+
+<div class="card-body">
+
+<table
+class="table table-striped">
+
+<thead>
+<tr>
+<th>User</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="ordersTable">
+</tbody>
+
+</table>
+
+</div>
+</div>
+
+</div>
 
 <script>
 
-async function loadMenus(){
+const token=
+localStorage.getItem(
+'token'
+);
 
- const token=
- localStorage.getItem('token');
 
- const res=
- await fetch(
- '/api/cooks/my/menu',
- {
-  headers:{
-   Authorization:
-   `Bearer ${token}`
-  }
- });
+// LOAD STATS
 
- const data=
- await res.json();
+async function loadStats(){
 
- let html='';
+const res=
+await fetch(
+'/api/subscriptions/cook/stats',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
 
- data.data.forEach(item=>{
+const data=
+await res.json();
 
-  html+=`
-   <div>
-    <h3>${item.name}</h3>
-    <p>₹${item.price}</p>
-    <button
-    onclick=
-    "editMenu('${item._id}')">
-    Edit
-    </button>
-   </div>
-  `;
- });
+document.getElementById(
+'totalSubs'
+).innerText=
+data.data.totalSubs;
 
- document.getElementById(
- 'menus'
- ).innerHTML=html;
+document.getElementById(
+'pendingSubs'
+).innerText=
+data.data.pending;
+
+document.getElementById(
+'activeSubs'
+).innerText=
+data.data.active;
+
+document.getElementById(
+'earnings'
+).innerText=
+data.data.earnings;
 }
 
-loadMenus();
+
+// LOAD SUBSCRIPTIONS
+
+async function loadSubs(){
+
+const res=
+await fetch(
+'/api/subscriptions/cook/my',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+const data=
+await res.json();
+
+const table=
+document.getElementById(
+'subsTable'
+);
+
+table.innerHTML='';
+
+data.data.forEach(sub=>{
+
+table.innerHTML+=`
+
+<tr>
+
+<td>
+${sub.user.name}
+</td>
+
+<td>
+${sub.plan}
+</td>
+
+<td>
+₹${sub.amount}
+</td>
+
+<td>
+${sub.status}
+</td>
+
+<td>
+
+<button
+class="btn btn-success btn-sm"
+onclick="
+acceptSub(
+'${sub._id}'
+)">
+Accept
+</button>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="
+rejectSub(
+'${sub._id}'
+)">
+Reject
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+}
+
+
+// ACCEPT
+
+async function acceptSub(id){
+
+await fetch(
+`/api/subscriptions/${id}/accept`,
+{
+method:'PUT',
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+loadSubs();
+loadStats();
+}
+
+
+// REJECT
+
+async function rejectSub(id){
+
+await fetch(
+`/api/subscriptions/${id}/reject`,
+{
+method:'PUT',
+headers:{
+'Content-Type':
+'application/json',
+Authorization:
+`Bearer ${token}`
+},
+body:JSON.stringify({
+reason:'Rejected'
+})
+});
+
+loadSubs();
+loadStats();
+}
+
+
+// LOAD ORDERS
+
+async function loadOrders(){
+
+const res=
+await fetch(
+'/api/orders/cook/my',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+const data=
+await res.json();
+
+const table=
+document.getElementById(
+'ordersTable'
+);
+
+table.innerHTML='';
+
+data.data.forEach(order=>{
+
+table.innerHTML+=`
+
+<tr>
+
+<td>
+${order.user?.name||''}
+</td>
+
+<td>
+₹${order.totalPrice}
+</td>
+
+<td>
+${order.status}
+</td>
+
+</tr>
+
+`;
+
+});
+}
+
+
+loadStats();
+loadSubs();
+loadOrders();
 
 </script>
 

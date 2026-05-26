@@ -1,60 +1,363 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
+
 <title>Admin Dashboard</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
 </head>
-<body>
 
-<h2>Admin KPI</h2>
+<body class="bg-light">
 
-<div id="stats"></div>
+<div class="container py-4">
+
+<h2 class="mb-4">
+Admin Dashboard
+</h2>
+
+<!-- DASHBOARD CARDS -->
+
+<div class="row g-3 mb-4">
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Users</h6>
+<h3 id="usersCount">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Cooks</h6>
+<h3 id="cooksCount">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Orders</h6>
+<h3 id="ordersCount">0</h3>
+</div>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card shadow-sm">
+<div class="card-body">
+<h6>Complaints</h6>
+<h3 id="complaintsCount">0</h3>
+</div>
+</div>
+</div>
+
+</div>
+
+
+<!-- CATEGORY -->
+
+<div class="card shadow-sm mb-4">
+
+<div class="card-header">
+Category Management
+</div>
+
+<div class="card-body">
+
+<input
+id="categoryName"
+class="form-control mb-2"
+placeholder="Category Name">
+
+<button
+class="btn btn-primary mb-3"
+onclick="addCategory()">
+Add Category
+</button>
+
+<ul
+class="list-group"
+id="categoryList">
+</ul>
+
+</div>
+</div>
+
+
+<!-- COMPLAINTS -->
+
+<div class="card shadow-sm">
+
+<div class="card-header">
+Complaints / Disputes
+</div>
+
+<div class="card-body">
+
+<div class="table-responsive">
+
+<table
+class="table table-bordered">
+
+<thead>
+<tr>
+<th>User</th>
+<th>Subject</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="complaintsTable">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+</div>
+
+</div>
+
 
 <script>
 
-async function loadStats(){
+const token =
+localStorage.getItem(
+'token'
+);
 
- const token=
- localStorage.getItem('token');
 
- const res=
- await fetch(
- '/api/admin/kpi',
- {
-  headers:{
-   Authorization:
-   `Bearer ${token}`
-  }
- });
+// DASHBOARD
 
- const data=
- await res.json();
+async function loadDashboard(){
 
- document.getElementById(
- 'stats'
- ).innerHTML=`
-  <h3>
-  Users:
-  ${data.data.users}
-  </h3>
+const res =
+await fetch(
+'/api/admin/dashboard',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
 
-  <h3>
-  Cooks:
-  ${data.data.cooks}
-  </h3>
+const data =
+await res.json();
 
-  <h3>
-  Active Subs:
-  ${data.data.activeSubscriptions}
-  </h3>
+document.getElementById(
+'usersCount'
+).innerText =
+data.data.users;
 
-  <h3>
-  Conversion:
-  ${data.data.conversionRate}%
-  </h3>
- `;
+document.getElementById(
+'cooksCount'
+).innerText =
+data.data.cooks;
+
+document.getElementById(
+'ordersCount'
+).innerText =
+data.data.orders;
+
+document.getElementById(
+'complaintsCount'
+).innerText =
+data.data.complaints;
 }
 
-loadStats();
+
+// CATEGORIES
+
+async function loadCategories(){
+
+const res =
+await fetch(
+'/api/admin/categories',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+const data =
+await res.json();
+
+const list =
+document.getElementById(
+'categoryList'
+);
+
+list.innerHTML='';
+
+data.data.forEach(cat=>{
+
+list.innerHTML+=`
+
+<li class="list-group-item d-flex justify-content-between">
+
+${cat.name}
+
+<button
+class="btn btn-danger btn-sm"
+onclick="deleteCategory('${cat._id}')">
+Delete
+</button>
+
+</li>
+
+`;
+
+});
+}
+
+
+async function addCategory(){
+
+const name =
+document.getElementById(
+'categoryName'
+).value;
+
+await fetch(
+'/api/admin/categories',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json',
+Authorization:
+`Bearer ${token}`
+},
+body:JSON.stringify({
+name
+})
+});
+
+loadCategories();
+}
+
+
+async function deleteCategory(id){
+
+await fetch(
+`/api/admin/categories/${id}`,
+{
+method:'DELETE',
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+loadCategories();
+}
+
+
+// COMPLAINTS
+
+async function loadComplaints(){
+
+const res =
+await fetch(
+'/api/admin/complaints',
+{
+headers:{
+Authorization:
+`Bearer ${token}`
+}
+});
+
+const data =
+await res.json();
+
+const table =
+document.getElementById(
+'complaintsTable'
+);
+
+table.innerHTML='';
+
+data.data.forEach(c=>{
+
+table.innerHTML+=`
+
+<tr>
+
+<td>
+${c.user?.firstName||''}
+</td>
+
+<td>
+${c.subject}
+</td>
+
+<td>
+${c.status}
+</td>
+
+<td>
+
+<select
+onchange="
+updateComplaint(
+'${c._id}',
+this.value
+)">
+<option>Open</option>
+<option>In Progress</option>
+<option>Resolved</option>
+</select>
+
+</td>
+
+</tr>
+
+`;
+
+});
+}
+
+
+async function updateComplaint(id,status){
+
+await fetch(
+`/api/admin/complaints/${id}`,
+{
+method:'PUT',
+headers:{
+'Content-Type':
+'application/json',
+Authorization:
+`Bearer ${token}`
+},
+body:JSON.stringify({
+status
+})
+});
+
+loadComplaints();
+}
+
+
+loadDashboard();
+loadCategories();
+loadComplaints();
 
 </script>
 

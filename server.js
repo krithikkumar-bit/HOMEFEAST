@@ -13,6 +13,7 @@ require('dotenv').config({
   path:'./.env'
 });
 
+
 /* =========================
    CONNECT DATABASE
 ========================= */
@@ -71,74 +72,100 @@ app.use(
    FRONTEND
 ========================= */
 
-app.get('/',
+app.get(
+'/',
 (req,res)=>{
 
-  res.sendFile(
-    path.join(
-      __dirname,
-      'index.html'
-    )
-  );
+res.sendFile(
+path.join(
+__dirname,
+'index.html'
+)
+);
 
-});
+}
+);
 
 
 /* =========================
    API ROUTES
 ========================= */
 
-app.use(
-  '/api/auth',
-  require('./routes/auth')
-);
+// AUTH
 
 app.use(
-  '/api/users',
-  require('./routes/users')
+'/api/auth',
+require('./routes/auth')
 );
+
+// USERS
 
 app.use(
-  '/api/cooks',
-  require('./routes/cooks')
+'/api/users',
+require('./routes/users')
 );
+
+// COOKS
 
 app.use(
-  '/api/menus',
-  require('./routes/menus')
+'/api/cooks',
+require('./routes/cooks')
 );
+
+// MENUS
 
 app.use(
-  '/api/orders',
-  require('./routes/orders')
+'/api/menus',
+require('./routes/menus')
 );
+
+// ORDERS
 
 app.use(
-  '/api/subscriptions',
-  require('./routes/subscriptions')
+'/api/orders',
+require('./routes/orders')
 );
+
+// SUBSCRIPTIONS
 
 app.use(
-  '/api/reviews',
-  require('./routes/reviews')
+'/api/subscriptions',
+require('./routes/subscriptions')
 );
+
+// REVIEWS
 
 app.use(
-  '/api/admin',
-  require('./routes/admin')
+'/api/reviews',
+require('./routes/reviews')
 );
 
-
-/* ===== CATEGORY ROUTE ADDED ===== */
+// ADMIN
 
 app.use(
-  '/api/categories',
-  require('./routes/categories')
+'/api/admin',
+require('./routes/admin')
 );
+
+// CATEGORIES
+
+app.use(
+'/api/categories',
+require('./routes/categories')
+);
+
+// NOTIFICATIONS
 
 app.use(
 '/api/notifications',
 require('./routes/notifications')
+);
+
+// COMPLAINTS
+
+app.use(
+'/api/complaints',
+require('./routes/complaints')
 );
 
 
@@ -147,43 +174,44 @@ require('./routes/notifications')
 ========================= */
 
 app.get(
-  '/api/health',
-  (req,res)=>{
+'/api/health',
+(req,res)=>{
 
-    res.json({
-      success:true,
-      message:
-      'HomeFeast API is running'
-    });
+res.json({
+success:true,
+message:
+'HomeFeast API is running'
+});
 
-  }
+}
 );
-
 
 
 /* =========================
    SPA FALLBACK
 ========================= */
 
-app.get('*',
+app.get(
+'*',
 (req,res,next)=>{
 
-  if(
-    req.path.startsWith(
-      '/api'
-    )
-  ){
-    return next();
-  }
+if(
+req.path.startsWith(
+'/api'
+)
+){
+return next();
+}
 
-  res.sendFile(
-    path.join(
-      __dirname,
-      'index.html'
-    )
-  );
+res.sendFile(
+path.join(
+__dirname,
+'index.html'
+)
+);
 
-});
+}
+);
 
 
 /* =========================
@@ -191,15 +219,15 @@ app.get('*',
 ========================= */
 
 app.use(
-  (req,res)=>{
+(req,res)=>{
 
-    res.status(404).json({
-      success:false,
-      message:
-      `Route ${req.originalUrl} not found`
-    });
+res.status(404).json({
+success:false,
+message:
+`Route ${req.originalUrl} not found`
+});
 
-  }
+}
 );
 
 
@@ -208,7 +236,7 @@ app.use(
 ========================= */
 
 app.use(
-  errorHandler
+errorHandler
 );
 
 
@@ -220,15 +248,15 @@ const PORT =
 process.env.PORT || 5000;
 
 app.listen(
-  PORT,
-  ()=>{
+PORT,
+()=>{
 
-    console.log(`
+console.log(`
 =================================
  HomeFeast Server Running
  http://localhost:${PORT}
 =================================
-    `);
+`);
 
-  }
+}
 );
