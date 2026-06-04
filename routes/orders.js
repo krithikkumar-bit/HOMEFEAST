@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose'); // FIX: Added missing mongoose import
 const { protect } = require('../middleware/auth');
 const Order = require('../models/Order');
 const Cook = require('../models/Cook');
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
+const Menu = require('../models/Menu'); // FIX: Moved Menu import to the top
 const { generateOrderId, getSubscriptionEndDate } = require('../utils/helpers');
 
 
@@ -87,7 +89,6 @@ router.post('/', protect, async (req, res, next) => {
       let orderCookId = cookId;
 
       // Calculate nutrition totals if available from menu
-      const Menu = require('../models/Menu');
       let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
       for (const item of items) {
         if (item.mealId) {
@@ -214,7 +215,9 @@ router.get('/:id', protect, async (req, res, next) => {
 
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-    if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+    // FIX: Safer check to prevent server crash if order.user is missing/unpopulated
+    const orderUserId = order.user ? order.user._id.toString() : null;
+    if (orderUserId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
     }
 
