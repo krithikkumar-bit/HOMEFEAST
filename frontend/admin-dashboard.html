@@ -1,365 +1,772 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1">
-
-<title>Admin Dashboard</title>
-
-<link
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-rel="stylesheet">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Dashboard — HomeFeast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#0F172A;--bg-deep:#1E293B;--bg-card:#1E293B;--fg:#F1F5F9;--fg-light:#CBD5E1;--muted:#64748B;--accent:#F97316;--accent-hover:#EA6D0E;--card:#1E293B;--border:rgba(255,255,255,.07);--success:#22C55E;--warning:#F59E0B;--danger:#EF4444;--info:#3B82F6;--shadow-md:0 8px 30px rgba(0,0,0,.3);--radius:16px;--radius-sm:10px;--font-d:'Playfair Display',Georgia,serif;--font-b:'DM Sans',sans-serif}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--bg);color:var(--fg);min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;outline:none;font-family:inherit}
+.sidebar{width:250px;background:var(--bg-deep);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-icon{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.sidebar-logo span{font-family:var(--font-d);font-size:20px;font-weight:700}
+.sidebar-logo .admin-tag{font-size:10px;background:rgba(249,115,22,.2);color:var(--accent);padding:2px 8px;border-radius:10px;font-weight:700;margin-left:4px}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+.nav-section-label{padding:6px 20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:var(--muted);cursor:pointer;transition:.2s;font-size:14px;font-weight:500;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:rgba(249,115,22,.08);color:var(--fg);border-left-color:var(--accent)}
+.nav-item i{width:18px;text-align:center}
+.nav-item .badge-count{margin-left:auto;background:var(--danger);color:#fff;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}
+.sidebar-user{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sidebar-user .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.sidebar-user .info .name{font-size:14px;font-weight:600}
+.sidebar-user .info .role{font-size:12px;color:var(--muted)}
+.main-content{margin-left:250px;flex:1;padding:32px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.topbar h1{font-family:var(--font-d);font-size:28px}
+.topbar-sub{font-size:14px;color:var(--muted);margin-top:4px}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--fg-light)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-info{background:var(--info);color:#fff}
+.btn-sm{padding:6px 12px;font-size:13px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.s-orange::before{background:var(--accent)}
+.stat-card.s-green::before{background:var(--success)}
+.stat-card.s-blue::before{background:var(--info)}
+.stat-card.s-yellow::before{background:var(--warning)}
+.stat-card.s-red::before{background:var(--danger)}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+.stat-card .stat-val{font-size:30px;font-weight:700;font-family:var(--font-d);margin-bottom:4px}
+.stat-card .stat-label{font-size:12px;color:var(--muted);font-weight:500}
+.ic-orange{background:rgba(249,115,22,.15);color:var(--accent)}
+.ic-green{background:rgba(34,197,94,.15);color:var(--success)}
+.ic-blue{background:rgba(59,130,246,.15);color:var(--info)}
+.ic-yellow{background:rgba(245,158,11,.15);color:var(--warning)}
+.ic-red{background:rgba(239,68,68,.15);color:var(--danger)}
+.section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:24px}
+.section-head{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.section-head h2{font-size:17px;font-weight:700}
+.section-body{padding:24px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:rgba(255,255,255,.03);white-space:nowrap}
+td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-green{background:rgba(34,197,94,.15);color:var(--success)}
+.badge-orange{background:rgba(249,115,22,.15);color:var(--accent)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--danger)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--info)}
+.badge-gray{background:rgba(100,116,139,.15);color:var(--muted)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--warning)}
+.search-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-bar input,.search-bar select{padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--bg);color:var(--fg);font-family:var(--font-b)}
+.search-bar input:focus,.search-bar select:focus{border-color:var(--accent);outline:none}
+.search-bar input{min-width:200px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--fg-light)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--bg);color:var(--fg);font-family:var(--font-b);transition:.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);outline:none}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--radius);width:90%;max-width:560px;max-height:85vh;overflow-y:auto;transform:translateY(20px);transition:.3s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:18px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.2s}
+.modal-close:hover{color:var(--fg)}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:var(--shadow-md);animation:slideIn .3s ease;max-width:340px;display:flex;align-items:center;gap:10px}
+.toast-success{background:var(--success);color:#fff}
+.toast-error{background:var(--danger);color:#fff}
+.toast-info{background:var(--info);color:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.page{display:none}.page.active{display:block}
+.empty{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty i{font-size:48px;margin-bottom:16px;opacity:.3;display:block}
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.loading i{font-size:28px;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;display:flex;align-items:center;gap:16px}
+.kpi-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.kpi-info .val{font-size:26px;font-weight:700;font-family:var(--font-d)}
+.kpi-info .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+.complaint-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px}
+.complaint-card .c-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:12px}
+.complaint-card .c-id{font-size:12px;color:var(--muted)}
+.complaint-card .c-issue{font-size:14px;line-height:1.5;color:var(--fg-light);margin-bottom:10px}
+.complaint-card .c-meta{font-size:12px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab-btn{padding:11px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.category-chip{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;margin:6px;font-size:14px;font-weight:500}
+.category-chip .del-btn{width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.15);color:var(--danger);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer}
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr}}
+.mob-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--accent);color:#fff;width:40px;height:40px;border-radius:8px;align-items:center;justify-content:center}
+@media(max-width:640px){.mob-toggle{display:flex}}
+</style>
 </head>
+<body>
+<div class="toast-wrap" id="toastW"></div>
 
-<body class="bg-light">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">⚙️</div>
+    <span>HomeFeast</span><span class="admin-tag">ADMIN</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-line"></i> Dashboard</div>
+    <div class="nav-section-label">Management</div>
+    <div class="nav-item" data-page="cooks"><i class="fas fa-utensils"></i> Cooks <span class="badge-count" id="pendingCount" style="display:none">0</span></div>
+    <div class="nav-item" data-page="users"><i class="fas fa-users"></i> Users</div>
+    <div class="nav-item" data-page="orders"><i class="fas fa-receipt"></i> Orders</div>
+    <div class="nav-item" data-page="subscriptions"><i class="fas fa-calendar-check"></i> Subscriptions</div>
+    <div class="nav-section-label">Support</div>
+    <div class="nav-item" data-page="complaints"><i class="fas fa-comment-alt"></i> Complaints <span class="badge-count" id="openComplaintsCount" style="display:none">0</span></div>
+    <div class="nav-section-label">Settings</div>
+    <div class="nav-item" data-page="categories"><i class="fas fa-tags"></i> Categories</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebarAvatar">A</div>
+      <div class="info">
+        <div class="name" id="sidebarName">Admin</div>
+        <div class="role">Super Admin</div>
+      </div>
+    </div>
+    <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:8px" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</aside>
 
-<div class="container py-4">
+<button class="mob-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
 
-<h2 class="mb-4">
-Admin Dashboard
-</h2>
+<main class="main-content">
+  <div class="topbar">
+    <div>
+      <h1 id="pageTitle">Admin Dashboard</h1>
+      <div class="topbar-sub" id="pageSub">Welcome back! Here's what's happening on HomeFeast.</div>
+    </div>
+    <a href="/" class="btn btn-outline btn-sm"><i class="fas fa-home"></i> View Site</a>
+  </div>
 
-<!-- DASHBOARD CARDS -->
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card s-orange"><div class="stat-icon ic-orange"><i class="fas fa-users"></i></div><div class="stat-val" id="kpiUsers">—</div><div class="stat-label">Registered Users</div></div>
+      <div class="stat-card s-green"><div class="stat-icon ic-green"><i class="fas fa-utensils"></i></div><div class="stat-val" id="kpiCooks">—</div><div class="stat-label">Total Cooks</div></div>
+      <div class="stat-card s-blue"><div class="stat-icon ic-blue"><i class="fas fa-calendar-check"></i></div><div class="stat-val" id="kpiSubs">—</div><div class="stat-label">Active Subscriptions</div></div>
+      <div class="stat-card s-yellow"><div class="stat-icon ic-yellow"><i class="fas fa-receipt"></i></div><div class="stat-val" id="kpiOrders">—</div><div class="stat-label">Total Orders</div></div>
+      <div class="stat-card s-green"><div class="stat-icon ic-green"><i class="fas fa-percentage"></i></div><div class="stat-val" id="kpiConversion">—</div><div class="stat-label">Conversion Rate</div></div>
+    </div>
 
-<div class="row g-3 mb-4">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div class="section">
+        <div class="section-head"><h2>Pending Cook Approvals</h2><button class="btn btn-outline btn-sm" onclick="showPage('cooks')">View All</button></div>
+        <div class="section-body" id="pendingCooksList"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h2>Open Complaints</h2><button class="btn btn-outline btn-sm" onclick="showPage('complaints')">View All</button></div>
+        <div class="section-body" id="openComplaintsList"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+      </div>
+    </div>
 
-<div class="col-md-3">
-<div class="card shadow-sm">
-<div class="card-body">
-<h6>Users</h6>
-<h3 id="usersCount">0</h3>
+    <div class="section" style="margin-top:24px">
+      <div class="section-head"><h2>Recent Orders</h2></div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>User</th><th>Cook</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="dashOrdersBody"><tr><td colspan="7"><div class="loading"><i class="fas fa-spinner"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COOKS -->
+  <div class="page" id="page-cooks">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchCookTab('all',this)">All Cooks</button>
+      <button class="tab-btn" onclick="switchCookTab('pending',this)">Pending</button>
+      <button class="tab-btn" onclick="switchCookTab('approved',this)">Approved</button>
+      <button class="tab-btn" onclick="switchCookTab('suspended',this)">Suspended</button>
+    </div>
+    <div class="section">
+      <div class="section-head">
+        <h2 id="cooksTableTitle">All Cooks</h2>
+        <div class="search-bar">
+          <input type="text" id="cookSearch" placeholder="Search cooks..." oninput="filterCooksTable()">
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Cuisine</th><th>Area</th><th>Plans (D/W/M)</th><th>Rating</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="cooksBody"><tr><td colspan="8"><div class="loading"><i class="fas fa-spinner"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="page" id="page-users">
+    <div class="section">
+      <div class="section-head">
+        <h2>All Users</h2>
+        <div class="search-bar">
+          <input type="text" id="userSearch" placeholder="Search users..." oninput="filterUsersTable()">
+          <select id="userStatusFilter" onchange="filterUsersTable()">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Area</th><th>Orders</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="usersBody"><tr><td colspan="8"><div class="loading"><i class="fas fa-spinner"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="page" id="page-orders">
+    <div class="section">
+      <div class="section-head">
+        <h2>All Orders</h2>
+        <div class="search-bar">
+          <input type="text" id="orderSearch" placeholder="Search orders..." oninput="filterOrdersTable()">
+          <select id="orderStatusFilter" onchange="filterOrdersTable()">
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Active">Active</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          <select id="orderPlanFilter" onchange="filterOrdersTable()">
+            <option value="">All Plans</option>
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>User</th><th>Cook</th><th>Meal</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="ordersBody"><tr><td colspan="8"><div class="loading"><i class="fas fa-spinner"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBSCRIPTIONS -->
+  <div class="page" id="page-subscriptions">
+    <div class="kpi-grid" id="subKpiGrid">
+      <div class="kpi-card"><div class="kpi-icon ic-blue"><i class="fas fa-calendar-check"></i></div><div class="kpi-info"><div class="val" id="subActive">—</div><div class="lbl">Active Subscriptions</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon ic-orange"><i class="fas fa-list"></i></div><div class="kpi-info"><div class="val" id="subTotal">—</div><div class="lbl">Total Subscriptions</div></div></div>
+      <div class="kpi-card"><div class="kpi-icon ic-green"><i class="fas fa-chart-bar"></i></div><div class="kpi-info"><div class="val" id="subBreakdown">—</div><div class="lbl">Top Plan</div></div></div>
+    </div>
+    <div class="section">
+      <div class="section-head"><h2>All Subscriptions</h2></div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>User</th><th>Cook</th><th>Plan</th><th>Amount</th><th>Status</th><th>Start Date</th><th>End Date</th><th>Preference</th></tr></thead>
+            <tbody id="subsBody"><tr><td colspan="8"><div class="loading"><i class="fas fa-spinner"></i></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLAINTS -->
+  <div class="page" id="page-complaints">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchComplaintTab('all',this)">All</button>
+      <button class="tab-btn" onclick="switchComplaintTab('Open',this)">Open</button>
+      <button class="tab-btn" onclick="switchComplaintTab('In Progress',this)">In Progress</button>
+      <button class="tab-btn" onclick="switchComplaintTab('Resolved',this)">Resolved</button>
+    </div>
+    <div id="complaintsContainer"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="page" id="page-categories">
+    <div class="section">
+      <div class="section-head">
+        <h2>Cuisine Categories</h2>
+        <button class="btn btn-primary btn-sm" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Add Category</button>
+      </div>
+      <div class="section-body">
+        <div id="categoriesContainer"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Cook Status Modal -->
+<div class="modal-overlay" id="cookStatusModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h3>Update Cook Status</h3>
+      <button class="modal-close" onclick="closeCookModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--fg-light);margin-bottom:16px" id="cookModalInfo"></p>
+      <div class="form-group"><label>New Status</label>
+        <select id="newCookStatus">
+          <option value="approved">✅ Approve</option>
+          <option value="pending">⏳ Mark as Pending</option>
+          <option value="suspended">🚫 Suspend</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeCookModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmCookStatus()">Update</button>
+    </div>
+  </div>
 </div>
-</div>
-</div>
 
-<div class="col-md-3">
-<div class="card shadow-sm">
-<div class="card-body">
-<h6>Cooks</h6>
-<h3 id="cooksCount">0</h3>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card shadow-sm">
-<div class="card-body">
-<h6>Orders</h6>
-<h3 id="ordersCount">0</h3>
-</div>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card shadow-sm">
-<div class="card-body">
-<h6>Complaints</h6>
-<h3 id="complaintsCount">0</h3>
-</div>
-</div>
+<!-- User Status Modal -->
+<div class="modal-overlay" id="userStatusModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h3>Update User Status</h3>
+      <button class="modal-close" onclick="document.getElementById('userStatusModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--fg-light);margin-bottom:16px" id="userModalInfo"></p>
+      <div class="form-group"><label>New Status</label>
+        <select id="newUserStatus">
+          <option value="Active">✅ Active</option>
+          <option value="Inactive">💤 Inactive</option>
+          <option value="Suspended">🚫 Suspended</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('userStatusModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmUserStatus()">Update</button>
+    </div>
+  </div>
 </div>
 
+<!-- Complaint Modal -->
+<div class="modal-overlay" id="complaintModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Resolve Complaint</h3>
+      <button class="modal-close" onclick="document.getElementById('complaintModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="complaintDetail" style="background:var(--bg);border-radius:8px;padding:14px;margin-bottom:16px;font-size:14px;color:var(--fg-light);line-height:1.6"></div>
+      <div class="form-group"><label>Update Status</label>
+        <select id="complaintNewStatus">
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Resolution / Note</label>
+        <textarea id="complaintResolution" placeholder="Describe the resolution or add a note..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('complaintModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmComplaintUpdate()"><i class="fas fa-check"></i> Save</button>
+    </div>
+  </div>
 </div>
 
-
-<!-- CATEGORY -->
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-Category Management
+<!-- Category Modal -->
+<div class="modal-overlay" id="categoryModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h3 id="catModalTitle">Add Category</h3>
+      <button class="modal-close" onclick="document.getElementById('categoryModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="catId">
+      <div class="form-group"><label>Category Name *</label><input id="catName" type="text" placeholder="e.g. South Indian"></div>
+      <div class="form-group"><label>Status</label>
+        <select id="catStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('categoryModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCategory()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
 </div>
-
-<div class="card-body">
-
-<input
-id="categoryName"
-class="form-control mb-2"
-placeholder="Category Name">
-
-<button
-class="btn btn-primary mb-3"
-onclick="addCategory()">
-Add Category
-</button>
-
-<ul
-class="list-group"
-id="categoryList">
-</ul>
-
-</div>
-</div>
-
-
-<!-- COMPLAINTS -->
-
-<div class="card shadow-sm">
-
-<div class="card-header">
-Complaints / Disputes
-</div>
-
-<div class="card-body">
-
-<div class="table-responsive">
-
-<table
-class="table table-bordered">
-
-<thead>
-<tr>
-<th>User</th>
-<th>Subject</th>
-<th>Status</th>
-<th>Action</th>
-</tr>
-</thead>
-
-<tbody id="complaintsTable">
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-</div>
-
-</div>
-
 
 <script>
+const API='/api';
+let token=localStorage.getItem('token');
+let allCooks=[],allUsers=[],allOrders=[],allComplaints=[];
+let cookTabFilter='all',complaintTabFilter='all';
+let updatingCookId=null,updatingUserId=null,updatingComplaintId=null;
 
-const token =
-localStorage.getItem(
-'token'
-);
+async function init(){
+  if(!token){location.href='/';return;}
+  try{
+    const r=await apiFetch('/auth/me');
+    if(!r.success||r.data.role!=='admin'){location.href='/';return;}
+    const u=r.data;
+    document.getElementById('sidebarAvatar').textContent=(u.firstName||'A')[0].toUpperCase();
+    document.getElementById('sidebarName').textContent=u.firstName+' '+(u.lastName||'');
+    loadDashboard();
+    loadCooks();
+    loadUsers();
+    loadOrders();
+    loadSubscriptions();
+    loadComplaints();
+    loadCategories();
+  }catch(e){location.href='/';}
+}
 
+async function apiFetch(path,opts={}){
+  const res=await fetch(API+path,{
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(opts.headers||{})},
+    ...opts
+  });
+  return res.json();
+}
+
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i>${msg}`;
+  document.getElementById('toastW').appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`[data-page="${p}"]`).classList.add('active');
+  const titles={dashboard:'Admin Dashboard',cooks:'Cook Management',users:'User Management',orders:'Order Management',subscriptions:'Subscription Management',complaints:'Complaint Management',categories:'Categories & Cuisines'};
+  const subs={dashboard:'Platform overview and key metrics',cooks:'Approve, suspend or review home cooks',users:'Manage customer accounts',orders:'Monitor all platform orders',subscriptions:'Track all meal subscriptions',complaints:'Resolve user complaints and disputes',categories:'Manage cuisine categories'};
+  document.getElementById('pageTitle').textContent=titles[p]||p;
+  document.getElementById('pageSub').textContent=subs[p]||'';
+}
+document.querySelectorAll('.nav-item').forEach(el=>{el.onclick=()=>showPage(el.dataset.page);});
 
 // DASHBOARD
-
 async function loadDashboard(){
-
-const res =
-await fetch(
-'/api/admin/dashboard',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
-}
-});
-
-const data =
-await res.json();
-
-document.getElementById(
-'usersCount'
-).innerText =
-data.data.users;
-
-document.getElementById(
-'cooksCount'
-).innerText =
-data.data.cooks;
-
-document.getElementById(
-'ordersCount'
-).innerText =
-data.data.orders;
-
-document.getElementById(
-'complaintsCount'
-).innerText =
-data.data.complaints;
+  const [kpi,stats,orders]=await Promise.all([apiFetch('/admin/kpi'),apiFetch('/admin/stats'),apiFetch('/admin/orders')]);
+  if(kpi.success){
+    const d=kpi.data;
+    document.getElementById('kpiUsers').textContent=d.users;
+    document.getElementById('kpiCooks').textContent=d.cooks;
+    document.getElementById('kpiSubs').textContent=d.activeSubscriptions;
+    document.getElementById('kpiOrders').textContent=d.orders;
+    document.getElementById('kpiConversion').textContent=d.conversionRate+'%';
+  }
+  if(stats.success){
+    const pending=stats.data.pendingCooks;
+    const openC=stats.data.openComplaints;
+    if(pending>0){const el=document.getElementById('pendingCount');el.textContent=pending;el.style.display='inline';}
+    if(openC>0){const el=document.getElementById('openComplaintsCount');el.textContent=openC;el.style.display='inline';}
+    // pending cooks panel
+    const pcList=document.getElementById('pendingCooksList');
+    const pendingCooks=(allCooks||[]).filter(c=>c.status==='pending').slice(0,4);
+    if(!pendingCooks.length)pcList.innerHTML='<div class="empty" style="padding:24px"><i class="fas fa-check-circle" style="font-size:32px"></i><p style="font-size:14px">No pending approvals</p></div>';
+    else pcList.innerHTML=pendingCooks.map(c=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)"><div><div style="font-weight:600;font-size:14px">${c.name}</div><div style="font-size:12px;color:var(--muted)">${c.cuisine} · ${c.area}</div></div><button class="btn btn-success btn-sm" onclick="quickApproveCook('${c._id}')"><i class="fas fa-check"></i> Approve</button></div>`).join('');
+  }
+  if(orders.success){
+    const tbody=document.getElementById('dashOrdersBody');
+    const recent=orders.data.slice(0,7);
+    if(!recent.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty" style="padding:24px"><i class="fas fa-receipt"></i><p>No orders</p></div></td></tr>';return;}
+    tbody.innerHTML=recent.map(o=>`<tr><td><strong>${o.orderId}</strong></td><td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td><td>${o.cook?.name||'—'}</td><td>${o.plan}</td><td>₹${o.amount}</td><td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td><td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td></tr>`).join('');
+    // open complaints panel
+    const ocList=document.getElementById('openComplaintsList');
+    const open=allComplaints.filter(c=>c.status==='Open').slice(0,4);
+    if(!open.length)ocList.innerHTML='<div class="empty" style="padding:24px"><i class="fas fa-check-circle" style="font-size:32px"></i><p style="font-size:14px">No open complaints</p></div>';
+    else ocList.innerHTML=open.map(c=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div style="font-size:13px;font-weight:600">${c.user?.firstName||'?'} ${c.user?.lastName||''}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${(c.issue||'').substring(0,60)}...</div></div><button class="btn btn-outline btn-sm" onclick="openComplaintModal('${c._id}')"><i class="fas fa-edit"></i></button></div></div>`).join('');
+  }
 }
 
+function statusBadge(s){return{Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'}[s]||'badge-gray';}
 
-// CATEGORIES
-
-async function loadCategories(){
-
-const res =
-await fetch(
-'/api/admin/categories',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
+// COOKS
+async function loadCooks(){
+  const r=await apiFetch('/admin/cooks');
+  allCooks=r.success?r.data:[];
+  renderCooks();
 }
-});
-
-const data =
-await res.json();
-
-const list =
-document.getElementById(
-'categoryList'
-);
-
-list.innerHTML='';
-
-data.data.forEach(cat=>{
-
-list.innerHTML+=`
-
-<li class="list-group-item d-flex justify-content-between">
-
-${cat.name}
-
-<button
-class="btn btn-danger btn-sm"
-onclick="deleteCategory('${cat._id}')">
-Delete
-</button>
-
-</li>
-
-`;
-
-});
+function switchCookTab(filter,el){
+  cookTabFilter=filter;
+  document.querySelectorAll('#page-cooks .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('cooksTableTitle').textContent=filter==='all'?'All Cooks':filter.charAt(0).toUpperCase()+filter.slice(1)+' Cooks';
+  renderCooks();
 }
-
-
-async function addCategory(){
-
-const name =
-document.getElementById(
-'categoryName'
-).value;
-
-await fetch(
-'/api/admin/categories',
-{
-method:'POST',
-headers:{
-'Content-Type':
-'application/json',
-Authorization:
-`Bearer ${token}`
-},
-body:JSON.stringify({
-name
-})
-});
-
-loadCategories();
+function filterCooksTable(){renderCooks();}
+function renderCooks(){
+  const search=document.getElementById('cookSearch').value.toLowerCase();
+  let data=cookTabFilter==='all'?allCooks:allCooks.filter(c=>c.status===cookTabFilter);
+  if(search)data=data.filter(c=>(c.name||'').toLowerCase().includes(search)||(c.cuisine||'').toLowerCase().includes(search)||(c.area||'').toLowerCase().includes(search));
+  const tbody=document.getElementById('cooksBody');
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty" style="padding:32px"><i class="fas fa-utensils"></i><p>No cooks found</p></div></td></tr>`;return;}
+  tbody.innerHTML=data.map(c=>{
+    const sMap={approved:'badge-green',pending:'badge-yellow',suspended:'badge-red'};
+    return`<tr>
+      <td><strong>${c.name}</strong><br><span style="font-size:11px;color:var(--muted)">${(c.types||[]).join(', ')}</span></td>
+      <td>${c.cuisine}</td><td>${c.area}</td>
+      <td style="font-size:12px">₹${c.plans?.daily||0} / ₹${c.plans?.weekly||0} / ₹${c.plans?.monthly||0}</td>
+      <td>⭐ ${c.rating||0} (${c.reviewCount||0})</td>
+      <td><span class="badge ${sMap[c.status]||'badge-gray'}">${c.status}</span></td>
+      <td>${new Date(c.createdAt).toLocaleDateString('en-IN')}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="openCookModal('${c._id}','${c.name}','${c.status}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCook('${c._id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function openCookModal(id,name,currentStatus){
+  updatingCookId=id;
+  document.getElementById('cookModalInfo').textContent=`Cook: ${name}`;
+  document.getElementById('newCookStatus').value=currentStatus;
+  document.getElementById('cookStatusModal').classList.add('open');
+}
+function closeCookModal(){document.getElementById('cookStatusModal').classList.remove('open');}
+async function confirmCookStatus(){
+  const status=document.getElementById('newCookStatus').value;
+  const r=await apiFetch('/admin/cooks/'+updatingCookId+'/status',{method:'PUT',body:JSON.stringify({status})});
+  if(r.success){toast('Cook status updated to '+status);closeCookModal();loadCooks();loadDashboard();}
+  else toast(r.message||'Failed','error');
+}
+async function quickApproveCook(id){
+  const r=await apiFetch('/admin/cooks/'+id+'/status',{method:'PUT',body:JSON.stringify({status:'approved'})});
+  if(r.success){toast('Cook approved!');loadCooks();loadDashboard();}
+  else toast(r.message||'Failed','error');
+}
+async function deleteCook(id){
+  if(!confirm('Delete this cook and all their menu items? This cannot be undone.'))return;
+  const r=await apiFetch('/admin/cooks/'+id,{method:'DELETE'});
+  if(r.success){toast('Cook deleted');loadCooks();}
+  else toast(r.message||'Failed','error');
 }
 
-
-async function deleteCategory(id){
-
-await fetch(
-`/api/admin/categories/${id}`,
-{
-method:'DELETE',
-headers:{
-Authorization:
-`Bearer ${token}`
+// USERS
+async function loadUsers(){
+  const r=await apiFetch('/admin/users');
+  allUsers=r.success?r.data:[];
+  renderUsers();
 }
-});
-
-loadCategories();
+function filterUsersTable(){renderUsers();}
+function renderUsers(){
+  const search=document.getElementById('userSearch').value.toLowerCase();
+  const statusF=document.getElementById('userStatusFilter').value;
+  let data=allUsers;
+  if(search)data=data.filter(u=>(u.firstName+' '+u.lastName).toLowerCase().includes(search)||(u.email||'').toLowerCase().includes(search));
+  if(statusF)data=data.filter(u=>u.status===statusF);
+  const tbody=document.getElementById('usersBody');
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty" style="padding:32px"><i class="fas fa-users"></i><p>No users found</p></div></td></tr>`;return;}
+  const sMap={Active:'badge-green',Inactive:'badge-gray',Suspended:'badge-red'};
+  tbody.innerHTML=data.map(u=>`<tr>
+    <td><strong>${u.firstName} ${u.lastName}</strong></td>
+    <td style="font-size:12px">${u.email}</td>
+    <td>${u.phone||'—'}</td>
+    <td>${u.area||'—'}</td>
+    <td>${u.orderCount||0}</td>
+    <td><span class="badge ${sMap[u.status]||'badge-gray'}">${u.status}</span></td>
+    <td>${new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="openUserModal('${u._id}','${u.firstName} ${u.lastName}','${u.status}')"><i class="fas fa-edit"></i></button></td>
+  </tr>`).join('');
+}
+function openUserModal(id,name,status){
+  updatingUserId=id;
+  document.getElementById('userModalInfo').textContent=`User: ${name}`;
+  document.getElementById('newUserStatus').value=status;
+  document.getElementById('userStatusModal').classList.add('open');
+}
+async function confirmUserStatus(){
+  const status=document.getElementById('newUserStatus').value;
+  const r=await apiFetch('/admin/users/'+updatingUserId+'/status',{method:'PUT',body:JSON.stringify({status})});
+  if(r.success){toast('User status updated');document.getElementById('userStatusModal').classList.remove('open');loadUsers();}
+  else toast(r.message||'Failed','error');
 }
 
+// ORDERS
+async function loadOrders(){
+  const r=await apiFetch('/admin/orders');
+  allOrders=r.success?r.data:[];
+  renderOrders();
+}
+function filterOrdersTable(){renderOrders();}
+function renderOrders(){
+  const search=document.getElementById('orderSearch').value.toLowerCase();
+  const statusF=document.getElementById('orderStatusFilter').value;
+  const planF=document.getElementById('orderPlanFilter').value;
+  let data=allOrders;
+  if(search)data=data.filter(o=>(o.orderId||'').toLowerCase().includes(search)||(o.user?.firstName||'').toLowerCase().includes(search)||(o.cook?.name||'').toLowerCase().includes(search));
+  if(statusF)data=data.filter(o=>o.status===statusF);
+  if(planF)data=data.filter(o=>o.plan===planF);
+  const tbody=document.getElementById('ordersBody');
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty" style="padding:32px"><i class="fas fa-receipt"></i><p>No orders found</p></div></td></tr>`;return;}
+  tbody.innerHTML=data.map(o=>`<tr>
+    <td><strong>${o.orderId}</strong></td>
+    <td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td>
+    <td>${o.cook?.name||'—'}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.meal}</td>
+    <td>${o.plan}</td>
+    <td>₹${o.amount}</td>
+    <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
+    <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
+  </tr>`).join('');
+}
+
+// SUBSCRIPTIONS
+async function loadSubscriptions(){
+  const [stats,subs]=await Promise.all([apiFetch('/subscriptions/stats'),apiFetch('/subscriptions')]);
+  if(stats.success){
+    document.getElementById('subActive').textContent=stats.data.active;
+    document.getElementById('subTotal').textContent=stats.data.total;
+    const top=stats.data.planBreakdown?.sort((a,b)=>b.count-a.count)[0];
+    document.getElementById('subBreakdown').textContent=top?top._id+' ('+top.count+')':'—';
+  }
+  const tbody=document.getElementById('subsBody');
+  if(!subs.success||!subs.data.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty" style="padding:32px"><i class="fas fa-calendar-check"></i><p>No subscriptions</p></div></td></tr>`;return;}
+  const sMap={Active:'badge-green',Paused:'badge-yellow',Cancelled:'badge-red',Expired:'badge-gray'};
+  tbody.innerHTML=subs.data.map(s=>`<tr>
+    <td>${s.user?.firstName||'?'} ${s.user?.lastName||''}</td>
+    <td>${s.cook?.name||'—'}</td>
+    <td>${s.plan}</td>
+    <td>₹${s.amount}</td>
+    <td><span class="badge ${sMap[s.status]||'badge-gray'}">${s.status}</span></td>
+    <td>${new Date(s.startDate).toLocaleDateString('en-IN')}</td>
+    <td>${s.endDate?new Date(s.endDate).toLocaleDateString('en-IN'):'—'}</td>
+    <td>${(s.mealPreference||[]).join(', ')}</td>
+  </tr>`).join('');
+}
 
 // COMPLAINTS
-
 async function loadComplaints(){
-
-const res =
-await fetch(
-'/api/admin/complaints',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
+  const r=await apiFetch('/admin/complaints');
+  allComplaints=r.success?r.data:[];
+  renderComplaints();
 }
-});
-
-const data =
-await res.json();
-
-const table =
-document.getElementById(
-'complaintsTable'
-);
-
-table.innerHTML='';
-
-data.data.forEach(c=>{
-
-table.innerHTML+=`
-
-<tr>
-
-<td>
-${c.user?.firstName||''}
-</td>
-
-<td>
-${c.subject}
-</td>
-
-<td>
-${c.status}
-</td>
-
-<td>
-
-<select
-onchange="
-updateComplaint(
-'${c._id}',
-this.value
-)">
-<option>Open</option>
-<option>In Progress</option>
-<option>Resolved</option>
-</select>
-
-</td>
-
-</tr>
-
-`;
-
-});
+function switchComplaintTab(filter,el){
+  complaintTabFilter=filter;
+  document.querySelectorAll('#page-complaints .tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderComplaints();
+}
+function renderComplaints(){
+  const data=complaintTabFilter==='all'?allComplaints:allComplaints.filter(c=>c.status===complaintTabFilter);
+  const c=document.getElementById('complaintsContainer');
+  if(!data.length){c.innerHTML='<div class="empty"><i class="fas fa-comment-alt"></i><p>No complaints found</p></div>';return;}
+  const sMap={Open:'badge-red','In Progress':'badge-yellow',Resolved:'badge-green',Closed:'badge-gray'};
+  c.innerHTML=data.map(comp=>`
+    <div class="complaint-card">
+      <div class="c-head">
+        <div>
+          <span class="badge ${sMap[comp.status]||'badge-gray'}" style="margin-bottom:6px">${comp.status}</span>
+          <div style="font-weight:700;font-size:15px">${comp.user?.firstName||'?'} ${comp.user?.lastName||''}</div>
+          <div class="c-id">#${comp.complaintId} · ${new Date(comp.createdAt).toLocaleDateString('en-IN')}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="openComplaintModal('${comp._id}')"><i class="fas fa-edit"></i> Respond</button>
+      </div>
+      <div class="c-issue">${comp.issue}</div>
+      <div class="c-meta">
+        ${comp.cook?`<span>🍳 Cook: ${comp.cook.name}</span>`:''}
+        ${comp.order?`<span>📦 Order: ${comp.order.orderId||''}</span>`:''}
+        ${comp.resolution?`<span>✅ Resolution: ${comp.resolution}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+function openComplaintModal(id){
+  updatingComplaintId=id;
+  const comp=allComplaints.find(c=>c._id===id);
+  if(!comp)return;
+  document.getElementById('complaintDetail').innerHTML=`<strong>${comp.user?.firstName} ${comp.user?.lastName||''}</strong>: ${comp.issue}`;
+  document.getElementById('complaintNewStatus').value=comp.status==='Open'?'In Progress':comp.status;
+  document.getElementById('complaintResolution').value=comp.resolution||'';
+  document.getElementById('complaintModal').classList.add('open');
+}
+async function confirmComplaintUpdate(){
+  const status=document.getElementById('complaintNewStatus').value;
+  const resolution=document.getElementById('complaintResolution').value;
+  const r=await apiFetch('/admin/complaints/'+updatingComplaintId,{method:'PUT',body:JSON.stringify({status,resolution})});
+  if(r.success){toast('Complaint updated to '+status);document.getElementById('complaintModal').classList.remove('open');loadComplaints();loadDashboard();}
+  else toast(r.message||'Failed','error');
 }
 
-
-async function updateComplaint(id,status){
-
-await fetch(
-`/api/admin/complaints/${id}`,
-{
-method:'PUT',
-headers:{
-'Content-Type':
-'application/json',
-Authorization:
-`Bearer ${token}`
-},
-body:JSON.stringify({
-status
-})
-});
-
-loadComplaints();
+// CATEGORIES
+async function loadCategories(){
+  const r=await apiFetch('/categories');
+  const c=document.getElementById('categoriesContainer');
+  if(!r.success||!r.data.length){c.innerHTML='<div class="empty"><i class="fas fa-tags"></i><p>No categories yet. Add your first cuisine category!</p></div>';return;}
+  c.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+    ${r.data.map(cat=>`
+      <div class="category-chip">
+        <span>${cat.name}</span>
+        <span class="badge ${cat.status==='active'?'badge-green':'badge-gray'}" style="font-size:10px">${cat.status}</span>
+        <span class="del-btn" onclick="deleteCategory('${cat._id}')"><i class="fas fa-times"></i></span>
+      </div>`).join('')}
+  </div>`;
+}
+function openCategoryModal(){
+  document.getElementById('catId').value='';
+  document.getElementById('catName').value='';
+  document.getElementById('catStatus').value='active';
+  document.getElementById('catModalTitle').textContent='Add Category';
+  document.getElementById('categoryModal').classList.add('open');
+}
+async function saveCategory(){
+  const name=document.getElementById('catName').value.trim();
+  if(!name){toast('Category name is required','error');return;}
+  const body={name,status:document.getElementById('catStatus').value};
+  const r=await apiFetch('/categories',{method:'POST',body:JSON.stringify(body)});
+  if(r.success){toast('Category added!');document.getElementById('categoryModal').classList.remove('open');loadCategories();}
+  else toast(r.message||'Failed','error');
+}
+async function deleteCategory(id){
+  if(!confirm('Delete this category?'))return;
+  const r=await apiFetch('/categories/'+id,{method:'DELETE'});
+  if(r.success){toast('Category deleted');loadCategories();}
+  else toast(r.message||'Failed','error');
 }
 
+function logout(){localStorage.removeItem('token');location.href='/';}
 
-loadDashboard();
-loadCategories();
-loadComplaints();
-
+init();
 </script>
-
 </body>
 </html>

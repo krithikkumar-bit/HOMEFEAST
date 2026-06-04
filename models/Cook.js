@@ -28,21 +28,10 @@ const cookSchema = new mongoose.Schema({
   },
 
   area: {
-  type: String,
-  required: true,
-  trim: true
-},
-
-city: {
-  type: String,
-  required: true,
-  trim: true
-},
-
-serviceArea: {
-  type: [String],
-  default: []
-},
+    type: String,
+    required: true,
+    trim: true
+  },
 
   image: {
     type: String,

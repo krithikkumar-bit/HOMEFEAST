@@ -18,264 +18,550 @@ require('../models/Order');
 const Complaint =
 require('../models/Complaint');
 
-const Category =
-require('../models/Category');
+const Menu =
+require('../models/Menu');
+
+const Subscription =
+require('../models/Subscription');
 
 
-// ==============================
-// ADMIN SUMMARY DASHBOARD
-// ==============================
+/* =========================
+   ADMIN PROTECTION
+========================= */
 
-router.get(
-'/dashboard',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-const users =
-await User.countDocuments();
-
-const cooks =
-await Cook.countDocuments();
-
-const orders =
-await Order.countDocuments();
-
-const complaints =
-await Complaint.countDocuments();
-
-res.json({
-success:true,
-data:{
-users,
-cooks,
-orders,
-complaints
-}
-});
-
-}catch(err){
-next(err);
-}
-});
-
-
-// ==============================
-// ALL USERS
-// ==============================
-
-router.get(
-'/users',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-const users =
-await User.find()
-.sort({
-createdAt:-1
-});
-
-res.json({
-success:true,
-count:users.length,
-data:users
-});
-
-}catch(err){
-next(err);
-}
-});
-
-
-// ==============================
-// ALL COOKS
-// ==============================
-
-router.get(
-'/cooks',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-const cooks =
-await Cook.find()
-.sort({
-createdAt:-1
-});
-
-res.json({
-success:true,
-count:cooks.length,
-data:cooks
-});
-
-}catch(err){
-next(err);
-}
-});
-
-
-// ==============================
-// CATEGORY CREATE
-// ==============================
-
-router.post(
-'/categories',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-const category =
-await Category.create({
-name:req.body.name
-});
-
-res.status(201).json({
-success:true,
-data:category
-});
-
-}catch(err){
-next(err);
-}
-});
-
-
-// ==============================
-// CATEGORY LIST
-// ==============================
-
-router.get(
-'/categories',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-const categories =
-await Category.find();
-
-res.json({
-success:true,
-count:categories.length,
-data:categories
-});
-
-}catch(err){
-next(err);
-}
-});
-
-
-// ==============================
-// DELETE CATEGORY
-// ==============================
-
-router.delete(
-'/categories/:id',
-protect,
-authorize('admin'),
-async(req,res,next)=>{
-
-try{
-
-await Category.findByIdAndDelete(
-req.params.id
+router.use(
+  protect,
+  authorize('admin')
 );
 
-res.json({
-success:true,
-message:'Category deleted'
-});
 
-}catch(err){
-next(err);
-}
-});
+/* =========================
+   KPI DASHBOARD
+========================= */
 
-
-// ==============================
-// COMPLAINTS
-// ==============================
-
-router.get(
-'/complaints',
-protect,
-authorize('admin'),
+router.get('/kpi',
 async(req,res,next)=>{
 
-try{
+  try{
 
-const complaints =
-await Complaint.find()
-.populate(
-'user',
-'firstName lastName email'
-)
-.sort({
-createdAt:-1
+    const users =
+    await User.countDocuments({
+      role:'user'
+    });
+
+    const cooks =
+    await Cook.countDocuments();
+
+    const activeSubscriptions =
+    await Subscription.countDocuments({
+      status:'Active'
+    });
+
+    const orders =
+    await Order.countDocuments();
+
+    const completedOrders =
+    await Order.countDocuments({
+      status:'Completed'
+    });
+
+    const conversionRate =
+    orders
+      ? (
+        (completedOrders/orders)
+        *100
+      ).toFixed(2)
+      : 0;
+
+    res.json({
+      success:true,
+      data:{
+        users,
+        cooks,
+        activeSubscriptions,
+        orders,
+        conversionRate
+      }
+    });
+
+  }catch(err){
+    next(err);
+  }
+
 });
 
-res.json({
-success:true,
-count:complaints.length,
-data:complaints
-});
 
-}catch(err){
-next(err);
-}
-});
+/* =========================
+   ADMIN STATS
+========================= */
 
-
-// ==============================
-// UPDATE COMPLAINT STATUS
-// ==============================
-
-router.put(
-'/complaints/:id',
-protect,
-authorize('admin'),
+router.get('/stats',
 async(req,res,next)=>{
 
-try{
+  try{
 
-const complaint =
-await Complaint.findById(
-req.params.id
-);
+    const totalCooks =
+    await Cook.countDocuments();
 
-if(!complaint){
-return res.status(404).json({
-success:false,
-message:'Complaint not found'
+    const pendingCooks =
+    await Cook.countDocuments({
+      status:'pending'
+    });
+
+    const totalUsers =
+    await User.countDocuments({
+      role:'user'
+    });
+
+    const activeOrders =
+    await Order.countDocuments({
+      status:'Active'
+    });
+
+    const openComplaints =
+    await Complaint.countDocuments({
+      status:'Open'
+    });
+
+    const totalRevenue =
+    await Order.aggregate([
+      {
+        $match:{
+          status:{
+            $ne:'Cancelled'
+          }
+        }
+      },
+      {
+        $group:{
+          _id:null,
+          total:{
+            $sum:'$amount'
+          }
+        }
+      }
+    ]);
+
+    res.json({
+
+      success:true,
+
+      data:{
+        totalCooks,
+        pendingCooks,
+        totalUsers,
+        activeOrders,
+        openComplaints,
+        totalRevenue:
+          totalRevenue[0]?.total || 0
+      }
+
+    });
+
+  }catch(err){
+    next(err);
+  }
+
 });
-}
 
-complaint.status =
-req.body.status ||
-complaint.status;
 
-await complaint.save();
+/* =========================
+   GET ALL COOKS
+========================= */
 
-res.json({
-success:true,
-data:complaint
+router.get('/cooks',
+async(req,res,next)=>{
+
+  try{
+
+    const cooks =
+    await Cook.find()
+      .populate(
+        'user',
+        'firstName lastName email phone status'
+      )
+      .sort({
+        createdAt:-1
+      });
+
+    res.json({
+      success:true,
+      data:cooks
+    });
+
+  }catch(err){
+    next(err);
+  }
+
 });
 
-}catch(err){
-next(err);
-}
+
+/* =========================
+   UPDATE COOK STATUS
+========================= */
+
+router.put('/cooks/:id/status',
+async(req,res,next)=>{
+
+  try{
+
+    const { status } =
+    req.body;
+
+    if(
+      ![
+        'approved',
+        'pending',
+        'suspended'
+      ].includes(status)
+    ){
+
+      return res.status(400).json({
+        success:false,
+        message:'Invalid status'
+      });
+
+    }
+
+    const cook =
+    await Cook.findByIdAndUpdate(
+
+      req.params.id,
+
+      {
+        status,
+        verified:
+        status === 'approved'
+      },
+
+      {
+        new:true
+      }
+
+    );
+
+    if(!cook){
+
+      return res.status(404).json({
+        success:false,
+        message:'Cook not found'
+      });
+
+    }
+
+    await User.findByIdAndUpdate(
+
+      cook.user,
+
+      {
+        status:
+        status === 'suspended'
+        ? 'Suspended'
+        : 'Active'
+      }
+
+    );
+
+    res.json({
+
+      success:true,
+
+      message:
+      `Cook ${status}`,
+
+      data:cook
+
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   DELETE COOK
+========================= */
+
+router.delete('/cooks/:id',
+async(req,res,next)=>{
+
+  try{
+
+    const cook =
+    await Cook.findByIdAndDelete(
+      req.params.id
+    );
+
+    if(!cook){
+
+      return res.status(404).json({
+        success:false,
+        message:'Cook not found'
+      });
+
+    }
+
+    await Menu.deleteMany({
+      cook:cook._id
+    });
+
+    res.json({
+      success:true,
+      message:'Cook deleted'
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   GET USERS
+========================= */
+
+router.get('/users',
+async(req,res,next)=>{
+
+  try{
+
+    const users =
+    await User.find({
+      role:'user'
+    }).sort({
+      createdAt:-1
+    });
+
+    const result =
+    await Promise.all(
+
+      users.map(
+        async(u)=>{
+
+          const orderCount =
+          await Order.countDocuments({
+            user:u._id
+          });
+
+          return {
+            ...u.toObject(),
+            orderCount
+          };
+
+        }
+      )
+
+    );
+
+    res.json({
+      success:true,
+      data:result
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   UPDATE USER STATUS
+========================= */
+
+router.put('/users/:id/status',
+async(req,res,next)=>{
+
+  try{
+
+    const { status } =
+    req.body;
+
+    if(
+      ![
+        'Active',
+        'Inactive',
+        'Suspended'
+      ].includes(status)
+    ){
+
+      return res.status(400).json({
+        success:false,
+        message:'Invalid status'
+      });
+
+    }
+
+    const user =
+    await User.findByIdAndUpdate(
+
+      req.params.id,
+
+      { status },
+
+      { new:true }
+
+    );
+
+    if(!user){
+
+      return res.status(404).json({
+        success:false,
+        message:'User not found'
+      });
+
+    }
+
+    res.json({
+
+      success:true,
+
+      message:
+      `User ${status.toLowerCase()}`,
+
+      data:user
+
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   GET ALL ORDERS
+========================= */
+
+router.get('/orders',
+async(req,res,next)=>{
+
+  try{
+
+    const orders =
+    await Order.find()
+      .populate(
+        'user',
+        'firstName lastName area'
+      )
+      .populate(
+        'cook',
+        'name cuisine'
+      )
+      .sort({
+        createdAt:-1
+      });
+
+    res.json({
+      success:true,
+      data:orders
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   GET COMPLAINTS
+========================= */
+
+router.get('/complaints',
+async(req,res,next)=>{
+
+  try{
+
+    const complaints =
+    await Complaint.find()
+      .populate(
+        'user',
+        'firstName lastName'
+      )
+      .populate(
+        'cook',
+        'name'
+      )
+      .populate(
+        'order',
+        'orderId meal'
+      )
+      .sort({
+        createdAt:-1
+      });
+
+    res.json({
+      success:true,
+      data:complaints
+    });
+
+  }catch(err){
+    next(err);
+  }
+
+});
+
+
+/* =========================
+   UPDATE COMPLAINT
+========================= */
+
+router.put('/complaints/:id',
+async(req,res,next)=>{
+
+  try{
+
+    const {
+      status,
+      resolution
+    } = req.body;
+
+    const complaint =
+    await Complaint.findByIdAndUpdate(
+
+      req.params.id,
+
+      {
+        status,
+        resolution:
+          resolution || ''
+      },
+
+      {
+        new:true
+      }
+
+    );
+
+    if(!complaint){
+
+      return res.status(404).json({
+        success:false,
+        message:'Complaint not found'
+      });
+
+    }
+
+    res.json({
+
+      success:true,
+
+      message:
+      `Complaint ${status}`,
+
+      data:complaint
+
+    });
+
+  }catch(err){
+    next(err);
+  }
+
 });
 
 module.exports = router;

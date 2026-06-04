@@ -1,371 +1,730 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1">
-
-<title>User Dashboard</title>
-
-<link
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-rel="stylesheet">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Dashboard — HomeFeast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--bg:#FFF9F3;--bg-deep:#FFF0E2;--fg:#2D1810;--fg-light:#5C3D2E;--muted:#9B7B6B;--accent:#E85D2C;--accent-hover:#D14A1A;--card:#fff;--border:rgba(45,24,16,.08);--success:#2D8F4E;--warning:#D4940A;--danger:#E53935;--info:#1976D2;--shadow-sm:0 2px 8px rgba(45,24,16,.06);--shadow-md:0 8px 30px rgba(45,24,16,.1);--radius:16px;--radius-sm:10px;--font-d:'Playfair Display',Georgia,serif;--font-b:'DM Sans',sans-serif}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--bg);color:var(--fg);min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;outline:none;font-family:inherit}
+/* LAYOUT */
+.dash-wrap{display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--fg);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.sidebar-logo .logo-icon{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.sidebar-logo span{font-family:var(--font-d);font-size:20px;font-weight:700}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;color:rgba(255,255,255,.7);cursor:pointer;transition:.2s;font-size:15px;font-weight:500;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.08);color:#fff;border-left-color:var(--accent)}
+.nav-item i{width:20px;text-align:center}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-user{display:flex;align-items:center;gap:10px}
+.sidebar-user .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.sidebar-user .info{flex:1}
+.sidebar-user .info .name{font-size:14px;font-weight:600}
+.sidebar-user .info .role{font-size:12px;color:rgba(255,255,255,.5)}
+.main-content{margin-left:250px;flex:1;padding:32px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.topbar h1{font-family:var(--font-d);font-size:28px;color:var(--fg)}
+.topbar-actions{display:flex;gap:12px;align-items:center}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--fg)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-danger{background:var(--danger);color:#fff}
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.stat-card .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
+.stat-card .stat-val{font-size:28px;font-weight:700;font-family:var(--font-d);margin-bottom:4px}
+.stat-card .stat-label{font-size:13px;color:var(--muted)}
+.ic-orange{background:rgba(232,93,44,.12);color:var(--accent)}
+.ic-green{background:rgba(45,143,78,.12);color:var(--success)}
+.ic-blue{background:rgba(25,118,210,.12);color:var(--info)}
+.ic-yellow{background:rgba(212,148,10,.12);color:var(--warning)}
+/* SECTIONS */
+.section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--border);margin-bottom:24px}
+.section-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.section-head h2{font-size:18px;font-weight:700}
+.section-body{padding:24px}
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{padding:10px 16px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--bg)}
+td{padding:14px 16px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg-deep)}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-green{background:rgba(45,143,78,.12);color:var(--success)}
+.badge-orange{background:rgba(232,93,44,.12);color:var(--accent)}
+.badge-red{background:rgba(229,57,53,.12);color:var(--danger)}
+.badge-blue{background:rgba(25,118,210,.12);color:var(--info)}
+.badge-gray{background:rgba(155,123,107,.12);color:var(--muted)}
+/* COOKS GRID */
+.cooks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.cook-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:.2s;box-shadow:var(--shadow-sm)}
+.cook-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.cook-card-img{height:180px;background:var(--bg-deep);position:relative;overflow:hidden}
+.cook-card-img img{width:100%;height:100%;object-fit:cover}
+.cook-card-img .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;background:linear-gradient(135deg,#FFF0E2,#FFD9C0)}
+.cook-card-badge{position:absolute;top:12px;right:12px;background:var(--success);color:#fff;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.cook-card-body{padding:18px}
+.cook-card-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.cook-card-meta{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:13px;color:var(--muted)}
+.cook-card-meta .star{color:#F59E0B}
+.cook-card-cuisine{font-size:13px;color:var(--fg-light);margin-bottom:14px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{background:var(--bg-deep);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.cook-card-plans{display:flex;gap:8px;margin-bottom:14px}
+.plan-chip{flex:1;text-align:center;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.plan-chip .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.plan-chip .price{font-size:16px;font-weight:700;color:var(--accent)}
+.cook-card-footer{display:flex;gap:8px}
+.cook-card-footer .btn{flex:1;justify-content:center}
+/* FILTER BAR */
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.filter-bar select,.filter-bar input{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);font-family:var(--font-b)}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--accent)}
+.filter-bar input{flex:1;min-width:200px}
+/* FORM */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--fg-light)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);font-family:var(--font-b);transition:.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);outline:none}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* SUBSCRIPTION CARD */
+.sub-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:16px;align-items:flex-start;margin-bottom:16px}
+.sub-icon{width:52px;height:52px;border-radius:12px;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.sub-info{flex:1}
+.sub-info h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.sub-info .sub-meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+.sub-info .sub-details{display:flex;gap:12px;flex-wrap:wrap}
+.sub-detail{font-size:13px;font-weight:500}
+.sub-actions{display:flex;gap:8px;align-items:center}
+/* TOAST */
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:var(--shadow-md);animation:slideIn .3s ease;max-width:340px;display:flex;align-items:center;gap:10px}
+.toast-success{background:#2D8F4E;color:#fff}
+.toast-error{background:var(--danger);color:#fff}
+.toast-info{background:var(--info);color:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border-radius:var(--radius);width:90%;max-width:520px;max-height:85vh;overflow-y:auto;transform:translateY(20px);transition:.3s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:20px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.2s}
+.modal-close:hover{background:var(--bg-deep);color:var(--fg)}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:12px}
+/* STAR RATING */
+.star-rating{display:flex;gap:6px;margin-bottom:8px}
+.star-rating i{font-size:24px;color:#D1B99A;cursor:pointer;transition:.2s}
+.star-rating i.active,.star-rating i:hover{color:#F59E0B}
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab-btn{padding:12px 20px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;background:none}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 24px;color:var(--muted)}
+.empty i{font-size:48px;margin-bottom:16px;opacity:.4}
+.empty p{font-size:15px;margin-bottom:20px}
+/* LOADING */
+.loading{text-align:center;padding:48px;color:var(--muted)}
+.loading i{font-size:32px;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+/* PAGE VISIBILITY */
+.page{display:none}.page.active{display:block}
+/* PROFILE AVATAR LARGE */
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;font-weight:700;margin:0 auto 16px}
+/* COMPLAINT SECTION */
+.complaint-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px}
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{width:200px}.main-content{margin-left:200px}.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}}
+.menu-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--fg);color:#fff;width:40px;height:40px;border-radius:8px;align-items:center;justify-content:center}
+@media(max-width:640px){.menu-toggle{display:flex}}
+</style>
 </head>
+<body>
 
-<body class="bg-light">
+<div class="toast-wrap" id="toastW"></div>
 
-<div class="container py-4">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🍱</div>
+    <span>HomeFeast</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-page="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</div>
+    <div class="nav-item" data-page="browse"><i class="fas fa-search"></i> Browse Cooks</div>
+    <div class="nav-item" data-page="orders"><i class="fas fa-receipt"></i> My Orders</div>
+    <div class="nav-item" data-page="subscriptions"><i class="fas fa-calendar-check"></i> Subscriptions</div>
+    <div class="nav-item" data-page="complaints"><i class="fas fa-comment-alt"></i> Complaints</div>
+    <div class="nav-item" data-page="profile"><i class="fas fa-user"></i> Profile</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="avatar" id="sidebarAvatar">U</div>
+      <div class="info">
+        <div class="name" id="sidebarName">User</div>
+        <div class="role">Customer</div>
+      </div>
+    </div>
+    <br>
+    <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</aside>
 
-<h2 class="mb-4">
-User Dashboard
-</h2>
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
 
-<div class="row g-3 mb-4">
+<!-- Main -->
+<main class="main-content">
+  <div class="topbar">
+    <h1 id="pageTitle">My Dashboard</h1>
+    <div class="topbar-actions">
+      <a href="/" class="btn btn-outline btn-sm"><i class="fas fa-home"></i> Home</a>
+    </div>
+  </div>
 
-<div class="col-md-4">
+  <!-- Dashboard Page -->
+  <div class="page active" id="page-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon ic-orange"><i class="fas fa-shopping-bag"></i></div>
+        <div class="stat-val" id="statOrders">—</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon ic-green"><i class="fas fa-calendar-check"></i></div>
+        <div class="stat-val" id="statSubs">—</div>
+        <div class="stat-label">Active Subscriptions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon ic-blue"><i class="fas fa-rupee-sign"></i></div>
+        <div class="stat-val" id="statSpent">—</div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon ic-yellow"><i class="fas fa-utensils"></i></div>
+        <div class="stat-val" id="statCooks">—</div>
+        <div class="stat-label">Cooks Tried</div>
+      </div>
+    </div>
 
-<div class="card shadow-sm">
-<div class="card-body">
+    <div class="section">
+      <div class="section-head">
+        <h2>Recent Orders</h2>
+        <button class="btn btn-outline btn-sm" onclick="showPage('orders')">View All</button>
+      </div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Cook</th><th>Meal</th><th>Plan</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="recentOrdersBody"><tr><td colspan="6" class="loading"><i class="fas fa-spinner"></i></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h6>
-Active Subscriptions
-</h6>
+  <!-- Browse Cooks Page -->
+  <div class="page" id="page-browse">
+    <div class="filter-bar">
+      <input type="text" placeholder="🔍 Search cooks, cuisine, area..." id="searchInput">
+      <select id="filterType"><option value="">All Types</option><option value="Veg">Veg</option><option value="Non-Veg">Non-Veg</option></select>
+      <select id="filterPlan"><option value="">All Plans</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select>
+      <select id="filterPrice"><option value="">All Prices</option><option value="budget">Budget (&lt;₹150)</option><option value="mid">Mid (₹150–200)</option><option value="premium">Premium (&gt;₹200)</option></select>
+      <button class="btn btn-primary btn-sm" onclick="loadCooks()"><i class="fas fa-search"></i> Search</button>
+    </div>
+    <div class="cooks-grid" id="cooksGrid"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+    <div style="text-align:center;margin-top:24px">
+      <button class="btn btn-outline" id="loadMoreBtn" onclick="loadMoreCooks()" style="display:none"><i class="fas fa-plus"></i> Load More</button>
+    </div>
+  </div>
 
-<h3 id="subCount">
-0
-</h3>
+  <!-- Orders Page -->
+  <div class="page" id="page-orders">
+    <div class="section">
+      <div class="section-head"><h2>Order History</h2></div>
+      <div class="section-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Cook</th><th>Meal</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="ordersBody"><tr><td colspan="8" class="loading"><i class="fas fa-spinner"></i></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Subscriptions Page -->
+  <div class="page" id="page-subscriptions">
+    <div id="subsContainer"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+  </div>
+
+  <!-- Complaints Page -->
+  <div class="page" id="page-complaints">
+    <div class="section">
+      <div class="section-head">
+        <h2>File a Complaint</h2>
+      </div>
+      <div class="section-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cook (optional)</label>
+            <select id="complaintCook"><option value="">Select Cook</option></select>
+          </div>
+          <div class="form-group">
+            <label>Order ID (optional)</label>
+            <select id="complaintOrder"><option value="">Select Order</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Describe the Issue *</label>
+          <textarea id="complaintIssue" placeholder="Describe your complaint in detail..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="submitComplaint()"><i class="fas fa-paper-plane"></i> Submit Complaint</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Page -->
+  <div class="page" id="page-profile">
+    <div class="section" style="max-width:600px">
+      <div class="section-head"><h2>My Profile</h2></div>
+      <div class="section-body">
+        <div style="text-align:center;margin-bottom:24px">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div id="profileName" style="font-size:20px;font-weight:700"></div>
+          <div id="profileEmail" style="color:var(--muted);font-size:14px"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input id="pFirstName" type="text"></div>
+          <div class="form-group"><label>Last Name</label><input id="pLastName" type="text"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Phone</label><input id="pPhone" type="text"></div>
+          <div class="form-group"><label>Area</label><input id="pArea" type="text"></div>
+        </div>
+        <div class="form-group"><label>Address</label><textarea id="pAddress" rows="2"></textarea></div>
+        <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Cook Detail Modal -->
+<div class="modal-overlay" id="cookModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalCookName">Cook Detail</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="cookModalBody"></div>
+  </div>
 </div>
+
+<!-- Order Modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Place Order</h3>
+      <button class="modal-close" onclick="closeOrderModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Cook</label><input id="orderCookName" disabled></div>
+      <div class="form-group"><label>Meal Description</label><input id="orderMeal" placeholder="e.g. 2 rotis + dal + rice"></div>
+      <div class="form-group"><label>Plan</label>
+        <select id="orderPlan">
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Monthly">Monthly</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Meal Preference</label>
+        <select id="orderMealPref">
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Delivery Address</label><textarea id="orderAddress" rows="2" placeholder="Enter delivery address"></textarea></div>
+      <div id="orderAmountDisplay" style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:12px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeOrderModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="placeOrder()"><i class="fas fa-check"></i> Confirm Order</button>
+    </div>
+  </div>
 </div>
 
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Write a Review</h3>
+      <button class="modal-close" onclick="document.getElementById('reviewModal').classList.remove('open')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Rating</label>
+        <div class="star-rating" id="starRating">
+          <i class="fas fa-star" data-v="1"></i><i class="fas fa-star" data-v="2"></i>
+          <i class="fas fa-star" data-v="3"></i><i class="fas fa-star" data-v="4"></i>
+          <i class="fas fa-star" data-v="5"></i>
+        </div>
+      </div>
+      <div class="form-group"><label>Your Review</label><textarea id="reviewText" placeholder="Share your experience..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="document.getElementById('reviewModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitReview()"><i class="fas fa-paper-plane"></i> Submit</button>
+    </div>
+  </div>
 </div>
-
-<div class="col-md-4">
-
-<div class="card shadow-sm">
-<div class="card-body">
-
-<h6>
-Orders
-</h6>
-
-<h3 id="orderCount">
-0
-</h3>
-
-</div>
-</div>
-
-</div>
-
-<div class="col-md-4">
-
-<div class="card shadow-sm">
-<div class="card-body">
-
-<h6>
-Complaints
-</h6>
-
-<h3 id="complaintCount">
-0
-</h3>
-
-</div>
-</div>
-
-</div>
-
-</div>
-
-
-<!-- SUBSCRIPTIONS -->
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-My Subscriptions
-</div>
-
-<div class="card-body">
-
-<table
-class="table table-bordered">
-
-<thead>
-
-<tr>
-<th>Plan</th>
-<th>Amount</th>
-<th>Status</th>
-</tr>
-
-</thead>
-
-<tbody id="subsTable">
-</tbody>
-
-</table>
-
-</div>
-</div>
-
-
-<!-- ORDERS -->
-
-<div class="card shadow-sm mb-4">
-
-<div class="card-header">
-Order History
-</div>
-
-<div class="card-body">
-
-<table
-class="table table-striped">
-
-<thead>
-
-<tr>
-<th>Total</th>
-<th>Status</th>
-</tr>
-
-</thead>
-
-<tbody id="ordersTable">
-</tbody>
-
-</table>
-
-</div>
-</div>
-
-
-<!-- COMPLAINT FORM -->
-
-<div class="card shadow-sm">
-
-<div class="card-header">
-Submit Complaint
-</div>
-
-<div class="card-body">
-
-<input
-id="subject"
-class="form-control mb-2"
-placeholder="Subject">
-
-<textarea
-id="message"
-class="form-control mb-2"
-placeholder="Complaint">
-</textarea>
-
-<button
-class="btn btn-danger"
-onclick="submitComplaint()">
-Submit
-</button>
-
-</div>
-</div>
-
-</div>
-
 
 <script>
+const API='/api';
+let token=localStorage.getItem('token');
+let currentUser=null;
+let cooksPage=1;
+let selectedCookId=null;
+let orderCookData=null;
+let reviewCookId=null;
+let selectedRating=0;
 
-const token =
-localStorage.getItem(
-'token'
-);
-
-
-// LOAD SUBSCRIPTIONS
-
-async function loadSubs(){
-
-const res =
-await fetch(
-'/api/subscriptions/my',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
-}
-});
-
-const data =
-await res.json();
-
-document.getElementById(
-'subCount'
-).innerText =
-data.count;
-
-const table =
-document.getElementById(
-'subsTable'
-);
-
-table.innerHTML='';
-
-data.data.forEach(sub=>{
-
-table.innerHTML+=`
-
-<tr>
-
-<td>
-${sub.plan}
-</td>
-
-<td>
-₹${sub.amount}
-</td>
-
-<td>
-${sub.status}
-</td>
-
-</tr>
-
-`;
-
-});
-
+// AUTH CHECK
+async function init(){
+  if(!token){location.href='/';return;}
+  try{
+    const r=await apiFetch('/auth/me');
+    if(!r.success){location.href='/';return;}
+    currentUser=r.data;
+    if(currentUser.role!=='user'){location.href='/';return;}
+    updateSidebarUser();
+    loadDashboard();
+    loadCooks();
+    loadOrders();
+    loadSubscriptions();
+    loadProfileData();
+    populateComplaintDropdowns();
+  }catch(e){location.href='/';}
 }
 
+function updateSidebarUser(){
+  const init=(currentUser.firstName||'U')[0].toUpperCase();
+  document.getElementById('sidebarAvatar').textContent=init;
+  document.getElementById('sidebarName').textContent=currentUser.firstName+' '+currentUser.lastName;
+  document.getElementById('profileAvatar').textContent=init;
+  document.getElementById('profileName').textContent=currentUser.firstName+' '+currentUser.lastName;
+  document.getElementById('profileEmail').textContent=currentUser.email;
+}
 
-// LOAD ORDERS
+async function apiFetch(path,opts={}){
+  const res=await fetch(API+path,{
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(opts.headers||{})},
+    ...opts
+  });
+  return res.json();
+}
 
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i>${msg}`;
+  document.getElementById('toastW').appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+// PAGES
+function showPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.querySelector(`[data-page="${p}"]`).classList.add('active');
+  const titles={dashboard:'My Dashboard',browse:'Browse Cooks',orders:'My Orders',subscriptions:'My Subscriptions',complaints:'Complaints',profile:'My Profile'};
+  document.getElementById('pageTitle').textContent=titles[p]||'Dashboard';
+}
+document.querySelectorAll('.nav-item').forEach(el=>{el.onclick=()=>showPage(el.dataset.page);});
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
+
+// DASHBOARD
+async function loadDashboard(){
+  const r=await apiFetch('/users/dashboard');
+  if(r.success){
+    const d=r.data;
+    document.getElementById('statOrders').textContent=d.totalOrders;
+    document.getElementById('statSubs').textContent=d.activeSubscriptions;
+    document.getElementById('statSpent').textContent='₹'+d.totalSpent.toLocaleString('en-IN');
+    document.getElementById('statCooks').textContent=d.cooksTried;
+  }
+  loadRecentOrders();
+}
+
+async function loadRecentOrders(){
+  const r=await apiFetch('/orders/my');
+  const tbody=document.getElementById('recentOrdersBody');
+  if(!r.success||!r.data.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty"><i class="fas fa-receipt"></i><p>No orders yet</p></div></td></tr>';return;}
+  tbody.innerHTML=r.data.slice(0,5).map(o=>`
+    <tr>
+      <td><strong>${o.orderId}</strong></td>
+      <td>${o.cook?.name||'—'}</td>
+      <td>${o.meal}</td>
+      <td>${o.plan}</td>
+      <td>₹${o.amount}</td>
+      <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
+    </tr>`).join('');
+}
+
+function statusBadge(s){return{Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'}[s]||'badge-gray';}
+
+// COOKS BROWSE
+async function loadCooks(reset=true){
+  if(reset)cooksPage=1;
+  const search=document.getElementById('searchInput').value;
+  const type=document.getElementById('filterType').value;
+  const plan=document.getElementById('filterPlan').value;
+  const price=document.getElementById('filterPrice').value;
+  const params=new URLSearchParams({page:cooksPage,limit:9});
+  if(search)params.set('search',search);
+  if(type)params.set('type',type);
+  if(plan)params.set('plan',plan);
+  if(price)params.set('price',price);
+  if(reset)document.getElementById('cooksGrid').innerHTML='<div class="loading"><i class="fas fa-spinner"></i> Loading cooks...</div>';
+  const r=await apiFetch('/cooks?'+params);
+  if(!r.success){document.getElementById('cooksGrid').innerHTML='<div class="empty"><i class="fas fa-exclamation-circle"></i><p>Failed to load cooks</p></div>';return;}
+  const grid=document.getElementById('cooksGrid');
+  if(reset)grid.innerHTML='';
+  if(!r.data.length&&reset){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="fas fa-search"></i><p>No cooks found for your search</p></div>';return;}
+  r.data.forEach(c=>grid.insertAdjacentHTML('beforeend',cookCardHTML(c)));
+  document.getElementById('loadMoreBtn').style.display=r.data.length===9?'inline-flex':'none';
+}
+function loadMoreCooks(){cooksPage++;loadCooks(false);}
+
+function cookCardHTML(c){
+  const stars=Array.from({length:5},(_,i)=>`<i class="fas fa-star" style="color:${i<Math.round(c.rating)?'#F59E0B':'#DDD'};font-size:12px"></i>`).join('');
+  return`<div class="cook-card">
+    <div class="cook-card-img">
+      ${c.avatar?`<img src="${c.avatar}" alt="${c.name}" onerror="this.parentNode.innerHTML='<div class=placeholder>🍱</div>'">`:'<div class="placeholder">🍱</div>'}
+      ${c.verified?'<span class="cook-card-badge">✓ Verified</span>':''}
+    </div>
+    <div class="cook-card-body">
+      <div class="cook-card-name">${c.name}</div>
+      <div class="cook-card-meta">
+        <span class="star">${stars}</span>
+        <span>${c.rating} (${c.reviewCount} reviews)</span>
+        <span>📍 ${c.area}</span>
+      </div>
+      <div class="cook-card-cuisine">
+        ${(c.types||[]).map(t=>`<span class="tag ${t==='Veg'?'':''}">🥬 ${t}</span>`).join('')}
+        <span class="tag">🍽 ${c.cuisine}</span>
+      </div>
+      <div class="cook-card-plans">
+        <div class="plan-chip"><div class="label">Daily</div><div class="price">₹${c.plans?.daily||0}</div></div>
+        <div class="plan-chip"><div class="label">Weekly</div><div class="price">₹${c.plans?.weekly||0}</div></div>
+        <div class="plan-chip"><div class="label">Monthly</div><div class="price">₹${c.plans?.monthly||0}</div></div>
+      </div>
+      <div class="cook-card-footer">
+        <button class="btn btn-outline btn-sm" onclick="viewCook('${c._id}')"><i class="fas fa-eye"></i> View</button>
+        <button class="btn btn-primary btn-sm" onclick="openOrderModal(${JSON.stringify(c).replace(/"/g,'&quot;')})"><i class="fas fa-cart-plus"></i> Order</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function viewCook(id){
+  document.getElementById('cookModalBody').innerHTML='<div class="loading"><i class="fas fa-spinner"></i></div>';
+  document.getElementById('cookModal').classList.add('open');
+  const r=await apiFetch('/cooks/'+id);
+  if(!r.success){document.getElementById('cookModalBody').innerHTML='<p>Failed to load cook details</p>';return;}
+  const c=r.data;
+  document.getElementById('modalCookName').textContent=c.name;
+  const menuHtml=c.menu?.length?c.menu.map(m=>`<tr><td>${m.name}</td><td><span class="badge ${m.type==='Veg'?'badge-green':'badge-orange'}">${m.type}</span></td><td>₹${m.price}</td><td>${m.available?'✅':'❌'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--muted)">No menu items</td></tr>';
+  const reviewsHtml=c.reviews?.length?c.reviews.slice(0,3).map(rv=>`<div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><strong>${rv.user?.firstName} ${rv.user?.lastName||''}</strong><span style="color:#F59E0B">${'★'.repeat(rv.rating)}</span></div><p style="font-size:14px;color:var(--fg-light)">${rv.text}</p></div>`).join(''):'<p style="color:var(--muted)">No reviews yet</p>';
+  document.getElementById('cookModalBody').innerHTML=`
+    <p style="color:var(--muted);margin-bottom:16px">${c.tagline||c.cuisine+' cuisine · '+c.area}</p>
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      ${(c.types||[]).map(t=>`<span class="badge badge-green">${t}</span>`).join('')}
+      <span class="badge badge-blue">⭐ ${c.rating} Rating</span>
+      <span class="badge badge-gray">📍 ${c.area}</span>
+      ${c.deliveryTime?`<span class="badge badge-orange">🕐 ${c.deliveryTime}</span>`:''}
+    </div>
+    <h4 style="margin-bottom:12px">Menu</h4>
+    <div class="table-wrap" style="margin-bottom:20px"><table><thead><tr><th>Dish</th><th>Type</th><th>Price</th><th>Available</th></tr></thead><tbody>${menuHtml}</tbody></table></div>
+    <h4 style="margin-bottom:12px">Reviews</h4>
+    ${reviewsHtml}
+    <div style="margin-top:20px">
+      <button class="btn btn-primary" onclick="openOrderModalById('${c._id}',${JSON.stringify(c.plans).replace(/"/g,'&quot;')});closeModal()"><i class="fas fa-cart-plus"></i> Place Order</button>
+      <button class="btn btn-outline" style="margin-left:10px" onclick="openReviewModal('${c._id}');closeModal()"><i class="fas fa-star"></i> Write Review</button>
+    </div>`;
+}
+
+function closeModal(){document.getElementById('cookModal').classList.remove('open');}
+
+// ORDER MODAL
+function openOrderModal(cook){
+  orderCookData=cook;
+  document.getElementById('orderCookName').value=cook.name;
+  document.getElementById('orderAddress').value=currentUser?.address||'';
+  updateOrderAmount();
+  document.getElementById('orderModal').classList.add('open');
+}
+function openOrderModalById(id,plans){openOrderModal({_id:id,name:'Cook',plans});}
+function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
+document.getElementById('orderPlan').onchange=updateOrderAmount;
+function updateOrderAmount(){
+  if(!orderCookData)return;
+  const plan=document.getElementById('orderPlan').value.toLowerCase();
+  const amt=orderCookData.plans?.[plan]||0;
+  document.getElementById('orderAmountDisplay').textContent=`Amount: ₹${amt}`;
+}
+async function placeOrder(){
+  const meal=document.getElementById('orderMeal').value.trim();
+  const plan=document.getElementById('orderPlan').value;
+  const mealPreference=document.getElementById('orderMealPref').value;
+  const deliveryAddress=document.getElementById('orderAddress').value.trim();
+  if(!meal){toast('Please enter meal description','error');return;}
+  const r=await apiFetch('/orders',{method:'POST',body:JSON.stringify({cookId:orderCookData._id,plan,meal,mealPreference:[mealPreference],deliveryAddress})});
+  if(r.success){toast(r.message||'Order placed!');closeOrderModal();loadDashboard();loadOrders();}
+  else toast(r.message||'Failed to place order','error');
+}
+
+// ORDERS
 async function loadOrders(){
-
-const res =
-await fetch(
-'/api/orders/my',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
+  const r=await apiFetch('/orders/my');
+  const tbody=document.getElementById('ordersBody');
+  if(!r.success||!r.data.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="fas fa-receipt"></i><p>No orders yet. <a href="#" onclick="showPage(\'browse\')" style="color:var(--accent)">Browse cooks</a> to place your first order!</p></div></td></tr>';return;}
+  tbody.innerHTML=r.data.map(o=>`
+    <tr>
+      <td><strong>${o.orderId}</strong></td>
+      <td>${o.cook?.name||'—'}</td>
+      <td>${o.meal}</td>
+      <td>${o.plan}</td>
+      <td>₹${o.amount}</td>
+      <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
+      <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
+      <td>
+        ${o.status==='Pending'||o.status==='Active'?`<button class="btn btn-danger btn-sm" onclick="cancelOrder('${o._id}')"><i class="fas fa-times"></i> Cancel</button>`:''}
+        ${o.status==='Completed'?`<button class="btn btn-outline btn-sm" onclick="openReviewModal('${o.cook?._id}')"><i class="fas fa-star"></i> Review</button>`:''}
+      </td>
+    </tr>`).join('');
 }
+async function cancelOrder(id){
+  if(!confirm('Cancel this order?'))return;
+  const r=await apiFetch('/orders/'+id+'/cancel',{method:'PUT'});
+  if(r.success){toast('Order cancelled');loadOrders();loadDashboard();}
+  else toast(r.message||'Failed','error');
+}
+
+// SUBSCRIPTIONS
+async function loadSubscriptions(){
+  const r=await apiFetch('/users/subscriptions');
+  const c=document.getElementById('subsContainer');
+  if(!r.success||!r.data.length){c.innerHTML='<div class="empty"><i class="fas fa-calendar-times"></i><p>No subscriptions yet. <a href="#" onclick="showPage(\'browse\')" style="color:var(--accent)">Browse cooks</a> to subscribe!</p></div>';return;}
+  c.innerHTML=r.data.map(s=>`
+    <div class="sub-card">
+      <div class="sub-icon">🍱</div>
+      <div class="sub-info">
+        <h3>${s.cook?.name||'Cook'}</h3>
+        <div class="sub-meta">${s.cook?.cuisine||''} · ${s.cook?.area||''}</div>
+        <div class="sub-details">
+          <span class="sub-detail"><strong>Plan:</strong> ${s.plan}</span>
+          <span class="sub-detail"><strong>Amount:</strong> ₹${s.amount}</span>
+          <span class="sub-detail"><strong>Started:</strong> ${new Date(s.startDate).toLocaleDateString('en-IN')}</span>
+          ${s.endDate?`<span class="sub-detail"><strong>Ends:</strong> ${new Date(s.endDate).toLocaleDateString('en-IN')}</span>`:''}
+          <span class="sub-detail"><strong>Preference:</strong> ${(s.mealPreference||[]).join(', ')}</span>
+        </div>
+      </div>
+      <div class="sub-actions">
+        <span class="badge ${statusBadge(s.status)}">${s.status}</span>
+        ${s.status==='Active'?`<button class="btn btn-outline btn-sm" onclick="pauseSub('${s._id}')"><i class="fas fa-pause"></i> Pause</button>`:''}
+      </div>
+    </div>`).join('');
+}
+async function pauseSub(id){
+  const r=await apiFetch('/users/subscriptions/'+id+'/pause',{method:'PUT'});
+  if(r.success){toast('Subscription paused');loadSubscriptions();}
+  else toast(r.message||'Failed','error');
+}
+
+// REVIEW
+function openReviewModal(cookId){
+  reviewCookId=cookId;selectedRating=0;
+  document.querySelectorAll('#starRating i').forEach(s=>s.classList.remove('active'));
+  document.getElementById('reviewText').value='';
+  document.getElementById('reviewModal').classList.add('open');
+}
+document.querySelectorAll('#starRating i').forEach(star=>{
+  star.onclick=()=>{selectedRating=parseInt(star.dataset.v);document.querySelectorAll('#starRating i').forEach(s=>s.classList.toggle('active',parseInt(s.dataset.v)<=selectedRating));};
 });
-
-const data =
-await res.json();
-
-document.getElementById(
-'orderCount'
-).innerText =
-data.count;
-
-const table =
-document.getElementById(
-'ordersTable'
-);
-
-table.innerHTML='';
-
-data.data.forEach(order=>{
-
-table.innerHTML+=`
-
-<tr>
-
-<td>
-₹${order.totalPrice}
-</td>
-
-<td>
-${order.status}
-</td>
-
-</tr>
-
-`;
-
-});
-
+async function submitReview(){
+  if(!selectedRating){toast('Please select a rating','error');return;}
+  const text=document.getElementById('reviewText').value.trim();
+  if(!text){toast('Please write a review','error');return;}
+  const r=await apiFetch('/reviews',{method:'POST',body:JSON.stringify({cookId:reviewCookId,rating:selectedRating,text})});
+  if(r.success){toast('Review submitted!');document.getElementById('reviewModal').classList.remove('open');}
+  else toast(r.message||'Failed','error');
 }
 
-
-// LOAD COMPLAINTS
-
-async function loadComplaints(){
-
-const res =
-await fetch(
-'/api/complaints/my',
-{
-headers:{
-Authorization:
-`Bearer ${token}`
+// COMPLAINTS
+async function populateComplaintDropdowns(){
+  const [cr,or]=await Promise.all([apiFetch('/cooks?limit=100'),apiFetch('/orders/my')]);
+  const cs=document.getElementById('complaintCook');
+  if(cr.success)cr.data.forEach(c=>cs.insertAdjacentHTML('beforeend',`<option value="${c._id}">${c.name}</option>`));
+  const os=document.getElementById('complaintOrder');
+  if(or.success)or.data.forEach(o=>os.insertAdjacentHTML('beforeend',`<option value="${o._id}">${o.orderId} — ${o.meal}</option>`));
 }
-});
-
-const data =
-await res.json();
-
-document.getElementById(
-'complaintCount'
-).innerText =
-data.count;
-
-}
-
-
-// SUBMIT COMPLAINT
-
 async function submitComplaint(){
-
-const subject =
-document.getElementById(
-'subject'
-).value;
-
-const message =
-document.getElementById(
-'message'
-).value;
-
-await fetch(
-'/api/complaints',
-{
-method:'POST',
-
-headers:{
-'Content-Type':
-'application/json',
-
-Authorization:
-`Bearer ${token}`
-},
-
-body:JSON.stringify({
-subject,
-message
-})
-});
-
-alert(
-'Complaint Submitted'
-);
-
-loadComplaints();
+  const issue=document.getElementById('complaintIssue').value.trim();
+  if(!issue){toast('Please describe the issue','error');return;}
+  const body={issue};
+  const ci=document.getElementById('complaintCook').value;
+  const oi=document.getElementById('complaintOrder').value;
+  if(ci)body.cookId=ci;
+  if(oi)body.orderId=oi;
+  const r=await apiFetch('/users/complaints',{method:'POST',body:JSON.stringify(body)});
+  if(r.success){toast('Complaint submitted. Our team will review shortly.');document.getElementById('complaintIssue').value='';}
+  else toast(r.message||'Failed','error');
 }
 
+// PROFILE
+async function loadProfileData(){
+  const r=await apiFetch('/auth/me');
+  if(r.success){
+    const u=r.data;
+    document.getElementById('pFirstName').value=u.firstName||'';
+    document.getElementById('pLastName').value=u.lastName||'';
+    document.getElementById('pPhone').value=u.phone||'';
+    document.getElementById('pArea').value=u.area||'';
+    document.getElementById('pAddress').value=u.address||'';
+  }
+}
+async function saveProfile(){
+  const body={firstName:document.getElementById('pFirstName').value,lastName:document.getElementById('pLastName').value,phone:document.getElementById('pPhone').value,area:document.getElementById('pArea').value,address:document.getElementById('pAddress').value};
+  const r=await apiFetch('/users/profile',{method:'PUT',body:JSON.stringify(body)});
+  if(r.success){toast('Profile updated!');currentUser={...currentUser,...body};updateSidebarUser();}
+  else toast(r.message||'Failed','error');
+}
 
-loadSubs();
-loadOrders();
-loadComplaints();
+// SEARCH on Enter
+document.getElementById('searchInput').addEventListener('keyup',e=>{if(e.key==='Enter')loadCooks();});
 
+function logout(){
+  localStorage.removeItem('token');
+  location.href='/';
+}
+
+init();
 </script>
-
 </body>
 </html>

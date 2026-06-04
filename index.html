@@ -2649,6 +2649,27 @@
             color: var(--warning)
         }
 
+        /* FIX 5: Added missing icon-btn CSS class */
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--bg-deep);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            color: var(--fg-light);
+            transition: var(--tr);
+            cursor: pointer;
+            border: none;
+        }
+
+        .icon-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
         @media(max-width:1024px) {
             .hero .container {
                 grid-template-columns: 1fr;
@@ -2882,19 +2903,19 @@
             <ul class="nav-links" id="navLinks">
 
     <li>
-        <a href="user-dashboard.html">
+        <a href="/frontend/user-dashboard.html">
             User Dashboard
         </a>
     </li>
 
     <li>
-        <a href="cook-dashboard.html">
+        <a href="/frontend/cook-dashboard.html">
             Cook Dashboard
         </a>
     </li>
 
     <li>
-        <a href="admin-dashboard.html">
+        <a href="/frontend/admin-dashboard.html">
             Admin
         </a>
     </li>
@@ -3020,9 +3041,9 @@ async function loadDatabase() {
             mid: meal._id,
             name: meal.name,
             price: meal.price,
-            img: meal.img || meal.image,           // ✅ handles both property names
-            cookId: meal.cookId || meal.cook,       // ✅ handles both property names
-            cookName: meal.cookName || 'Home Cook', // ✅ fallback
+            img: meal.img || meal.image,
+            cookId: meal.cookId || meal.cook,
+            cookName: meal.cookName || 'Home Cook',
             qty
         });
     }
@@ -3041,16 +3062,13 @@ function bindAddToCart(app, cookName, cookId) {
                 toast('Item not found', 'error');
                 return;
             }
-            // Build a complete meal object with correct property names
             addCart({
                 ...meal,
                 cookName: cookName || meal.cookName || 'Home Cook',
                 cookId: cookId || meal.cookId || meal.cook
             });
-            // Update button appearance to show "added"
             this.classList.add('added');
             this.innerHTML = '<i class="fas fa-check"></i>';
-            // Revert after 1.5 seconds so they can add more quantity
             setTimeout(() => {
                 this.classList.remove('added');
                 this.innerHTML = '<i class="fas fa-plus"></i>';
@@ -3061,7 +3079,7 @@ function bindAddToCart(app, cookName, cookId) {
         function rmCart(mid) { S.cart = S.cart.filter(c => c.mid !== mid); save(); updateUI() }
         function updCartQ(mid, d) { const i = S.cart.find(c => c.mid === mid); if (!i) return; i.qty += d; if (i.qty < 1) rmCart(mid); else { save(); updateUI() } }
         function clearCart() { S.cart = []; save(); updateUI() }
-        const stMap = { placed: { l: 'Placed', c: 'st-placed' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
+        const stMap = { placed: { l: 'Placed', c: 'st-placed' }, 'Pending': { l: 'Pending', c: 'st-pending' }, 'Active': { l: 'Active', c: 'st-active' }, 'Completed': { l: 'Delivered', c: 'st-delivered' }, 'Cancelled': { l: 'Cancelled', c: 'st-cancelled' }, confirmed: { l: 'Confirmed', c: 'st-confirmed' }, preparing: { l: 'Preparing', c: 'st-preparing' }, on_the_way: { l: 'On the Way', c: 'st-onway' }, delivered: { l: 'Delivered', c: 'st-delivered' }, cancelled: { l: 'Cancelled', c: 'st-cancelled' }, pending: { l: 'Pending', c: 'st-pending' }, active: { l: 'Active', c: 'st-active' }, paused: { l: 'Paused', c: 'st-paused' }, approved: { l: 'Approved', c: 'st-approved' }, rejected: { l: 'Rejected', c: 'st-rejected' }, open: { l: 'Open', c: 'st-placed' }, resolved: { l: 'Resolved', c: 'st-delivered' } };
 
         function nav(r, p = {}) {
     let url = '#' + r;
@@ -3079,21 +3097,19 @@ function getRoute() {
 function route() {
     const { page, id } = getRoute();
 
-    if (S.user && S.user.role === 'cook' && (
-        page === 'home' || page === 'browse' || page === 'how' ||
-        page === 'about' || page === 'dashboard' ||
-        page === 'subscriptions' || page === 'profile'
-    )) {
+    /* FIX 8: Cook redirect guard now also covers wallet/nutrition/recommendations/cart/checkout */
+    const userOnlyPages = ['home','browse','how','about','dashboard','subscriptions','profile',
+        'cart','checkout','orders','order-detail','sub-detail','wallet','nutrition','recommendations'];
+    if (S.user && S.user.role === 'cook' && userOnlyPages.includes(page)) {
         location.hash = '#cook-dashboard';
         return;
     }
 
-    if (S.user && S.user.role === 'admin' && (
-        page === 'home' || page === 'browse' || page === 'how' ||
-        page === 'about' || page === 'cook-dashboard' ||
-        page === 'cook-menu' || page === 'cook-orders' ||
-        page === 'cook-earnings' || page === 'cook-settings'
-    )) {
+    /* FIX 8: Admin redirect guard also expanded */
+    const adminOnlyPages = ['home','browse','how','about','cook-dashboard','cook-menu','cook-orders',
+        'cook-subs','cook-earnings','cook-settings','cart','checkout','dashboard','subscriptions',
+        'orders','profile','wallet','nutrition','recommendations'];
+    if (S.user && S.user.role === 'admin' && adminOnlyPages.includes(page)) {
         location.hash = '#admin-dashboard';
         return;
     }
@@ -3109,21 +3125,20 @@ function route() {
         return;
     }
 
-    /* ========== FIX: Changed startsWith('cook') to startsWith('cook-') ========== */
-    /* This allows regular users to view the public cook profile page (#cook/{id})  */
-    /* while still protecting cook-only pages like #cook-dashboard, #cook-menu etc. */
     if (page.startsWith('cook-') && (!S.user || S.user.role !== 'cook')) {
         window.location.hash = '#home';
         return;
     }
-    /* ============================================================================= */
 
+    /* FIX 3: Added wallet, nutrition, recommendations to auth guard */
     if ((page === 'dashboard' || page === 'subscriptions' ||
-         page === 'orders' || page === 'profile') && !S.user) {
+         page === 'orders' || page === 'profile' ||
+         page === 'wallet' || page === 'nutrition' || page === 'recommendations') && !S.user) {
         window.location.hash = '#login';
         return;
     }
 
+    /* FIX 2: Added wallet, nutrition, recommendations route entries */
     const R = {
         home: pgHome, browse: pgBrowse, cook: () => pgCookProfile(id),
         how: pgHow, about: pgAbout, login: pgLogin, register: pgRegister,
@@ -3135,7 +3150,8 @@ function route() {
         'cook-earnings': pgCookEarnings, 'cook-settings': pgCookSettings,
         'admin-dashboard': pgAdminDash, 'admin-users': pgAdminUsers,
         'admin-cooks': pgAdminCooks, 'admin-orders': pgAdminOrders,
-        'admin-categories': pgAdminCats, 'admin-complaints': pgAdminComplaints
+        'admin-categories': pgAdminCats, 'admin-complaints': pgAdminComplaints,
+        wallet: pgWallet, nutrition: pgNutrition, recommendations: pgRecommendations
     };
 
     const fn = R[page] || pgNotFound;
@@ -3166,12 +3182,12 @@ function route() {
 
     const cur = getRoute().page;
     $('#navLinks').innerHTML = Object.entries(links).map(([k, v]) => `<li><a data-nv="${k}" class="${cur === k ? 'active' : ''}">${v}</a></li>`).join('');
-    $('#mobMenu').innerHTML = Object.entries(links).map(([k, v]) => `<a data-nv="${k}">${v}</a>`).join('') + (auth ? '' : `<a data-nv="login">Login / Register</a>`);
+    $('#mobMenu').innerHTML = Object.entries(links).map(([k, v]) => `<a data-nv="${k}">${v}</a></li>`).join('') + (auth ? '' : `<a data-nv="login">Login / Register</a>`);
 
     if (auth) {
         const fullName = `${S.user.firstName || ''} ${S.user.lastName || ''}`.trim();
         const inits = ini(fullName || 'U');
-        $('#authArea').innerHTML = `<div style="position:relative"><button class="user-btn" id="uBtn">${inits}</button><div class="user-dd" id="uDD"><a data-nv="${r === 'cook' ? 'cook-settings' : 'profile'}"><i class="fas fa-user"></i> My Profile</a>${r === 'user' ? `<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>` : ''}<div class="dd-div"></div><button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button></div></div>`;
+        $('#authArea').innerHTML = `<div style="position:relative"><button class="user-btn" id="uBtn">${inits}</button><div class="user-dd" id="uDD"><a data-nv="${r === 'cook' ? 'cook-settings' : 'profile'}"><i class="fas fa-user"></i> My Profile</a>${r === 'user' ? `<a data-nv="orders"><i class="fas fa-receipt"></i> My Orders</a><a data-nv="wallet"><i class="fas fa-wallet"></i> Wallet</a><a data-nv="nutrition"><i class="fas fa-leaf"></i> Nutrition</a><a data-nv="recommendations"><i class="fas fa-robot"></i> For You</a><a data-nv="subscriptions"><i class="fas fa-repeat"></i> Subscriptions</a>` : ''}<div class="dd-div"></div><button id="loBtn"><i class="fas fa-right-from-bracket"></i> Logout</button></div></div>`;
         $('#uBtn')?.addEventListener('click', e => { e.stopPropagation(); $('#uDD').classList.toggle('open'); });
         document.addEventListener('click', e => { if (!$('#authArea').contains(e.target)) $('#uDD')?.classList.remove('open'); });
         $('#loBtn')?.addEventListener('click', () => { closeMob(); doLogout(); });
@@ -3204,14 +3220,16 @@ function route() {
     return `<div class="card cook-card" data-ck="${ck._id}"><div class="cook-card-img"><img src="${ck.image || 'https://picsum.photos/600/400'}" alt="${ck.name}" loading="lazy"/><div class="cook-card-badge"><span class="badge ${ck.status === 'approved' ? 'badge-veg' : ck.status === 'pending' ? 'badge-new' : 'badge-nv'}">${ck.status}</span></div></div><div class="cook-card-body"><div class="cook-card-name">${ck.name}</div><div class="cook-card-meta"><span class="ra"><i class="fas fa-star"></i> ${avgR}</span><span><i class="fas fa-utensils"></i> ${revs.length} reviews</span><span><i class="fas fa-truck"></i> ${ck.totalOrders || 0} orders</span></div><div class="cook-card-cuisine"><i class="fas fa-fire" style="margin-right:4px"></i>${ck.cuisine}</div><div class="cook-card-plans"><span class="plan-tag">Daily</span><span class="plan-tag">Weekly</span><span class="plan-tag">Monthly</span></div><div class="cook-card-footer"><div class="cook-card-price">From <strong>${fp(minP)}</strong>/day</div><button class="cook-card-btn" type="button" data-id="${ck._id}">View Menu</button></div></div></div>`;
 }
 
+        /* FIX 7: Changed type check to case-insensitive */
         function mealCardHTML(m) {
     const inC = S.cart.find(c => c.mid === m._id);
-    return `<div class="card meal-card"><div class="mc-img"><img src="${m.image}" alt="${m.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x250?text=Food+Image'"/><span class="mc-tag badge ${m.type === 'Veg' ? 'badge-veg' : 'badge-nv'}">${m.type}</span></div><div class="mc-body"><div class="mc-name">${m.name}</div><div class="mc-desc">Fresh homemade delicious food</div><div class="mc-foot"><div class="mc-price">₹${m.price}</div><button class="mc-add ${inC ? 'added' : ''}" data-add="${m._id}"><i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i></button></div></div></div>`;
+    const typeLower = (m.type || '').toLowerCase();
+    return `<div class="card meal-card"><div class="mc-img"><img src="${m.image || m.img || 'https://picsum.photos/400/300'}" alt="${m.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x250?text=Food+Image'"/><span class="mc-tag badge ${typeLower === 'veg' ? 'badge-veg' : 'badge-nv'}">${m.type || 'N/A'}</span></div><div class="mc-body"><div class="mc-name">${m.name}</div><div class="mc-desc">Fresh homemade delicious food</div><div class="mc-foot"><div class="mc-price">\u20B9${m.price}</div><button class="mc-add ${inC ? 'added' : ''}" data-add="${m._id}"><i class="fas ${inC ? 'fa-check' : 'fa-plus'}"></i></button></div></div></div>`;
 }
 
         function pgHome(a) {
             const approvedCooks = DB.cooks.filter(c => c.status === 'approved');
-            a.innerHTML = `<section class="hero"><div class="container"><div class="hero-content"><div class="hero-badge"><span class="pd"></span>Now delivering in Bangalore</div><h1 class="hero-title">Affordable <span class="hl">Home-Cooked</span> Tiffin at Your Door</h1><p class="hero-desc">Discover verified home cooks near you. Subscribe for daily, weekly, or monthly meals — healthy, hygienic, and homemade just like your mother makes.</p><div class="hero-actions"><a class="btn btn-p" data-nv="browse"><i class="fas fa-search"></i> Find Tiffin Providers</a><a class="btn btn-o" data-nv="how">How It Works</a></div><div class="hero-stats"><div><div class="hero-stat-n">2,500+</div><div class="hero-stat-l">Meals Delivered</div></div><div><div class="hero-stat-n">120+</div><div class="hero-stat-l">Home Cooks</div></div><div><div class="hero-stat-n">4.8</div><div class="hero-stat-l">Avg Rating</div></div><div><div class="hero-stat-n">3 Cities</div><div class="hero-stat-l">And Growing</div></div></div></div><div class="hero-vis"><div class="hero-img-w"><div class="hero-circle c1"></div><div class="hero-circle c2"></div><img src="https://picsum.photos/seed/hf-hero3/600/600.jpg" alt="Home-cooked meal" class="hero-img-main"/>
+            a.innerHTML = `<section class="hero"><div class="container"><div class="hero-content"><div class="hero-badge"><span class="pd"></span>Now delivering in Bangalore</div><h1 class="hero-title">Affordable <span class="hl">Home-Cooked</span> Tiffin at Your Door</h1><p class="hero-desc">Discover verified home cooks near you. Subscribe for daily, weekly, or monthly meals — healthy, hygienic, and homemade just like your mother makes.</p><div class="hero-actions"><a class="btn btn-p" data-nv="browse"><i class="fas fa-search"></i> Find Tiffin Providers</a><a class="btn btn-o" data-nv="how">How It Works</a></div><div class="hero-stats"><div><div class="hero-stat-n">2,500+</div><div class="hero-stat-l">Meals Delivered</div></div><div><div class="hero-stat-n">120+</div><div class="hero-stat-l">Home Cooks</div></div><div><div class="hero-stat-n">4.8</div><div class="hero-stat-l">Avg Rating</div></div></div></div><div class="hero-vis"><div class="hero-img-w"><div class="hero-circle c1"></div><div class="hero-circle c2"></div><img src="https://picsum.photos/seed/hf-hero3/600/600.jpg" alt="Home-cooked meal" class="hero-img-main"/>
 <div class="hero-fc c1"><div class="fc-icon or"><i class="fas fa-clock"></i></div><div class="fc-text"><strong>30 Min Delivery</strong><span>Fresh at your door</span></div></div>
 <div class="hero-fc c2"><div class="fc-icon gr"><i class="fas fa-leaf"></i></div><div class="fc-text"><strong>100% Homemade</strong><span>No preservatives</span></div></div>
 </div></div>
@@ -3321,10 +3339,8 @@ function pgCookProfile(id, a) {
 
     updateUI();
 
-    // ✅ FIX: Bind add-to-cart buttons for meal cards
     bindAddToCart(app, ck.name, ck._id);
 
-    // ✅ FIX: Add click listeners to Subscribe buttons
     $$('.sub-btn', app).forEach(btn => {
         btn.addEventListener('click', function() {
             const planType = this.dataset.planType;
@@ -3386,7 +3402,6 @@ function pgCookProfile(id, a) {
         });
     });
 
-    // Tab switching
     $$('[data-tab]', app).forEach(t => {
         t.addEventListener('click', () => {
             $$('.tab', app).forEach(x => x.classList.remove('active'));
@@ -3454,7 +3469,7 @@ function pgCookProfile(id, a) {
         function pgDashboard(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.userId === S.user._id); const mySubs = DB.subscriptions.filter(s => s.userId === S.user._id && s.status === 'active'); const totalSpent = myOrders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0) + mySubs.filter(s => s.status === 'active').reduce((s, sub) => s + sub.price, 0);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalSpent)}</div><div class="stat-lbl">Total Spent</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-star"></i></div><div><div class="stat-val">${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}</div><div class="stat-lbl">Account Status</div></div></div></div><div class="tabs" id="dashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="subs">Active Subs</button></div><div id="tab-recent">${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 5).map(o => { const ck = DB.cooks.find(c => c._id === o.cookId); return `<tr style="cursor:pointer" data-nv="order-detail" data-id="${o._id}"><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${ck?.name || 'Cook'}</td><td>${o.items.length} item${o.items.length > 1 ? 's' : ''}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Start by browsing home cooks and subscribing!</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div><div id="tab-subs" style="display:none">${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Cook</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th><th>Action</th></tr></thead><tbody>${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<tr><td style="font-weight:600">${ck?.name || 'Cook'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="font-weight:700;color:var(--accent)">${fp(s.price)}</td><td style="font-size:.85rem">${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td><td><button class="btn btn-o btn-sm pause-sub-btn" data-sid="${s._id}">Pause</button></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No active subscriptions</h3><p>Browse cooks and subscribe to daily homemade meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalSpent)}</div><div class="stat-lbl">Total Spent</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-star"></i></div><div><div class="stat-val">${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}</div><div class="stat-lbl">Account Status</div></div></div></div><div class="tabs" id="dashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="subs">Active Subs</button></div><div id="tab-recent">${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 5).map(o => { const ck = DB.cooks.find(c => c._id === o.cookId); return `<tr style="cursor:pointer" data-nv="order-detail" data-id="${o._id}"><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${ck?.name || 'Cook'}</td><td>${o.items ? o.items.length + ' item' + (o.items.length !== 1 ? 's' : '') : (o.meal || '1 item')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Start by browsing home cooks and subscribing!</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div><div id="tab-subs" style="display:none">${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Cook</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th><th>Action</th></tr></thead><tbody>${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<tr><td style="font-weight:600">${ck?.name || 'Cook'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="font-weight:700;color:var(--accent)">${fp(s.price)}</td><td style="font-size:.85rem">${s.nextDelivery || '\u2014'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td><td><button class="btn btn-o btn-sm pause-sub-btn" data-sid="${s._id}">Pause</button></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No active subscriptions</h3><p>Browse cooks and subscribe to daily homemade meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div></div></section>`;
             updateUI();
             $$('[data-tab]', a).forEach(t => t.addEventListener('click', () => { $$('.tab', a).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', a).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, a).style.display = '' }));
             $$('tr[data-nv]', a).forEach(r => r.addEventListener('click', () => nav(r.dataset.nv, { id: r.dataset.id })));
@@ -3474,7 +3489,7 @@ function pgCookProfile(id, a) {
             const sub = DB.subscriptions.find(s => s._id === id);
             if (!sub || sub.userId !== S.user._id) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-repeat"></i><h3>Subscription not found</h3><a class="btn btn-p" data-nv="subscriptions">Back</a></div></div></div>`; updateUI(); return }
             const ck = DB.cooks.find(c => c._id === sub.cookId);
-            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px"><a class="btn btn-ghost" data-nv="subscriptions" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Subscriptions</a><div class="card" style="padding:28px;margin-bottom:20px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px"><div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:var(--accent)">${ini(ck?.name)}</div><div><h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800">${ck?.name || 'Cook'}</h3><p style="font-size:.84rem;color:var(--muted)">${ck?.cuisine || ''} | ${ck?.timings || ''}</p></div></div><span class="badge-st ${stMap[sub.status]?.c || ''}" style="font-size:.85rem;padding:6px 16px">${stMap[sub.status]?.l || sub.status}</span></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px"><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Plan</div><div style="font-weight:700;text-transform:capitalize">${sub.plan} — ${sub.meal}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Price</div><div style="font-weight:700;color:var(--accent)">${fp(sub.price)}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Start Date</div><div style="font-weight:700">${new Date(sub.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">${sub.endDate ? 'End Date' : 'Ongoing'}</div><div style="font-weight:700">${sub.endDate ? new Date(sub.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Auto-renews'}</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap">${sub.status === 'active' ? `<button class="btn btn-o btn-sm pause-btn"><i class="fas fa-pause"></i> Pause</button><button class="btn btn-d btn-sm cancel-sub-btn"><i class="fas fa-xmark"></i> Cancel</button>` : ''}${sub.status === 'paused' ? `<button class="btn btn-s btn-sm resume-btn"><i class="fas fa-play"></i> Resume</button>` : ''}<button class="btn btn-o btn-sm" data-nv="cook" data-id="${sub.cookId}"><i class="fas fa-utensils"></i> View Cook</button></div></div><div class="card" style="padding:20px"><h4 style="font-weight:700;margin-bottom:12px"><i class="fas fa-headset" style="color:var(--accent);margin-right:6px"></i>Need Help?</h4><p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Facing issues with your subscription? File a complaint and we'll resolve it.</p><button class="btn btn-o btn-sm complaint-btn"><i class="fas fa-flag"></i> File Complaint</button></div></div></section>`;
+            app.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px"><a class="btn btn-ghost" data-nv="subscriptions" style="margin-bottom:16px"><i class="fas fa-arrow-left"></i> Back to Subscriptions</a><div class="card" style="padding:28px;margin-bottom:20px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px"><div style="display:flex;align-items:center;gap:14px"><div style="width:56px;height:56px;border-radius:50%;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;color:var(--accent)">${ini(ck?.name)}</div><div><h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800">${ck?.name || 'Cook'}</h3><p style="font-size:.84rem;color:var(--muted)">${ck?.cuisine || ''} | ${ck?.timings || ''}</p></div></div><span class="badge-st ${stMap[sub.status]?.c || ''}" style="font-size:.85rem;padding:6px 16px">${stMap[sub.status]?.l || sub.status}</span></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px"><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Plan</div><div style="font-weight:700;text-transform:capitalize">${sub.plan} \u2014 ${sub.meal}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Price</div><div style="font-weight:700;color:var(--accent)">${fp(sub.price)}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">Start Date</div><div style="font-weight:700">${new Date(sub.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div><div style="padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-size:.78rem;color:var(--muted)">${sub.endDate ? 'End Date' : 'Ongoing'}</div><div style="font-weight:700">${sub.endDate ? new Date(sub.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Auto-renews'}</div></div></div><div style="display:flex;gap:10px;flex-wrap:wrap">${sub.status === 'active' ? `<button class="btn btn-o btn-sm pause-btn"><i class="fas fa-pause"></i> Pause</button><button class="btn btn-d btn-sm cancel-sub-btn"><i class="fas fa-xmark"></i> Cancel</button>` : ''}${sub.status === 'paused' ? `<button class="btn btn-s btn-sm resume-btn"><i class="fas fa-play"></i> Resume</button>` : ''}<button class="btn btn-o btn-sm" data-nv="cook" data-id="${sub.cookId}"><i class="fas fa-utensils"></i> View Cook</button></div></div><div class="card" style="padding:20px"><h4 style="font-weight:700;margin-bottom:12px"><i class="fas fa-headset" style="color:var(--accent);margin-right:6px"></i>Need Help?</h4><p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Facing issues with your subscription? File a complaint and we'll resolve it.</p><button class="btn btn-o btn-sm complaint-btn"><i class="fas fa-flag"></i> File Complaint</button></div></div></section>`;
             updateUI();
             $('.pause-btn', app)?.addEventListener('click', () => { sub.status = 'paused'; sub.nextDelivery = null; toast('Subscription paused'); pgSubDetail(id, app) });
             $('.resume-btn', app)?.addEventListener('click', () => { sub.status = 'active'; sub.nextDelivery = new Date(Date.now() + 86400000).toISOString().split('T')[0]; toast('Subscription resumed'); pgSubDetail(id, app) });
@@ -3500,7 +3515,7 @@ function pgCookProfile(id, a) {
             if (!S.user) { nav('login'); return }
             if (S.cart.length === 0) { nav('cart'); return }
             const sub = cartSub(), del = sub >= 500 ? 0 : 29, gst = Math.round(sub * .05), tot = sub + del + gst;
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Checkout</div><h2 class="sec-title">Complete Your Order</h2></div><div class="checkout-layout"><div><div class="co-card"><h3><span class="sn">1</span> Delivery Address</h3><form id="coF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="coN" value="${S.user.fullName || S.user.username || ''}" required/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="coPh" value="${S.user.phone || ''}" required/></div></div><div class="fg"><label class="fl">Address Line 1</label><input class="fi" id="coA1" value="${S.user.address?.line1 || ''}" placeholder="House, Building, Street" required/></div><div class="fg"><label class="fl">Address Line 2</label><input class="fi" id="coA2" value="${S.user.address?.line2 || ''}" placeholder="Landmark, Area"/></div><div class="fr"><div class="fg"><label class="fl">City</label><input class="fi" id="coCity" value="${S.user.address?.city || 'Bangalore'}" required/></div><div class="fg"><label class="fl">PIN Code</label><input class="fi" id="coPin" value="${S.user.address?.pin || ''}" required/></div></div><div class="fg"><label class="fl">Notes</label><textarea class="fi" id="coNotes" rows="2" placeholder="Delivery instructions..."></textarea></div></form></div><div class="co-card"><h3><span class="sn">2</span> Payment</h3><div class="pay-opts"><label class="pay-opt active" data-pay="cod"><input type="radio" name="pay" value="cod" checked/><div class="rc"></div><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></label><label class="pay-opt" data-pay="online"><input type="radio" name="pay" value="online"/><div class="rc"></div><i class="fas fa-credit-card"></i><span>Online Payment</span></label></div></div></div><div class="cart-summary"><h3>Summary</h3>${S.cart.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}<div style="height:1px;background:var(--border);margin:12px 0"></div><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div><div class="sum-row"><span>GST</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem"><i class="fas fa-check-circle"></i> Place Order</button></div></div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Checkout</div><h2 class="sec-title">Complete Your Order</h2></div><div class="checkout-layout"><div><div class="co-card"><h3><span class="sn">1</span> Delivery Address</h3><form id="coF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="coN" value="${S.user.fullName || S.user.username || ''}" required/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="coPh" value="${S.user.phone || ''}" required/></div></div><div class="fg"><label class="fl">Address Line 1</label><input class="fi" id="coA1" value="${S.user.address?.line1 || ''}" placeholder="House, Building, Street" required/></div><div class="fg"><label class="fl">Address Line 2</label><input class="fi" id="coA2" value="${S.user.address?.line2 || ''}" placeholder="Landmark, Area"/></div><div class="fr"><div class="fg"><label class="fl">City</label><input class="fi" id="coCity" value="${S.user.address?.city || 'Bangalore'}" required/></div><div class="fg"><label class="fl">PIN Code</label><input class="fi" id="coPin" value="${S.user.address?.pin || ''}" required/></div></div><div class="fg"><label class="fl">Notes</label><textarea class="fi" id="coNotes" rows="2" placeholder="Delivery instructions..."></textarea></div></form></div><div class="co-card"><h3><span class="sn">2</span> Payment</h3><div class="pay-opts"><label class="pay-opt active" data-pay="cod"><input type="radio" name="pay" value="cod" checked/><div class="rc"></div><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></label><label class="pay-opt" data-pay="online"><input type="radio" name="pay" value="online"/><div class="rc"></div><i class="fas fa-credit-card"></i><span>Online Payment</span></label><label class="pay-opt" data-pay="wallet"><input type="radio" name="pay" value="wallet"/><div class="rc"></div><i class="fas fa-wallet"></i><span>Wallet (\u20B9${S.user?.walletBalance || 0})</span></label></div></div></div><div class="cart-summary"><h3>Summary</h3>${S.cart.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.86rem"><span>${i.name} x${i.qty}</span><span style="font-weight:600">${fp(i.price * i.qty)}</span></div>`).join('')}<div style="height:1px;background:var(--border);margin:12px 0"></div><div class="sum-row"><span>Subtotal</span><span>${fp(sub)}</span></div><div class="sum-row ${del === 0 ? 'free' : ''}"><span>Delivery</span><span>${del === 0 ? 'FREE' : fp(del)}</span></div><div class="sum-row"><span>GST</span><span>${fp(gst)}</span></div><div class="sum-total"><span class="lb">Total</span><span class="am">${fp(tot)}</span></div><button class="btn btn-p btn-block" id="placeOrder" style="padding:14px;font-size:.95rem"><i class="fas fa-check-circle"></i> Place Order</button></div></div></div></section>`;
             updateUI();
             $$('.pay-opt', a).forEach(o => o.addEventListener('click', () => { $$('.pay-opt', a).forEach(x => x.classList.remove('active')); o.classList.add('active'); o.querySelector('input').checked = true; }));
             $('#placeOrder', a)?.addEventListener('click', async () => {
@@ -3517,8 +3532,8 @@ function pgCookProfile(id, a) {
         async function pgOrders(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return; }
             let myOrders = [];
-            try { const res = await api('/orders'); myOrders = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); } catch (err) { console.error(err); toast('Failed to load orders', 'error'); }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">My Orders</div><h2 class="sec-title">${myOrders.length} Order${myOrders.length !== 1 ? 's' : ''}</h2></div>${myOrders.length ? `<div style="display:flex;flex-direction:column;gap:14px">${myOrders.map(o => `<div class="card" style="padding:18px;cursor:pointer" data-nv="order-detail" data-id="${o._id}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div><div style="font-weight:700;font-size:.92rem">Order #${o._id.slice(-6).toUpperCase()}</div><div style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:.86rem;color:var(--muted)">${o.items.length} item${o.items.length > 1 ? 's' : ''}</div><div style="display:flex;align-items:center;gap:14px"><span style="font-family:var(--font-d);font-weight:800;color:var(--accent)">${fp(o.total)}</span><i class="fas fa-arrow-right" style="color:var(--muted)"></i></div></div></div>`).join('')}</div>` : `<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Place your first order from a home cook.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>`}</div></section>`;
+            try { const res = await api('/orders/my'); myOrders = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); } catch (err) { console.error(err); toast('Failed to load orders', 'error'); }
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">My Orders</div><h2 class="sec-title">${myOrders.length} Order${myOrders.length !== 1 ? 's' : ''}</h2></div>${myOrders.length ? `<div style="display:flex;flex-direction:column;gap:14px">${myOrders.map(o => `<div class="card" style="padding:18px;cursor:pointer" data-nv="order-detail" data-id="${o._id}"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px"><div><div style="font-weight:700;font-size:.92rem">Order #${o._id.slice(-6).toUpperCase()}</div><div style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div></div><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-size:.86rem;color:var(--muted)">${o.items ? o.items.length + ' item' + (o.items.length !== 1 ? 's' : '') : (o.meal || '1 item')}</div><div style="display:flex;align-items:center;gap:14px"><span style="font-family:var(--font-d);font-weight:800;color:var(--accent)">${fp(o.total || o.amount || 0)}</span><i class="fas fa-arrow-right" style="color:var(--muted)"></i></div></div></div>`).join('')}</div>` : `<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Place your first order from a home cook.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>`}</div></section>`;
             updateUI();
             $$('[data-nv]', a).forEach(el => { el.addEventListener('click', () => nav(el.dataset.nv, { id: el.dataset.id })); });
         }
@@ -3561,12 +3576,17 @@ function pgCookProfile(id, a) {
             updateUI();
         }
 
+        /* FIX 6: Added Add Item button handler and updateUI() call */
         function pgCookMenu(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return; }
             const cookData = DB.cooks.find(c => c.user === S.user._id || c.userId === S.user._id || c.email === S.user.email);
-            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><h2>Cook not found</h2></div></section>`; return; }
+            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><h2>Cook not found</h2></div></section>`; updateUI(); return; }
             const myItems = DB.menuItems.filter(m => m.cookId === cookData._id || m.cook === cookData._id);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px"><h2 class="sec-title">${myItems.length} Items</h2><button class="btn btn-p"><i class="fas fa-plus"></i> Add Item</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px">${myItems.map(item => `<div class="card meal-card"><div class="mc-img"><img src="${item.image || item.img || 'https://picsum.photos/400/300'}" alt="${item.name}" style="width:100%;height:220px;object-fit:cover;border-radius:18px 18px 0 0"/></div><div class="mc-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${item.type}</span><strong style="color:var(--accent)">₹${item.price}</strong></div><h3 style="margin-bottom:10px">${item.name}</h3><p style="color:var(--muted);margin-bottom:14px">${item.description || item.desc || 'Fresh homemade food'}</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:${item.available ? 'green' : 'red'};font-size:14px">● ${item.available ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:10px"><button class="icon-btn"><i class="fas fa-eye"></i></button><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn" style="background:#ef4444;color:white"><i class="fas fa-trash"></i></button></div></div></div></div>`).join('')}</div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px"><h2 class="sec-title">${myItems.length} Items</h2><button class="btn btn-p" id="addMenuItemBtn"><i class="fas fa-plus"></i> Add Item</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px">${myItems.map(item => `<div class="card meal-card"><div class="mc-img"><img src="${item.image || item.img || 'https://picsum.photos/400/300'}" alt="${item.name}" style="width:100%;height:220px;object-fit:cover;border-radius:18px 18px 0 0"/></div><div class="mc-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${item.type}</span><strong style="color:var(--accent)">\u20B9${item.price}</strong></div><h3 style="margin-bottom:10px">${item.name}</h3><p style="color:var(--muted);margin-bottom:14px">${item.description || item.desc || 'Fresh homemade food'}</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:${item.available ? 'green' : 'red'};font-size:14px">\u25CF ${item.available ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:10px"><button class="icon-btn"><i class="fas fa-eye"></i></button><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn" style="background:#ef4444;color:white"><i class="fas fa-trash"></i></button></div></div></div></div>`).join('')}</div></div></section>`;
+            updateUI();
+            $('#addMenuItemBtn', a)?.addEventListener('click', () => {
+                showMealModal(null, () => pgCookMenu(a));
+            });
         }
 
         function showMealModal(meal, onSave) {
@@ -3583,7 +3603,7 @@ function pgCookProfile(id, a) {
         function pgCookOrders(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const myOrders = DB.orders.filter(o => o.cookId === S.user._id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Orders</div><h2 class="sec-title">${myOrders.length} Orders</h2></div>${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${myOrders.map(o => { const u = DB.users.find(x => x._id === o.userId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || 'User'}</td><td>${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${o.status === 'placed' ? `<button class="btn btn-s btn-sm acc-o" data-oid="${o._id}">Accept</button>` : o.status === 'confirmed' ? `<button class="btn btn-p btn-sm prep-o" data-oid="${o._id}">Start Prep</button>` : o.status === 'preparing' ? `<button class="btn btn-i btn-sm disp-o" data-oid="${o._id}">Out for Delivery</button>` : o.status === 'on_the_way' ? `<button class="btn btn-s btn-sm del-o" data-oid="${o._id}">Delivered</button>` : '—'}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>'}</div></section>`; updateUI();
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Orders</div><h2 class="sec-title">${myOrders.length} Orders</h2></div>${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${myOrders.map(o => { const u = DB.users.find(x => x._id === o.userId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || 'User'}</td><td>${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${o.status === 'placed' ? `<button class="btn btn-s btn-sm acc-o" data-oid="${o._id}">Accept</button>` : o.status === 'confirmed' ? `<button class="btn btn-p btn-sm prep-o" data-oid="${o._id}">Start Prep</button>` : o.status === 'preparing' ? `<button class="btn btn-i btn-sm disp-o" data-oid="${o._id}">Out for Delivery</button>` : o.status === 'on_the_way' ? `<button class="btn btn-s btn-sm del-o" data-oid="${o._id}">Delivered</button>` : '\u2014'}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>'}</div></section>`; updateUI();
             const updateO = (id, st) => { const o = DB.orders.find(x => x._id === id); if (o) { o.status = st; o.updatedAt = new Date().toISOString(); toast(`Order ${st}`); pgCookOrders(a) } };
             $$('.acc-o', a).forEach(b => b.addEventListener('click', () => updateO(b.dataset.oid, 'confirmed')));
             $$('.prep-o', a).forEach(b => b.addEventListener('click', () => updateO(b.dataset.oid, 'preparing')));
@@ -3594,7 +3614,7 @@ function pgCookProfile(id, a) {
         function pgCookSubs(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
             const mySubs = DB.subscriptions.filter(s => s.cookId === S.user._id);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscriptions</h2></div>${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Plan</th><th>Meal</th><th>Price</th><th>Start</th><th>Next Delivery</th><th>Status</th></tr></thead><tbody>${mySubs.map(s => { const u = DB.users.find(x => x._id === s.userId); return `<tr><td style="font-weight:600">${u?.name || 'User'}</td><td style="text-transform:capitalize">${s.plan}</td><td style="text-transform:capitalize">${s.meal}</td><td style="color:var(--accent);font-weight:700">${fp(s.price)}</td><td style="font-size:.8rem">${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${s.nextDelivery || '—'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions</h3></div>'}</div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Subscriptions</div><h2 class="sec-title">${mySubs.length} Subscriptions</h2></div>${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Customer</th><th>Plan</th><th>Meal</th><th>Price</th><th>Start</th><th>Next Delivery</th><th>Status</th></tr></thead><tbody>${mySubs.map(s => { const u = DB.users.find(x => x._id === s.userId); return `<tr><td style="font-weight:600">${u?.name || 'User'}</td><td style="text-transform:capitalize">${s.plan}</td><td style="text-transform:capitalize">${s.meal}</td><td style="color:var(--accent);font-weight:700">${fp(s.price)}</td><td style="font-size:.8rem">${new Date(s.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${s.nextDelivery || '\u2014'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No subscriptions</h3></div>'}</div></section>`; updateUI()
         }
 
         function pgCookEarnings(a) {
@@ -3630,12 +3650,12 @@ function pgCookProfile(id, a) {
 
         function pgAdminUsers(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Users (${DB.users.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Orders</th></tr></thead><tbody>${DB.users.map(u => `<tr><td style="font-weight:600">${u.name}</td><td style="font-size:.85rem">${u.email}</td><td>${u.phone || '—'}</td><td><span class="badge ${u.role === 'admin' ? 'badge-pop' : u.role === 'cook' ? 'badge-new' : 'badge-veg'}">${u.role}</span></td><td>${DB.orders.filter(o => o.userId === u._id).length}</td></tr>`).join('')}</tbody></table></div></div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Users (${DB.users.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Orders</th></tr></thead><tbody>${DB.users.map(u => `<tr><td style="font-weight:600">${u.name}</td><td style="font-size:.85rem">${u.email}</td><td>${u.phone || '\u2014'}</td><td><span class="badge ${u.role === 'admin' ? 'badge-pop' : u.role === 'cook' ? 'badge-new' : 'badge-veg'}">${u.role}</span></td><td>${DB.orders.filter(o => o.userId === u._id).length}</td></tr>`).join('')}</tbody></table></div></div></section>`; updateUI()
         }
 
         function pgAdminCooks(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>${DB.cooks.map(c => { const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0; return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '—'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '—'}</td><td>${c.totalOrders}</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>` }).join('')}</tbody></table></div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>${DB.cooks.map(c => { const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0; return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '\u2014'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '\u2014'}</td><td>${c.totalOrders}</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>` }).join('')}</tbody></table></div></div></section>`;
             updateUI();
             $$('.appr-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'approved'; toast(`${c.name} approved`); pgAdminCooks(a) } }));
             $$('.rej-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'rejected'; toast(`${c.name} deactivated`); pgAdminCooks(a) } }));
@@ -3644,7 +3664,7 @@ function pgCookProfile(id, a) {
         function pgAdminOrders(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
             const sorted = [...DB.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">All Orders (${sorted.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${sorted.map(o => { const u = DB.users.find(x => x._id === o.userId); const ck = DB.cooks.find(x => x._id === o.cookId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || '—'}</td><td>${ck?.name || '—'}</td><td style="font-size:.82rem">${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div></div></section>`; updateUI()
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">All Orders (${sorted.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${sorted.map(o => { const u = DB.users.find(x => x._id === o.userId); const ck = DB.cooks.find(x => x._id === o.cookId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || '\u2014'}</td><td>${ck?.name || '\u2014'}</td><td style="font-size:.82rem">${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div></div></section>`; updateUI()
         }
 
         function pgAdminCats(a) {
@@ -3664,7 +3684,170 @@ function pgCookProfile(id, a) {
 
         function pgNotFound(a) { a.innerHTML = `<section class="not-found"><h1>404</h1><h2>Page Not Found</h2><p>The page you are looking for doesn't exist.</p><a class="btn btn-p" data-nv="home"><i class="fas fa-home"></i> Go Home</a></section>`; updateUI() }
 
-        window.addEventListener('hashchange', route);
+        /* ======================================================================
+           FIX 1 & FIX 4: These three functions are now at TOP LEVEL (not inside
+           DOMContentLoaded) and use proper backticks (not escaped \`)
+           ====================================================================== */
+
+        async function pgWallet(a) {
+            if (!S.user) { nav('login'); return; }
+            let walletData = { balance: 0, transactions: [] };
+            try {
+                const res = await api('/wallet');
+                walletData = res.data || walletData;
+                S.user.walletBalance = walletData.balance;
+                saveU();
+            } catch(e) {}
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:700px">
+                <div style="margin-bottom:24px"><div class="sec-label">Wallet</div><h2 class="sec-title">My Wallet</h2></div>
+                <div class="co-card" style="text-align:center;padding:40px 20px;background:linear-gradient(135deg,var(--accent),#f7773a);color:#fff;border-radius:20px;margin-bottom:24px">
+                    <div style="font-size:.9rem;opacity:.85;margin-bottom:8px">Available Balance</div>
+                    <div style="font-size:3rem;font-weight:900;font-family:var(--font-d)">\u20B9${walletData.balance}</div>
+                    <div style="margin-top:16px;font-size:.8rem;opacity:.7">Earn 2% cashback on every delivered order!</div>
+                </div>
+                <div class="co-card" style="margin-bottom:24px">
+                    <h3><i class="fas fa-plus-circle" style="color:var(--accent)"></i> Add Money</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+                        ${[100,200,500,1000].map(amt => `<button class="btn btn-o btn-sm quick-add" data-amt="${amt}">+\u20B9${amt}</button>`).join('')}
+                    </div>
+                    <div style="display:flex;gap:10px">
+                        <input class="fi" id="walletAmt" type="number" placeholder="Enter amount" min="1" max="50000" style="flex:1"/>
+                        <button class="btn btn-p" id="addWalletBtn"><i class="fas fa-wallet"></i> Add</button>
+                    </div>
+                </div>
+                <div class="co-card">
+                    <h3><i class="fas fa-history" style="color:var(--accent)"></i> Transaction History</h3>
+                    ${walletData.transactions.length ? walletData.transactions.slice(0,20).map(t => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+                            <div>
+                                <div style="font-size:.88rem;font-weight:600">${t.description || (t.type==='credit'?'Money Added':'Payment')}</div>
+                                <div style="font-size:.76rem;color:var(--muted)">${new Date(t.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+                            </div>
+                            <span style="font-weight:800;font-family:var(--font-d);color:${t.type==='credit'?'var(--success)':'var(--danger)'}">${t.type==='credit'?'+':'-'}\u20B9${t.amount}</span>
+                        </div>`).join('') : '<p style="color:var(--muted);text-align:center;padding:20px">No transactions yet</p>'}
+                </div>
+            </div></section>`;
+            updateUI();
+            $$('.quick-add', a).forEach(btn => {
+                btn.addEventListener('click', () => { $('#walletAmt', a).value = btn.dataset.amt; });
+            });
+            $('#addWalletBtn', a)?.addEventListener('click', async () => {
+                const amt = parseFloat($('#walletAmt', a).value);
+                if (!amt || amt < 1) { toast('Enter a valid amount', 'error'); return; }
+                const btn = $('#addWalletBtn', a);
+                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                try {
+                    await api('/wallet/add', { method: 'POST', body: JSON.stringify({ amount: amt }) });
+                    toast('\u20B9' + amt + ' added to wallet!');
+                    pgWallet(a);
+                } catch(e) { toast('Failed to add money', 'error'); }
+                finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-wallet"></i> Add'; }
+            });
+        }
+
+        async function pgNutrition(a) {
+            if (!S.user) { nav('login'); return; }
+            let nutData = null;
+            try { const r = await api('/nutrition/summary?days=7'); nutData = r.data; } catch(e) {}
+            const pct = nutData?.targetProgress || 0;
+            const avg = nutData?.averagePerDay || {};
+            const tot = nutData?.totals || {};
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:800px">
+                <div style="margin-bottom:24px"><div class="sec-label">Nutrition</div><h2 class="sec-title">Calorie & Nutrition Tracker</h2></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+                    <div class="co-card" style="text-align:center">
+                        <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">Avg Daily Calories</div>
+                        <div style="font-size:2.4rem;font-weight:900;font-family:var(--font-d);color:var(--accent)">${avg.calories || 0}</div>
+                        <div style="font-size:.76rem;color:var(--muted)">Target: ${nutData?.dailyCalorieTarget || 2000} kcal</div>
+                        <div style="margin-top:10px;background:var(--border);border-radius:8px;height:8px;overflow:hidden">
+                            <div style="width:${Math.min(pct,100)}%;height:100%;background:${pct>110?'var(--danger)':pct>90?'var(--success)':'var(--accent)'};border-radius:8px"></div>
+                        </div>
+                        <div style="font-size:.75rem;color:var(--muted);margin-top:4px">${pct}% of target</div>
+                    </div>
+                    <div class="co-card">
+                        <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">Avg Daily Macros</div>
+                        <div style="display:flex;flex-direction:column;gap:10px">
+                            <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:.84rem">Protein</span><strong style="color:#22c55e">${avg.protein||0}g</strong></div>
+                            <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:.84rem">Carbs</span><strong style="color:#f59e0b">${avg.carbs||0}g</strong></div>
+                            <div style="display:flex;justify-content:space-between"><span style="color:var(--muted);font-size:.84rem">Fat</span><strong style="color:#ef4444">${avg.fat||0}g</strong></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="co-card" style="margin-bottom:24px">
+                    <h3><i class="fas fa-sliders" style="color:var(--accent)"></i> Your Dietary Goal</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+                        ${['weight_loss','muscle_gain','maintenance','healthy_eating'].map(g => `<button class="btn ${nutData?.dietaryGoal===g?'btn-p':'btn-o'} btn-sm goal-btn" data-goal="${g}" style="text-transform:capitalize">${g.replace(/_/g,' ')}</button>`).join('')}
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                        <label style="font-size:.86rem;color:var(--muted)">Daily Calorie Target:</label>
+                        <input class="fi" id="calTarget" type="number" value="${nutData?.dailyCalorieTarget||2000}" min="500" max="5000" style="width:120px"/>
+                        <button class="btn btn-p btn-sm" id="saveGoals"><i class="fas fa-save"></i> Save</button>
+                    </div>
+                </div>
+                <div class="co-card">
+                    <h3><i class="fas fa-chart-bar" style="color:var(--accent)"></i> 7-Day Summary</h3>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+                        <div style="padding:12px;background:var(--bg-deep);border-radius:12px;text-align:center"><div style="font-size:1.6rem;font-weight:800;color:var(--accent)">${tot.calories||0}</div><div style="font-size:.76rem;color:var(--muted)">Total Calories</div></div>
+                        <div style="padding:12px;background:var(--bg-deep);border-radius:12px;text-align:center"><div style="font-size:1.6rem;font-weight:800;color:var(--info)">${tot.orders||0}</div><div style="font-size:.76rem;color:var(--muted)">Orders Tracked</div></div>
+                        <div style="padding:12px;background:var(--bg-deep);border-radius:12px;text-align:center"><div style="font-size:1.6rem;font-weight:800;color:#22c55e">${tot.protein||0}g</div><div style="font-size:.76rem;color:var(--muted)">Total Protein</div></div>
+                        <div style="padding:12px;background:var(--bg-deep);border-radius:12px;text-align:center"><div style="font-size:1.6rem;font-weight:800;color:#f59e0b">${tot.carbs||0}g</div><div style="font-size:.76rem;color:var(--muted)">Total Carbs</div></div>
+                    </div>
+                </div>
+            </div></section>`;
+            updateUI();
+            let selGoal = nutData?.dietaryGoal || 'healthy_eating';
+            $$('.goal-btn', a).forEach(btn => btn.addEventListener('click', () => {
+                selGoal = btn.dataset.goal;
+                $$('.goal-btn', a).forEach(b => { b.classList.toggle('btn-p', b.dataset.goal===selGoal); b.classList.toggle('btn-o', b.dataset.goal!==selGoal); });
+            }));
+            $('#saveGoals', a)?.addEventListener('click', async () => {
+                const target = parseInt($('#calTarget', a).value);
+                try {
+                    await api('/nutrition/preferences', { method: 'PUT', body: JSON.stringify({ dietaryGoal: selGoal, dailyCalorieTarget: target }) });
+                    toast('Goals saved!');
+                } catch(e) { toast('Failed to save', 'error'); }
+            });
+        }
+
+        async function pgRecommendations(a) {
+            if (!S.user) { nav('login'); return; }
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">For You</div><h2 class="sec-title">AI Meal Recommendations</h2><p style="color:var(--muted);font-size:.88rem">Personalised picks based on your order history and goals</p></div><div id="recList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px"><div style="text-align:center;grid-column:1/-1;padding:40px;color:var(--muted)"><i class="fas fa-spinner fa-spin" style="font-size:2rem;margin-bottom:12px;display:block"></i>Loading recommendations...</div></div></div></section>`;
+            updateUI();
+            try {
+                const res = await api('/recommendations');
+                const recs = res.data?.recommendations || [];
+                const based = res.data?.basedOn || {};
+                const list = $('#recList', a);
+                if (!recs.length) {
+                    list.innerHTML = `<div style="text-align:center;grid-column:1/-1;padding:60px;color:var(--muted)"><i class="fas fa-robot" style="font-size:3rem;margin-bottom:16px;display:block;opacity:.4"></i><h3>Not enough data yet</h3><p>Order a few meals to get AI recommendations!</p><a class="btn btn-p" data-nv="browse" style="margin-top:16px">Browse Cooks</a></div>`;
+                    $$('[data-nv]', a).forEach(el => el.addEventListener('click', () => nav(el.dataset.nv)));
+                    return;
+                }
+                list.innerHTML = `<div style="grid-column:1/-1;padding:12px 16px;background:rgba(232,93,44,.08);border-radius:12px;font-size:.83rem;color:var(--muted)"><i class="fas fa-robot" style="color:var(--accent)"></i> Based on <strong>${based.orderHistory} orders</strong> \u00B7 Fav cuisine: <strong>${based.preferredCuisine}</strong> \u00B7 Goal: <strong style="text-transform:capitalize">${(based.dietaryGoal||'').replace(/_/g,' ')}</strong></div>` +
+                recs.map(r => `<div class="card" style="padding:20px">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                        <img src="${r.cook.image||r.cook.avatar||'https://picsum.photos/seed/'+r.cook._id+'/80/80'}" style="width:56px;height:56px;border-radius:50%;object-fit:cover"/>
+                        <div style="flex:1">
+                            <div style="font-weight:700">${r.cook.name}</div>
+                            <div style="font-size:.78rem;color:var(--muted)">${r.cook.cuisine} \u00B7 ${r.cook.area}</div>
+                            <div style="font-size:.76rem;color:var(--warning)"><i class="fas fa-star"></i> ${r.cook.rating||'New'}</div>
+                        </div>
+                        <div style="text-align:right"><div style="font-size:.72rem;color:var(--muted)">From</div><div style="font-weight:900;font-family:var(--font-d);color:var(--accent)">\u20B9${r.cook.plans?.daily||0}/day</div></div>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">${r.reasons.map(reason => `<span style="background:rgba(232,93,44,.1);color:var(--accent);padding:3px 8px;border-radius:20px;font-size:.73rem"><i class="fas fa-check"></i> ${reason}</span>`).join('')}</div>
+                    ${r.sampleItem ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:12px">Try: <strong>${r.sampleItem.name}</strong> \u00B7 \u20B9${r.sampleItem.price}${r.sampleItem.calories?' \u00B7 '+r.sampleItem.calories+' kcal':''}</div>` : ''}
+                    <button class="btn btn-p btn-sm btn-block view-cook-btn" data-id="${r.cook._id}"><i class="fas fa-arrow-right"></i> View Cook</button>
+                </div>`).join('');
+                $$('.view-cook-btn', a).forEach(btn => btn.addEventListener('click', () => { window.location.hash = '#cook/'+btn.dataset.id; route(); }));
+            } catch(e) {
+                console.error(e);
+                $('#recList', a).innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;color:var(--muted)">Failed to load. Please try again.</div>';
+            }
+        }
+
+        /* ======================================================================
+           DOMContentLoaded — NO page functions defined inside here anymore
+           ====================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
             const navEl = $('#navbar'), stBtn = $('#scrollTop'), mobTog = $('#mobTog'), mobMenu = $('#mobMenu'), cartBtn = $('#cartBtn');
             window.addEventListener('scroll', () => { navEl.classList.toggle('scrolled', window.scrollY > 50); stBtn.classList.toggle('vis', window.scrollY > 400) }, { passive: true });

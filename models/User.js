@@ -10,7 +10,21 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'cook', 'admin'], default: 'user' },
   address: { type: String, trim: true },
   area: { type: String, trim: true },
-  status: { type: String, enum: ['Active', 'Inactive', 'Suspended'], default: 'Active' }
+  status: { type: String, enum: ['Active', 'Inactive', 'Suspended'], default: 'Active' },
+  // WALLET feature
+  walletBalance: { type: Number, default: 0, min: 0 },
+  walletTransactions: [{
+    type: { type: String, enum: ['credit', 'debit'], required: true },
+    amount: { type: Number, required: true },
+    description: { type: String },
+    date: { type: Date, default: Date.now }
+  }],
+  // NUTRITION preferences
+  dietaryGoal: { type: String, enum: ['weight_loss', 'muscle_gain', 'maintenance', 'healthy_eating'], default: 'healthy_eating' },
+  dailyCalorieTarget: { type: Number, default: 2000 },
+  allergies: [{ type: String }],
+  // AI recommendation history
+  lastRecommendations: { type: Date }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 userSchema.pre('save', async function (next) {
