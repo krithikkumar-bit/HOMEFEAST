@@ -201,7 +201,14 @@ router.post('/', protect, async (req, res, next) => {
 ========================= */
 router.get('/:id', protect, async (req, res, next) => {
   try {
-    const order = await Order.findById(req.params.id)
+    const { id } = req.params;
+
+    // Search by MongoDB _id OR custom orderId string
+    const query = mongoose.Types.ObjectId.isValid(id)
+      ? { $or: [{ _id: id }, { orderId: id }] }
+      : { orderId: id };
+
+    const order = await Order.findOne(query)
       .populate('cook', 'name cuisine area avatar')
       .populate('user', 'firstName lastName email phone');
 
