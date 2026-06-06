@@ -3579,26 +3579,291 @@ function pgCookProfile(id, a) {
 
         /* FIX 6: Added Add Item button handler and updateUI() call */
         function pgCookMenu(a) {
-            if (!S.user || S.user.role !== 'cook') { nav('login'); return; }
-            const cookData = DB.cooks.find(c => c.user === S.user._id || c.userId === S.user._id || c.email === S.user.email);
-            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><h2>Cook not found</h2></div></section>`; updateUI(); return; }
-            const myItems = DB.menuItems.filter(m => m.cookId === cookData._id || m.cook === cookData._id);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px"><h2 class="sec-title">${myItems.length} Items</h2><button class="btn btn-p" id="addMenuItemBtn"><i class="fas fa-plus"></i> Add Item</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px">${myItems.map(item => `<div class="card meal-card"><div class="mc-img"><img src="${item.image || item.img || 'https://picsum.photos/400/300'}" alt="${item.name}" style="width:100%;height:220px;object-fit:cover;border-radius:18px 18px 0 0"/></div><div class="mc-body"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">${item.type}</span><strong style="color:var(--accent)">\u20B9${item.price}</strong></div><h3 style="margin-bottom:10px">${item.name}</h3><p style="color:var(--muted);margin-bottom:14px">${item.description || item.desc || 'Fresh homemade food'}</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="color:${item.available ? 'green' : 'red'};font-size:14px">\u25CF ${item.available ? 'Available' : 'Unavailable'}</span><div style="display:flex;gap:10px"><button class="icon-btn"><i class="fas fa-eye"></i></button><button class="icon-btn"><i class="fas fa-pen"></i></button><button class="icon-btn" style="background:#ef4444;color:white"><i class="fas fa-trash"></i></button></div></div></div></div>`).join('')}</div></div></section>`;
-            updateUI();
-            $('#addMenuItemBtn', a)?.addEventListener('click', () => {
-                showMealModal(null, () => pgCookMenu(a));
+
+    if (!S.user || S.user.role !== 'cook') {
+        nav('login');
+        return;
+    }
+
+    const cookData = DB.cooks.find(
+        c =>
+            c.user === S.user._id ||
+            c.userId === S.user._id ||
+            c.email === S.user.email
+    );
+
+    if (!cookData) {
+        a.innerHTML = `
+        <section class="page-sec">
+            <div class="container">
+                <h2>Cook not found</h2>
+            </div>
+        </section>`;
+        updateUI();
+        return;
+    }
+
+    const myItems = DB.menuItems.filter(
+        m =>
+            m.cookId === cookData._id ||
+            m.cook === cookData._id
+    );
+
+    a.innerHTML = `
+    <section class="page-sec">
+        <div class="container">
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px">
+                <h2 class="sec-title">${myItems.length} Items</h2>
+
+                <button class="btn btn-p" id="addMenuItemBtn">
+                    <i class="fas fa-plus"></i> Add Item
+                </button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px">
+
+                ${myItems.map(item => `
+
+                <div class="card meal-card">
+
+                    <div class="mc-img">
+                        <img
+                            src="${item.image || item.img || 'https://picsum.photos/400/300'}"
+                            alt="${item.name}"
+                            style="width:100%;height:220px;object-fit:cover;border-radius:18px 18px 0 0"
+                        />
+                    </div>
+
+                    <div class="mc-body">
+
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                            <span class="badge ${item.type === 'veg' ? 'badge-veg' : 'badge-nv'}">
+                                ${item.type}
+                            </span>
+
+                            <strong style="color:var(--accent)">
+                                ₹${item.price}
+                            </strong>
+                        </div>
+
+                        <h3 style="margin-bottom:10px">
+                            ${item.name}
+                        </h3>
+
+                        <p style="color:var(--muted);margin-bottom:14px">
+                            ${item.description || item.desc || 'Fresh homemade food'}
+                        </p>
+
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+
+                            <span style="color:${item.available ? 'green' : 'red'};font-size:14px">
+                                ● ${item.available ? 'Available' : 'Unavailable'}
+                            </span>
+
+                            <div style="display:flex;gap:10px">
+
+                                <button class="icon-btn">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+
+                                <button
+                                    class="icon-btn editMenuBtn"
+                                    data-id="${item._id}">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+
+                                <button
+                                    class="icon-btn deleteMenuBtn"
+                                    data-id="${item._id}"
+                                    style="background:#ef4444;color:white">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                `).join('')}
+
+            </div>
+
+        </div>
+    </section>
+    `;
+
+    updateUI();
+
+    $('#addMenuItemBtn', a)?.addEventListener('click', () => {
+        showMealModal(null, () => pgCookMenu(a));
+    });
+
+    // EDIT MENU
+
+    $$('.editMenuBtn', a).forEach(btn => {
+
+        btn.addEventListener('click', () => {
+
+            const id = btn.dataset.id;
+
+            const item = DB.menuItems.find(
+                m => m._id === id
+            );
+
+            if (!item) {
+                toast('Item not found', 'error');
+                return;
+            }
+
+            showMealModal(item, () => {
+                pgCookMenu(a);
             });
+
+        });
+
+    });
+
+    // DELETE MENU
+
+    $$('.deleteMenuBtn', a).forEach(btn => {
+
+    btn.addEventListener('click', async () => {
+
+        const id = btn.dataset.id;
+
+        if (!confirm('Delete this menu item?'))
+            return;
+
+        try {
+
+            const token =
+                localStorage.getItem('hf_tk');
+
+            const res = await fetch(
+                `https://homefeast-3fqr.onrender.com/api/menus/${id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization':
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data =
+                await res.json();
+
+            if (!res.ok) {
+                toast(data.message, 'error');
+                return;
+            }
+
+            toast('Menu deleted');
+
+            pgCookMenu(a);
+
+        } catch (err) {
+
+            console.error(err);
+
+            toast('Delete failed', 'error');
         }
+
+    });
+
+});
+
+}
 
         function showMealModal(meal, onSave) {
             const isEdit = !!meal;
             openModal(isEdit ? 'Edit Menu Item' : 'Add Menu Item', `<div class="fg"><label class="fl">Dish Name</label><input class="fi" id="mName" value="${meal?.name || ''}" required/></div><div class="fr"><div class="fg"><label class="fl">Type</label><select class="fi" id="mType"><option value="veg" ${meal?.type === 'veg' ? 'selected' : ''}>Vegetarian</option><option value="non-veg" ${meal?.type === 'non-veg' ? 'selected' : ''}>Non-Vegetarian</option></select></div><div class="fg"><label class="fl">Price</label><input class="fi" type="number" id="mPrice" value="${meal?.price || ''}" required/></div></div><div class="fg"><label class="fl">Category</label><select class="fi" id="mCat">${DB.categories.map(c => `<option value="${c._id}" ${meal?.category === c._id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label class="fl">Description</label><textarea class="fi" id="mDesc" rows="2">${meal?.desc || ''}</textarea></div><div class="fg"><label class="fl">Image URL</label><input class="fi" id="mImg" value="${meal?.img || ''}" placeholder="https://..."/></div>`, `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="saveMealBtn">${isEdit ? 'Update' : 'Add'}</button>`);
-            $('#saveMealBtn').addEventListener('click', () => {
-                const name = $('#mName').value.trim(); const price = parseInt($('#mPrice').value); if (!name || !price) { toast('Fill required fields', 'error'); return }
-                const data = { name, type: $('#mType').value, price, category: $('#mCat').value, desc: $('#mDesc').value.trim(), img: $('#mImg').value.trim() || `https://picsum.photos/seed/meal-${Date.now()}/500/400.jpg`, avail: true, cookId: S.user._id };
-                if (isEdit) { const m = DB.menuItems.find(x => x._id === meal._id); if (m) Object.assign(m, data) } else { data._id = 'm' + Date.now(); DB.menuItems.push(data) }
-                closeModal(); toast(isEdit ? 'Item updated' : 'Item added'); onSave()
-            });
+            $('#saveMealBtn').addEventListener('click', async () => {
+
+    const name = $('#mName').value.trim();
+    const price = parseInt($('#mPrice').value);
+
+    if (!name || !price) {
+        toast('Fill required fields', 'error');
+        return;
+    }
+
+    const payload = {
+        cook: S.user._id,
+        name,
+        type: $('#mType').value === 'veg' ? 'Veg' : 'Non-Veg',
+        price,
+        category: $('#mCat').value,
+        description: $('#mDesc').value.trim(),
+        image: $('#mImg').value.trim(),
+        available: true
+    };
+
+    try {
+
+        const token = localStorage.getItem('hf_tk');
+
+        let response;
+
+        if (isEdit) {
+
+            response = await fetch(
+                `https://homefeast-3fqr.onrender.com/api/menus/${meal._id}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+        } else {
+
+            response = await fetch(
+                'https://homefeast-3fqr.onrender.com/api/menus',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+        }
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            toast(result.message || 'Operation failed', 'error');
+            return;
+        }
+
+        closeModal();
+
+        toast(
+            isEdit
+                ? 'Menu updated successfully'
+                : 'Menu added successfully'
+        );
+
+        onSave();
+
+    } catch (err) {
+
+        console.error(err);
+
+        toast('Server error', 'error');
+    }
+
+});
         }
 
         function pgCookOrders(a) {
