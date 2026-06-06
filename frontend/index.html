@@ -3002,11 +3002,11 @@
 
 async function loadDatabase() {
     try {
-        const cooksRes = await fetch('http://localhost:5000/api/cooks');
+        const cooksRes = await fetch('https://homefeast-3fqr.onrender.com/api/cooks');
         const cooksData = await cooksRes.json();
         DB.cooks = cooksData.data || cooksData;
 
-        const menusRes = await fetch('http://localhost:5000/api/menus');
+        const menusRes = await fetch('https://homefeast-3fqr.onrender.com/api/menus');
         const menusData = await menusRes.json();
         DB.menuItems = menusData.data || menusData;
 
@@ -3431,7 +3431,7 @@ function pgCookProfile(id, a) {
                 const btn = $('button[type=submit]', a);
                 btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
                 try {
-                    const r = await fetch('http://localhost:5000/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
+                    const r = await fetch('https://homefeast-3fqr.onrender.com/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
                     const data = await r.json();
                     if (!r.ok) { toast(data.message || 'Login failed', 'error'); return; }
                     S.user = data.user || data.data?.user;
@@ -3458,7 +3458,7 @@ function pgCookProfile(id, a) {
                 if (isCook) { d.cuisine = $('#rCui', a).value.trim(); d.experience = $('#rExp', a).value; d.fssai = $('#rFss', a).value.trim(); d.serviceArea = $('#rArea', a).value.trim(); d.timings = $('#rTim', a).value.trim(); d.bio = $('#rBio', a).value.trim(); }
                 const btn = $('button[type=submit]', a); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
                 try {
-                    const r = await fetch('http://localhost:5000/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+                    const r = await fetch('https://homefeast-3fqr.onrender.com/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
                     const data = await r.json();
                     if (!r.ok) { toast(data.message || 'Registration failed', 'error'); return; }
                     toast(isCook ? 'Cook registration submitted!' : 'Account created successfully!'); nav('login');
