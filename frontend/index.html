@@ -3436,6 +3436,7 @@ function pgCookProfile(id, a) {
                     if (!r.ok) { toast(data.message || 'Login failed', 'error'); return; }
                     S.user = data.user || data.data?.user;
                     S.token = data.token || data.data?.token;
+                    localStorage.setItem('token', data.token);
                     localStorage.setItem('hf_tk', S.token);
                     localStorage.setItem('hf_user', JSON.stringify(S.user));
                     saveU(); saveT(); updateUI();
@@ -3636,7 +3637,63 @@ function pgCookProfile(id, a) {
             a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="margin-bottom:24px"><div class="sec-label">Settings</div><h2 class="sec-title">Cook Profile</h2></div><div class="co-card"><h3><i class="fas fa-user" style="color:var(--accent)"></i> Basic Info</h3><form id="ckSetF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="ckN" value="${S.user.name}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ckPh" value="${S.user.phone || ''}"/></div></div><div class="fg"><label class="fl">Cuisine</label><input class="fi" id="ckCui" value="${cook.cuisine || ''}"/></div><div class="fg"><label class="fl">Service Area</label><input class="fi" id="ckArea" value="${cook.serviceArea || ''}"/></div><div class="fg"><label class="fl">Timings</label><input class="fi" id="ckTim" value="${cook.timings || ''}"/></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ckBio" rows="2">${cook.bio || ''}</textarea></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save Changes</button></form></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-tags" style="color:var(--accent)"></i> Subscription Plans</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:16px">Set your daily, weekly, and monthly pricing.</p><div id="plansEditor">${[{ type: 'daily', label: 'Daily' }, { type: 'weekly', label: 'Weekly' }, { type: 'monthly', label: 'Monthly' }].map(pt => `<div style="margin-bottom:16px;padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-weight:700;font-size:.9rem;margin-bottom:10px">${pt.label}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="fg" style="margin:0"><label class="fl">Lunch Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="lunch" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'lunch')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Dinner Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="dinner" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'dinner')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Both Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="both" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'both')?.price || ''}" placeholder="0"/></div></div></div>`).join('')}</div><button class="btn btn-p btn-sm" id="savePlans" style="margin-top:12px"><i class="fas fa-save"></i> Save Plans</button></div></div></section>`;
             updateUI();
             $('#ckSetF', a)?.addEventListener('submit', e => { e.preventDefault(); S.user.name = $('#ckN', a).value.trim(); S.user.phone = $('#ckPh', a).value.trim(); const ck = DB.cooks.find(c => c._id === S.user._id); if (ck) { ck.cuisine = $('#ckCui', a).value.trim(); ck.serviceArea = $('#ckArea', a).value.trim(); ck.timings = $('#ckTim', a).value.trim(); ck.bio = $('#ckBio', a).value.trim() } saveU(); updateUI(); toast('Settings saved!') });
-            $('#savePlans', a)?.addEventListener('click', () => { const ck = DB.cooks.find(c => c._id === S.user._id); if (!ck) return; ck.plans = []; $$('.plan-price', a).forEach(inp => { const v = parseInt(inp.value); if (v > 0) ck.plans.push({ type: inp.dataset.pt, meal: inp.dataset.meal, price: v }) }); toast('Plans saved!') });
+            $('#savePlans', a)?.addEventListener('click', async () => {
+
+    try {
+
+        const daily =
+            parseInt(
+                document.querySelector('[data-pt="daily"][data-meal="both"]').value
+            ) || 0;
+
+        const weekly =
+            parseInt(
+                document.querySelector('[data-pt="weekly"][data-meal="both"]').value
+            ) || 0;
+
+        const monthly =
+            parseInt(
+                document.querySelector('[data-pt="monthly"][data-meal="both"]').value
+            ) || 0;
+
+        const token =
+            localStorage.getItem('token');
+
+        const response =
+            await fetch(
+                'https://homefeast-3fqr.onrender.com/api/cooks/profile/my',
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        plans: {
+                            daily,
+                            weekly,
+                            monthly
+                        }
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (response.ok) {
+            toast('Plans saved successfully!');
+        } else {
+            toast(data.message || 'Failed to save');
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        toast('Failed to save plans');
+    }
+});
         }
 
         function pgAdminDash(a) {
