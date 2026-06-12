@@ -3779,125 +3779,162 @@ function pgCookProfile(id, a) {
 
 }
 
-       $('#saveMealBtn').addEventListener('click', async () => {
+        function showMealModal(meal, onSave) {
 
-    const name = $('#mName').value.trim();
-    const price = parseInt($('#mPrice').value);
+    const isEdit = !!meal;
 
-    if (!name || !price) {
-        toast('Fill required fields', 'error');
-        return;
-    }
+    openModal(
+        isEdit ? 'Edit Menu Item' : 'Add Menu Item',
 
-    const cookData = DB.cooks.find(
-        c =>
-            c.user === S.user._id ||
-            c.userId === S.user._id ||
-            c.email === S.user.email
+        `<div class="fg">
+            <label class="fl">Dish Name</label>
+            <input class="fi" id="mName" value="${meal?.name || ''}" required/>
+        </div>
+
+        <div class="fr">
+            <div class="fg">
+                <label class="fl">Type</label>
+                <select class="fi" id="mType">
+                    <option value="veg" ${meal?.type === 'Veg' ? 'selected' : ''}>Vegetarian</option>
+                    <option value="non-veg" ${meal?.type === 'Non-Veg' ? 'selected' : ''}>Non-Vegetarian</option>
+                </select>
+            </div>
+
+            <div class="fg">
+                <label class="fl">Price</label>
+                <input class="fi" type="number" id="mPrice" value="${meal?.price || ''}" required/>
+            </div>
+        </div>
+
+        <div class="fg">
+            <label class="fl">Category</label>
+            <input class="fi" id="mCat" value="${meal?.category || ''}" />
+        </div>
+
+        <div class="fg">
+            <label class="fl">Description</label>
+            <textarea class="fi" id="mDesc">${meal?.description || ''}</textarea>
+        </div>
+
+        <div class="fg">
+            <label class="fl">Image URL</label>
+            <input class="fi" id="mImg" value="${meal?.image || ''}" />
+        </div>`,
+
+        `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button>
+         <button class="btn btn-p btn-sm" id="saveMealBtn">
+            ${isEdit ? 'Update' : 'Add'}
+         </button>`
     );
 
-    if (!cookData) {
-        toast('Cook profile not found', 'error');
-        return;
-    }
+    setTimeout(() => {
 
-    const payload = {
-        cook: cookData._id,
-        name: name,
-        type: $('#mType').value === 'veg' ? 'Veg' : 'Non-Veg',
-        price: price,
-        category: $('#mCat').value,
-        description: $('#mDesc').value.trim(),
-        image: $('#mImg').value.trim(),
-        available: true
-    };
+        const saveBtn = document.getElementById('saveMealBtn');
 
-    console.log('PAYLOAD:', payload);
-
-    try {
-
-        const token = localStorage.getItem('hf_tk');
-
-        let response;
-
-        if (isEdit) {
-
-            response = await fetch(
-                `https://homefeast-3fqr.onrender.com/api/menus/${meal._id}`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
-                }
-            );
-
-        } else {
-
-            response = await fetch(
-                'https://homefeast-3fqr.onrender.com/api/menus',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
-                }
-            );
-
-        }
-
-        const text = await response.text();
-
-        console.log('SERVER RESPONSE:', text);
-
-        let result = {};
-
-        try {
-            result = JSON.parse(text);
-        } catch (e) {}
-
-        if (!response.ok) {
-
-            toast(
-                result.message ||
-                text ||
-                'Operation failed',
-                'error'
-            );
-
+        if (!saveBtn) {
+            console.error('saveMealBtn not found');
             return;
         }
 
-        closeModal();
+        saveBtn.addEventListener('click', async () => {
 
-        toast(
-            isEdit
-                ? 'Menu updated successfully'
-                : 'Menu added successfully'
-        );
+            const name = document.getElementById('mName').value.trim();
+            const price = parseInt(document.getElementById('mPrice').value);
 
-        if (typeof loadMenus === 'function') {
-            await loadMenus();
-        }
+            if (!name || !price) {
+                toast('Fill required fields', 'error');
+                return;
+            }
 
-        if (onSave) {
-            onSave();
-        }
+            const cookData = DB.cooks.find(
+                c =>
+                    c.user === S.user._id ||
+                    c.userId === S.user._id ||
+                    c.email === S.user.email
+            );
 
-    } catch (err) {
+            if (!cookData) {
+                toast('Cook profile not found', 'error');
+                return;
+            }
 
-        console.error(err);
+            const payload = {
+                cook: cookData._id,
+                name,
+                type: document.getElementById('mType').value === 'veg'
+                    ? 'Veg'
+                    : 'Non-Veg',
+                price,
+                category: document.getElementById('mCat').value,
+                description: document.getElementById('mDesc').value,
+                image: document.getElementById('mImg').value,
+                available: true
+            };
 
-        toast(
-            err.message || 'Server error',
-            'error'
-        );
-    }
-});
+            try {
+
+                const token = localStorage.getItem('hf_tk');
+
+                let response;
+
+                if (isEdit) {
+
+                    response = await fetch(
+                        `https://homefeast-3fqr.onrender.com/api/menus/${meal._id}`,
+                        {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(payload)
+                        }
+                    );
+
+                } else {
+
+                    response = await fetch(
+                        'https://homefeast-3fqr.onrender.com/api/menus',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(payload)
+                        }
+                    );
+
+                }
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    toast(result.message || 'Operation failed', 'error');
+                    return;
+                }
+
+                closeModal();
+
+                toast(
+                    isEdit
+                        ? 'Menu updated successfully'
+                        : 'Menu added successfully'
+                );
+
+                if (onSave) onSave();
+
+            } catch (err) {
+
+                console.error(err);
+                toast('Server error', 'error');
+
+            }
+
+        });
+
+    }, 100);
+}
 
         function pgCookOrders(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
