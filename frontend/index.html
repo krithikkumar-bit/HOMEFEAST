@@ -3779,10 +3779,7 @@ function pgCookProfile(id, a) {
 
 }
 
-        function showMealModal(meal, onSave) {
-            const isEdit = !!meal;
-            openModal(isEdit ? 'Edit Menu Item' : 'Add Menu Item', `<div class="fg"><label class="fl">Dish Name</label><input class="fi" id="mName" value="${meal?.name || ''}" required/></div><div class="fr"><div class="fg"><label class="fl">Type</label><select class="fi" id="mType"><option value="veg" ${meal?.type === 'veg' ? 'selected' : ''}>Vegetarian</option><option value="non-veg" ${meal?.type === 'non-veg' ? 'selected' : ''}>Non-Vegetarian</option></select></div><div class="fg"><label class="fl">Price</label><input class="fi" type="number" id="mPrice" value="${meal?.price || ''}" required/></div></div><div class="fg"><label class="fl">Category</label><select class="fi" id="mCat">${DB.categories.map(c => `<option value="${c._id}" ${meal?.category === c._id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div><div class="fg"><label class="fl">Description</label><textarea class="fi" id="mDesc" rows="2">${meal?.desc || ''}</textarea></div><div class="fg"><label class="fl">Image URL</label><input class="fi" id="mImg" value="${meal?.img || ''}" placeholder="https://..."/></div>`, `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="saveMealBtn">${isEdit ? 'Update' : 'Add'}</button>`);
-            $('#saveMealBtn').addEventListener('click', async () => {
+       $('#saveMealBtn').addEventListener('click', async () => {
 
     const name = $('#mName').value.trim();
     const price = parseInt($('#mPrice').value);
@@ -3792,16 +3789,30 @@ function pgCookProfile(id, a) {
         return;
     }
 
+    const cookData = DB.cooks.find(
+        c =>
+            c.user === S.user._id ||
+            c.userId === S.user._id ||
+            c.email === S.user.email
+    );
+
+    if (!cookData) {
+        toast('Cook profile not found', 'error');
+        return;
+    }
+
     const payload = {
-        cook: S.user._id,
-        name,
+        cook: cookData._id,
+        name: name,
         type: $('#mType').value === 'veg' ? 'Veg' : 'Non-Veg',
-        price,
+        price: price,
         category: $('#mCat').value,
         description: $('#mDesc').value.trim(),
         image: $('#mImg').value.trim(),
         available: true
     };
+
+    console.log('PAYLOAD:', payload);
 
     try {
 
@@ -3839,10 +3850,25 @@ function pgCookProfile(id, a) {
 
         }
 
-        const result = await response.json();
+        const text = await response.text();
+
+        console.log('SERVER RESPONSE:', text);
+
+        let result = {};
+
+        try {
+            result = JSON.parse(text);
+        } catch (e) {}
 
         if (!response.ok) {
-            toast(result.message || 'Operation failed', 'error');
+
+            toast(
+                result.message ||
+                text ||
+                'Operation failed',
+                'error'
+            );
+
             return;
         }
 
@@ -3854,17 +3880,24 @@ function pgCookProfile(id, a) {
                 : 'Menu added successfully'
         );
 
-        onSave();
+        if (typeof loadMenus === 'function') {
+            await loadMenus();
+        }
+
+        if (onSave) {
+            onSave();
+        }
 
     } catch (err) {
 
         console.error(err);
 
-        toast('Server error', 'error');
+        toast(
+            err.message || 'Server error',
+            'error'
+        );
     }
-
 });
-        }
 
         function pgCookOrders(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
