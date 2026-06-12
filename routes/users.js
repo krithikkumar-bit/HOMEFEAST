@@ -261,5 +261,26 @@ router.post('/complaints', async (req, res, next) => {
   }
 
 });
+// GET ALL USERS (ADMIN)
+router.get('/', async (req, res) => {
+  try {
+
+    const users = await User.find()
+      .select('-password');
+
+    res.json({
+      success: true,
+      data: users
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
+
+  }
+});
 
 module.exports = router;
