@@ -3142,7 +3142,7 @@ function route() {
     const R = {
         home: pgHome, browse: pgBrowse, cook: () => pgCookProfile(id),
         how: pgHow, about: pgAbout, login: pgLogin, register: pgRegister,
-        'register-cook': () => pgRegister('cook'), cart: pgCart, checkout: pgCheckout,
+        'register-cook': (a) => pgRegister(a, 'cook'), cart: pgCart, checkout: pgCheckout,
         dashboard: pgDashboard, subscriptions: pgSubs, orders: pgOrders,
         'order-detail': () => pgOrderDetail(id), 'sub-detail': () => pgSubDetail(id),
         profile: pgProfile, 'cook-dashboard': pgCookDash, 'cook-menu': pgCookMenu,
