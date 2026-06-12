@@ -34,16 +34,16 @@ app.use(cookieParser());
 
 
 /* =========================
-   STATIC FILES — serve from frontend/ subfolder
+   STATIC FILES
 ========================= */
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname)));
 
 
 /* =========================
-   FRONTEND — root serves index.html from frontend/
+   FRONTEND
 ========================= */
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
@@ -74,11 +74,11 @@ app.get('/api/health', (req, res) => {
 
 
 /* =========================
-   SPA FALLBACK — non-API routes serve index.html from frontend/
+   SPA FALLBACK
 ========================= */
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
@@ -111,7 +111,6 @@ app.listen(PORT, () => {
   ✅ Nutrition Tracking (/api/nutrition)
   ✅ AI Recommendations (/api/recommendations)
   ✅ Order Bug Fixed (/api/orders)
-  ✅ Static files served from ./frontend/
 =================================
   `);
 });
