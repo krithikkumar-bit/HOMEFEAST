@@ -3859,17 +3859,14 @@ function pgCookProfile(id, a) {
             }
 
             const payload = {
-                cook: cookData._id,
-                name,
-                type: document.getElementById('mType').value === 'veg'
-                    ? 'Veg'
-                    : 'Non-Veg',
-                price,
-                category: document.getElementById('mCat').value,
-                description: document.getElementById('mDesc').value,
-                image: document.getElementById('mImg').value,
-                available: true
-            };
+    name,
+    type: $('#mType').value === 'veg' ? 'Veg' : 'Non-Veg',
+    price,
+    category: $('#mCat').value,
+    description: $('#mDesc').value.trim(),
+    image: $('#mImg').value.trim(),
+    available: true
+};
 
             try {
 
@@ -3880,7 +3877,7 @@ function pgCookProfile(id, a) {
                 if (isEdit) {
 
                     response = await fetch(
-                        `https://homefeast-3fqr.onrender.com/api/menus/${meal._id}`,
+    `https://homefeast-3fqr.onrender.com/api/cooks/menu/${meal._id}`,
                         {
                             method: 'PUT',
                             headers: {
@@ -3893,8 +3890,8 @@ function pgCookProfile(id, a) {
 
                 } else {
 
-                    response = await fetch(
-                        'https://homefeast-3fqr.onrender.com/api/menus',
+                  response = await fetch(
+    'https://homefeast-3fqr.onrender.com/api/cooks/menus',
                         {
                             method: 'POST',
                             headers: {
@@ -4386,7 +4383,15 @@ function pgCookProfile(id, a) {
 
         function pgAdminCooks(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>${DB.cooks.map(c => { const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0; return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '\u2014'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '\u2014'}</td><td>${c.totalOrders}</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>` }).join('')}</tbody></table></div></div></section>`;
+            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Cooks (${DB.cooks.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Cuisine</th><th>FSSAI</th><th>Rating</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead><tbody>${DB.cooks.map(c => { const revs = DB.reviews.filter(r => r.cookId === c._id); const avg = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : 0; return `<tr><td style="font-weight:600">${c.name}</td><td>${c.cuisine}</td><td style="font-size:.82rem">${c.fssai || '\u2014'}</td><td><i class="fas fa-star" style="color:var(--warning)"></i> ${avg || '\u2014'}</td><td>
+${
+    DB.orders.filter(
+        o =>
+            o.cookId === c._id ||
+            o.cook === c._id
+    ).length
+}
+</td><td><span class="badge-st ${stMap[c.status]?.c || ''}">${stMap[c.status]?.l || c.status}</span></td><td>${c.status === 'pending' ? `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Approve</button> <button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Reject</button>` : c.status === 'approved' ? `<button class="btn btn-d btn-sm rej-ck2" data-cid="${c._id}">Deactivate</button>` : `<button class="btn btn-s btn-sm appr-ck2" data-cid="${c._id}">Reactivate</button>`}</td></tr>` }).join('')}</tbody></table></div></div></section>`;
             updateUI();
             $$('.appr-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'approved'; toast(`${c.name} approved`); pgAdminCooks(a) } }));
             $$('.rej-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'rejected'; toast(`${c.name} deactivated`); pgAdminCooks(a) } }));
