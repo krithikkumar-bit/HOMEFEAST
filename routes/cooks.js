@@ -184,10 +184,12 @@ router.get(
         });
       }
 
+      // FIX: Query both 'placed' and 'confirmed' as pending for the cook dashboard
+      // Orders are created with lowercase status values
       const pendingOrders =
         await Order.countDocuments({
           cook: cook._id,
-          status: 'Pending'
+          status: { $in: ['placed', 'confirmed'] }
         });
 
       const activeSubscribers =
@@ -196,13 +198,15 @@ router.get(
           status: 'Active'
         });
 
+      // FIX: Use lowercase 'cancelled' to match actual order status values
+      // Also sum 'total' field instead of 'amount' for cart-based orders
       const totalEarnings =
         await Order.aggregate([
           {
             $match: {
               cook: cook._id,
               status: {
-                $ne: 'Cancelled'
+                $nin: ['cancelled', 'Cancelled']
               }
             }
           },
@@ -210,7 +214,7 @@ router.get(
             $group: {
               _id: null,
               total: {
-                $sum: '$amount'
+                $sum: '$total'
               }
             }
           }
@@ -310,6 +314,15 @@ router.put(
         return res.status(404).json({
           success: false,
           message: 'Order not found'
+        });
+      }
+
+      // FIX: Validate the status value before updating
+      const validStatuses = ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'];
+      if (!validStatuses.includes(req.body.status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid status value'
         });
       }
 

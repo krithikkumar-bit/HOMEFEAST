@@ -54,18 +54,19 @@ router.get('/dashboard', async (req, res, next) => {
         user: req.user.id
       });
 
+    // FIX: Also sum 'total' field for accurate spent amount (cart orders use 'total')
     const totalSpent =
       await Order.aggregate([
         {
           $match: {
             user: req.user._id,
-            status: { $ne: 'Cancelled' }
+            status: { $nin: ['cancelled', 'Cancelled'] }
           }
         },
         {
           $group: {
             _id: null,
-            total: { $sum: '$amount' }
+            total: { $sum: '$total' }
           }
         }
       ]);

@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema({
   total: { type: Number, min: 0, default: 0 },
   status: {
     type: String,
+    // FIX: Standardized to lowercase. Kept capitalized variants for backward compat with existing data.
     enum: ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled', 'Pending', 'Active', 'Completed', 'Cancelled'],
     default: 'placed'
   },

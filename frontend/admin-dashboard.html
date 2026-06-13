@@ -656,7 +656,7 @@ async function loadDashboard(){
     const tbody=document.getElementById('dashOrdersBody');
     const recent=orders.data.slice(0,7);
     if(!recent.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty" style="padding:24px"><i class="fas fa-receipt"></i><p>No orders</p></div></td></tr>';return;}
-    tbody.innerHTML=recent.map(o=>`<tr><td><strong>${o.orderId}</strong></td><td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td><td>${o.cook?.name||'—'}</td><td>${o.plan}</td><td>₹${o.amount}</td><td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td><td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td></tr>`).join('');
+    tbody.innerHTML=recent.map(o=>`<tr><td><strong>${o.orderId}</strong></td><td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td><td>${o.cook?.name||'—'}</td><td>${o.plan}</td><td>₹${o.total||o.amount||0}</td><td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td><td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td></tr>`).join('');
     // open complaints panel
     const ocList=document.getElementById('openComplaintsList');
     const open=allComplaints.filter(c=>c.status==='Open').slice(0,4);
@@ -665,7 +665,8 @@ async function loadDashboard(){
   }
 }
 
-function statusBadge(s){return{Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'}[s]||'badge-gray';}
+// FIX: Added all lowercase status badges to match actual order status values
+function statusBadge(s){return{placed:'badge-orange',confirmed:'badge-blue',preparing:'badge-blue',on_the_way:'badge-blue',delivered:'badge-green',cancelled:'badge-red',Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'}[s]||'badge-gray';}
 
 // COOKS
 async function loadCooks(){
@@ -785,16 +786,20 @@ function renderOrders(){
   if(planF)data=data.filter(o=>o.plan===planF);
   const tbody=document.getElementById('ordersBody');
   if(!data.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty" style="padding:32px"><i class="fas fa-receipt"></i><p>No orders found</p></div></td></tr>`;return;}
-  tbody.innerHTML=data.map(o=>`<tr>
+  tbody.innerHTML=data.map(o=>{
+    // FIX: Show items for cart orders, total for accurate amount
+    const displayMeal = o.items && o.items.length ? o.items.map(i=>i.name).join(', ') : (o.meal||'—');
+    const displayAmt = o.total || o.amount || 0;
+    return`<tr>
     <td><strong>${o.orderId}</strong></td>
     <td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td>
     <td>${o.cook?.name||'—'}</td>
-    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.meal}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${displayMeal}</td>
     <td>${o.plan}</td>
-    <td>₹${o.amount}</td>
+    <td>₹${displayAmt}</td>
     <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
     <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
-  </tr>`).join('');
+  </tr>`;}).join('');
 }
 
 // SUBSCRIPTIONS

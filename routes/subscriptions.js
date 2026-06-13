@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
 const Subscription = require('../models/Subscription');
+const Cook = require('../models/Cook');
 
 /* =========================
    CREATE SUBSCRIPTION
@@ -32,7 +33,7 @@ router.post('/', protect, async (req, res, next) => {
 });
 
 /* =========================
-   MY SUBSCRIPTIONS
+   MY SUBSCRIPTIONS (for users)
 ========================= */
 router.get('/my', protect, async (req, res, next) => {
     try {
@@ -59,6 +60,43 @@ router.get('/my', protect, async (req, res, next) => {
         next(err);
     }
 });
+
+/* =========================
+   COOK'S SUBSCRIPTIONS
+   GET /api/subscriptions/cook/my
+   FIX: New endpoint for cooks to see their own subscribers
+========================= */
+router.get(
+    '/cook/my',
+    protect,
+    authorize('cook'),
+    async (req, res, next) => {
+        try {
+            const cook = await Cook.findOne({ user: req.user.id });
+            if (!cook) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Cook profile not found'
+                });
+            }
+
+            const subs = await Subscription
+                .find({ cook: cook._id })
+                .populate('user', 'firstName lastName email area')
+                .populate('cook', 'name cuisine area')
+                .sort({ createdAt: -1 });
+
+            res.json({
+                success: true,
+                count: subs.length,
+                data: subs
+            });
+
+        } catch (err) {
+            next(err);
+        }
+    }
+);
 
 /* =========================
    ADMIN STATS
@@ -110,16 +148,41 @@ router.get(
 
 /* =========================
    ADMIN ALL SUBSCRIPTIONS
+   FIX: Also support cookId query parameter for cook dashboard
 ========================= */
 router.get(
     '/',
     protect,
-    authorize('admin'),
     async (req, res, next) => {
         try {
+            // Allow both admin and cook roles
+            // Cooks can only see subscriptions for their own cook profile
+            let filter = {};
+
+            if (req.user.role === 'admin') {
+                // Admin can see all subscriptions, optionally filtered by cookId
+                if (req.query.cookId) {
+                    filter.cook = req.query.cookId;
+                }
+            } else if (req.user.role === 'cook') {
+                // Cook can only see their own subscriptions
+                const cook = await Cook.findOne({ user: req.user.id });
+                if (!cook) {
+                    return res.status(404).json({
+                        success: false,
+                        message: 'Cook profile not found'
+                    });
+                }
+                filter.cook = cook._id;
+            } else {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Not authorized'
+                });
+            }
 
             const subs =
-                await Subscription.find()
+                await Subscription.find(filter)
                     .populate(
                         'user',
                         'firstName lastName email area'

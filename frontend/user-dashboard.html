@@ -475,18 +475,21 @@ async function loadRecentOrders(){
   const r=await apiFetch('/orders/my');
   const tbody=document.getElementById('recentOrdersBody');
   if(!r.success||!r.data.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty"><i class="fas fa-receipt"></i><p>No orders yet</p></div></td></tr>';return;}
-  tbody.innerHTML=r.data.slice(0,5).map(o=>`
-    <tr>
+  tbody.innerHTML=r.data.slice(0,5).map(o=>{
+    const displayMeal = o.items && o.items.length ? o.items.map(i=>i.name).join(', ') : (o.meal||'—');
+    const displayAmt = o.total || o.amount || 0;
+    return`<tr>
       <td><strong>${o.orderId}</strong></td>
       <td>${o.cook?.name||'—'}</td>
-      <td>${o.meal}</td>
+      <td>${displayMeal}</td>
       <td>${o.plan}</td>
-      <td>₹${o.amount}</td>
+      <td>₹${displayAmt}</td>
       <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
-    </tr>`).join('');
+    </tr>`;}).join('');
 }
 
-function statusBadge(s){return{Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'}[s]||'badge-gray';}
+// FIX: Added all lowercase status badges to match actual order status values
+function statusBadge(s){return{placed:'badge-orange',confirmed:'badge-blue',preparing:'badge-blue',on_the_way:'badge-blue',delivered:'badge-green',cancelled:'badge-red',Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red',Paused:'badge-yellow',Expired:'badge-gray'}[s]||'badge-gray';}
 
 // COOKS BROWSE
 async function loadCooks(reset=true){
@@ -604,20 +607,28 @@ async function loadOrders(){
   const r=await apiFetch('/orders/my');
   const tbody=document.getElementById('ordersBody');
   if(!r.success||!r.data.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty"><i class="fas fa-receipt"></i><p>No orders yet. <a href="#" onclick="showPage(\'browse\')" style="color:var(--accent)">Browse cooks</a> to place your first order!</p></div></td></tr>';return;}
-  tbody.innerHTML=r.data.map(o=>`
-    <tr>
+  tbody.innerHTML=r.data.map(o=>{
+    // FIX: Show items for cart orders, fallback to meal for subscription orders
+    const displayMeal = o.items && o.items.length ? o.items.map(i=>i.name).join(', ') : (o.meal||'—');
+    // FIX: Show total if available (cart orders), fallback to amount
+    const displayAmt = o.total || o.amount || 0;
+    // FIX: Allow cancel for placed/confirmed/preparing status (lowercase)
+    const canCancel = o.status==='placed'||o.status==='confirmed'||o.status==='preparing'||o.status==='Pending'||o.status==='Active';
+    // FIX: Allow review for delivered/completed status (lowercase)
+    const canReview = o.status==='delivered'||o.status==='Completed';
+    return`<tr>
       <td><strong>${o.orderId}</strong></td>
       <td>${o.cook?.name||'—'}</td>
-      <td>${o.meal}</td>
+      <td>${displayMeal}</td>
       <td>${o.plan}</td>
-      <td>₹${o.amount}</td>
+      <td>₹${displayAmt}</td>
       <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
       <td><span class="badge ${statusBadge(o.status)}">${o.status}</span></td>
       <td>
-        ${o.status==='Pending'||o.status==='Active'?`<button class="btn btn-danger btn-sm" onclick="cancelOrder('${o._id}')"><i class="fas fa-times"></i> Cancel</button>`:''}
-        ${o.status==='Completed'?`<button class="btn btn-outline btn-sm" onclick="openReviewModal('${o.cook?._id}')"><i class="fas fa-star"></i> Review</button>`:''}
+        ${canCancel?`<button class="btn btn-danger btn-sm" onclick="cancelOrder('${o._id}')"><i class="fas fa-times"></i> Cancel</button>`:''}
+        ${canReview?`<button class="btn btn-outline btn-sm" onclick="openReviewModal('${o.cook?._id}')"><i class="fas fa-star"></i> Review</button>`:''}
       </td>
-    </tr>`).join('');
+    </tr>`;}).join('');
 }
 async function cancelOrder(id){
   if(!confirm('Cancel this order?'))return;

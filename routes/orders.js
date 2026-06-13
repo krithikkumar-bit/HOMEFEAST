@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose'); // FIX: Added missing mongoose import
+const mongoose = require('mongoose');
 const { protect } = require('../middleware/auth');
 const Order = require('../models/Order');
 const Cook = require('../models/Cook');
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
-const Menu = require('../models/Menu'); // FIX: Moved Menu import to the top
+const Menu = require('../models/Menu');
 const { generateOrderId, getSubscriptionEndDate } = require('../utils/helpers');
 
 
@@ -45,19 +45,18 @@ router.get('/my', protect, async (req, res, next) => {
 router.post('/', protect, async (req, res, next) => {
   try {
     const {
-      items,          // array: [{mealId, name, price, qty, customizations}]
-      address,        // {name, phone, line1, line2, city, pin, notes}
-      paymentMethod,  // 'cod' | 'online' | 'wallet'
-      cookId,         // optional: for subscription orders
-      plan,           // optional: 'Daily'|'Weekly'|'Monthly' for subscription
-      meal,           // optional: for subscription
-      mealPreference, // optional
-      deliveryAddress,// optional legacy
-      useWallet,      // boolean: use wallet balance
+      items,
+      address,
+      paymentMethod,
+      cookId,
+      plan,
+      meal,
+      mealPreference,
+      deliveryAddress,
+      useWallet,
       customizationNotes
     } = req.body;
 
-    // Validate: must have either items (cart order) or cookId+plan+meal (subscription)
     const isCartOrder = Array.isArray(items) && items.length > 0;
     const isSubOrder = cookId && plan && meal;
 
@@ -78,6 +77,11 @@ router.post('/', protect, async (req, res, next) => {
       customizationNotes
     };
 
+    // Track subscription amount for creating Subscription doc later
+    let subAmount = 0;
+    let subStartDate = null;
+    let subEndDate = null;
+
     if (isCartOrder) {
       // --- CART-BASED ORDER ---
       const subtotal = items.reduce((sum, i) => sum + (i.price * (i.qty || 1)), 0);
@@ -85,10 +89,8 @@ router.post('/', protect, async (req, res, next) => {
       const gst = Math.round(subtotal * 0.05);
       const total = subtotal + delivery + gst;
 
-      // Detect cook from first item if possible
       let orderCookId = cookId;
 
-      // Calculate nutrition totals if available from menu
       let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFat = 0;
       for (const item of items) {
         if (item.mealId) {
@@ -124,12 +126,11 @@ router.post('/', protect, async (req, res, next) => {
           await user.save();
         }
 
-        // If wallet fully covers the order, mark as paid
         if (remaining <= 0) {
           orderData.paymentStatus = 'paid';
           orderData.paymentMethod = 'wallet';
         } else {
-          orderData.paymentMethod = 'cod'; // rest via COD
+          orderData.paymentMethod = 'cod';
         }
       }
 
@@ -161,6 +162,11 @@ router.post('/', protect, async (req, res, next) => {
       const startDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
       const endDate = plan !== 'Daily' ? getSubscriptionEndDate(plan) : undefined;
 
+      // FIX: Store subscription details for creating Subscription document
+      subAmount = amount;
+      subStartDate = startDate;
+      subEndDate = endDate;
+
       orderData = {
         ...orderData,
         cook: cookId,
@@ -171,7 +177,7 @@ router.post('/', protect, async (req, res, next) => {
         subtotal: amount,
         delivery: 0,
         gst: 0,
-        status: plan === 'Daily' ? 'placed' : 'placed',
+        status: 'placed',
         deliveryAddress: deliveryAddress || req.user.address,
         mealPreference: mealPreference || ['lunch'],
         startDate,
@@ -186,6 +192,29 @@ router.post('/', protect, async (req, res, next) => {
     }
 
     const order = await Order.create(orderData);
+
+    // ============================================================
+    // FIX: Create a Subscription document for Weekly/Monthly orders
+    // This ensures the dashboard subscription count works correctly
+    // ============================================================
+    if (isSubOrder && plan !== 'Daily') {
+      try {
+        await Subscription.create({
+          user: req.user.id,
+          cook: cookId,
+          plan: plan,
+          amount: subAmount,
+          status: 'Active',
+          startDate: subStartDate,
+          endDate: subEndDate,
+          mealPreference: mealPreference || ['lunch'],
+          deliveryAddress: deliveryAddress || req.user.address || ''
+        });
+      } catch (subErr) {
+        console.error('Failed to create subscription document:', subErr.message);
+        // Don't fail the order if subscription creation fails
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -204,7 +233,6 @@ router.get('/:id', protect, async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Search by MongoDB _id OR custom orderId string
     const query = mongoose.Types.ObjectId.isValid(id)
       ? { $or: [{ _id: id }, { orderId: id }] }
       : { orderId: id };
@@ -215,7 +243,6 @@ router.get('/:id', protect, async (req, res, next) => {
 
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
 
-    // FIX: Safer check to prevent server crash if order.user is missing/unpopulated
     const orderUserId = order.user ? order.user._id.toString() : null;
     if (orderUserId !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Unauthorized' });
@@ -259,6 +286,18 @@ router.put('/:id/status', protect, async (req, res, next) => {
       }
     }
 
+    // FIX: Also update the corresponding Subscription status when order is cancelled
+    if (status === 'cancelled' && order.cook) {
+      try {
+        await Subscription.updateMany(
+          { user: order.user, cook: order.cook, status: 'Active' },
+          { status: 'Cancelled' }
+        );
+      } catch (subErr) {
+        console.error('Failed to update subscription on cancel:', subErr.message);
+      }
+    }
+
     await order.save();
     res.json({ success: true, message: 'Order status updated', data: order });
   } catch (err) { next(err); }
@@ -295,11 +334,16 @@ router.put('/:id/cancel', protect, async (req, res, next) => {
 
     await order.save();
 
+    // FIX: Also cancel the corresponding Subscription
     if (order.cook) {
-      await Subscription.updateMany(
-        { user: order.user, cook: order.cook },
-        { status: 'Cancelled' }
-      );
+      try {
+        await Subscription.updateMany(
+          { user: order.user, cook: order.cook, status: 'Active' },
+          { status: 'Cancelled' }
+        );
+      } catch (subErr) {
+        console.error('Failed to cancel subscription:', subErr.message);
+      }
     }
 
     res.json({ success: true, message: 'Order cancelled', data: order });

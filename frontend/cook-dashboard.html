@@ -196,10 +196,12 @@ input:checked+.toggle-track::after{left:21px}
         <div style="display:flex;gap:8px">
           <select id="orderFilter" onchange="filterOrders()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:var(--font-b)">
             <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Active">Active</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
+            <option value="placed">Placed</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="preparing">Preparing</option>
+            <option value="on_the_way">On the Way</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
       </div>
@@ -333,9 +335,11 @@ input:checked+.toggle-track::after{left:21px}
       <p style="font-size:14px;color:var(--muted);margin-bottom:16px" id="orderUpdateInfo"></p>
       <div class="form-group"><label>New Status</label>
         <select id="newOrderStatus">
-          <option value="Active">Active (Accept)</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
+          <option value="confirmed">Confirmed (Accept)</option>
+          <option value="preparing">Preparing</option>
+          <option value="on_the_way">On the Way</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
         </select>
       </div>
     </div>
@@ -443,22 +447,34 @@ function renderOrders(orders){
 }
 
 function orderRow(o,mini){
-  const statusBadge={Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'};
+  // FIX: Added all lowercase status badges to match actual order status values
+  const statusBadge={
+    placed:'badge-orange',confirmed:'badge-blue',preparing:'badge-blue',
+    on_the_way:'badge-blue',delivered:'badge-green',cancelled:'badge-red',
+    Active:'badge-green',Completed:'badge-blue',Pending:'badge-orange',Cancelled:'badge-red'
+  };
+  // FIX: Show total if available (cart orders), fallback to amount
+  const displayAmt = o.total || o.amount || 0;
+  // FIX: Show items for cart orders, fallback to meal for subscription orders
+  const displayMeal = o.items && o.items.length ? o.items.map(i=>i.name).join(', ') : (o.meal||'—');
+  // FIX: Consider 'placed' and 'confirmed' as pending (needs cook response)
+  const isPending = o.status==='placed'||o.status==='confirmed'||o.status==='Pending';
+  const isDone = o.status==='delivered'||o.status==='cancelled'||o.status==='Completed'||o.status==='Cancelled';
   const cols=mini?`
     <td><strong>${o.orderId}</strong></td>
     <td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td>
-    <td>${o.meal}</td><td>${o.plan}</td>
-    <td>₹${o.amount}</td>
+    <td>${displayMeal}</td><td>${o.plan}</td>
+    <td>₹${displayAmt}</td>
     <td><span class="badge ${statusBadge[o.status]||'badge-gray'}">${o.status}</span></td>
-    <td>${o.status==='Pending'?`<button class="btn btn-success btn-sm" onclick="openOrderUpdate('${o._id}','${o.orderId}')"><i class="fas fa-check"></i> Respond</button>`:''}</td>
+    <td>${isPending?`<button class="btn btn-success btn-sm" onclick="openOrderUpdate('${o._id}','${o.orderId}')"><i class="fas fa-check"></i> Respond</button>`:''}</td>
   `:`
     <td><strong>${o.orderId}</strong></td>
     <td>${o.user?.firstName||'?'} ${o.user?.lastName||''}</td>
-    <td>${o.meal}</td><td>${o.plan}</td>
-    <td>₹${o.amount}</td>
+    <td>${displayMeal}</td><td>${o.plan}</td>
+    <td>₹${displayAmt}</td>
     <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
     <td><span class="badge ${statusBadge[o.status]||'badge-gray'}">${o.status}</span></td>
-    <td>${o.status!=='Completed'&&o.status!=='Cancelled'?`<button class="btn btn-outline btn-sm" onclick="openOrderUpdate('${o._id}','${o.orderId}')"><i class="fas fa-edit"></i> Update</button>`:''}</td>
+    <td>${!isDone?`<button class="btn btn-outline btn-sm" onclick="openOrderUpdate('${o._id}','${o.orderId}')"><i class="fas fa-edit"></i> Update</button>`:''}</td>
   `;
   return`<tr>${cols}</tr>`;
 }
@@ -482,18 +498,27 @@ async function confirmOrderUpdate(){
 }
 
 async function loadSubscriptions(){
-  const r=await apiFetch('/cooks/orders/my');
+  // FIX: Fetch actual subscriptions from the Subscription collection instead of filtering orders
+  // Use the cook-specific subscription endpoint
+  const cookRes=await apiFetch('/cooks/dashboard/my');
+  if(!cookRes.success){document.getElementById('subsBody').innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No subscribers yet</p></div>';return;}
+  const cookId=cookRes.data.cook?._id;
+  if(!cookId){document.getElementById('subsBody').innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No subscribers yet</p></div>';return;}
+
+  // Fetch all subscriptions for this cook
+  const r=await apiFetch('/subscriptions?cookId='+cookId);
   const c=document.getElementById('subsBody');
-  if(!r.success){c.innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No subscribers yet</p></div>';return;}
-  const active=r.data.filter(o=>o.status==='Active'&&o.plan!=='Daily');
+  if(!r.success||!r.data||!r.data.length){c.innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No active subscribers yet</p></div>';return;}
+  // Show only active subscriptions
+  const active=r.data.filter(s=>s.status==='Active');
   if(!active.length){c.innerHTML='<div class="empty"><i class="fas fa-users"></i><p>No active subscribers yet</p></div>';return;}
-  c.innerHTML=active.map(o=>`
+  c.innerHTML=active.map(s=>`
     <div class="subscriber-card">
-      <div class="subscriber-avatar">${(o.user?.firstName||'?')[0].toUpperCase()}</div>
+      <div class="subscriber-avatar">${(s.user?.firstName||'?')[0].toUpperCase()}</div>
       <div style="flex:1">
-        <div style="font-weight:700">${o.user?.firstName||'?'} ${o.user?.lastName||''}</div>
-        <div style="font-size:13px;color:var(--muted)">${o.plan} Plan · ₹${o.amount} · ${o.meal}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">📍 ${o.user?.area||'N/A'} · Pref: ${(o.mealPreference||[]).join(', ')}</div>
+        <div style="font-weight:700">${s.user?.firstName||'?'} ${s.user?.lastName||''}</div>
+        <div style="font-size:13px;color:var(--muted)">${s.plan} Plan · ₹${s.amount}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">📍 ${s.user?.area||s.cook?.area||'N/A'} · Pref: ${(s.mealPreference||[]).join(', ')}</div>
       </div>
       <span class="badge badge-green">Active</span>
     </div>`).join('');

@@ -57,15 +57,17 @@ router.get('/kpi', async (req, res, next) => {
     const totalOrders =
       await Order.countDocuments();
 
+    // FIX: Use lowercase 'placed' to match actual order status values
     const pendingOrders =
       await Order.countDocuments({
-        status: 'Placed'
+        status: 'placed'
       });
 
+    // FIX: Use lowercase to match actual order status values
     const completedOrders =
       await Order.countDocuments({
         status: {
-          $in: ['Delivered', 'Completed']
+          $in: ['delivered', 'Delivered', 'completed', 'Completed']
         }
       });
 
@@ -76,12 +78,14 @@ router.get('/kpi', async (req, res, next) => {
         }
       });
 
+    // FIX: Use lowercase 'cancelled' to match actual order status values
+    // Also sum 'total' field for accurate revenue (cart orders use 'total')
     const revenueData =
       await Order.aggregate([
         {
           $match: {
             status: {
-              $ne: 'Cancelled'
+              $nin: ['cancelled', 'Cancelled']
             }
           }
         },
@@ -89,7 +93,7 @@ router.get('/kpi', async (req, res, next) => {
           $group: {
             _id: null,
             revenue: {
-              $sum: '$amount'
+              $sum: '$total'
             }
           }
         }
@@ -160,9 +164,10 @@ async(req,res,next)=>{
       role:'user'
     });
 
+    // FIX: Use lowercase to match actual order status values
     const activeOrders =
     await Order.countDocuments({
-      status:'Active'
+      status: { $in: ['placed', 'confirmed', 'preparing', 'on_the_way'] }
     });
 
     const openComplaints =
@@ -170,12 +175,13 @@ async(req,res,next)=>{
       status:'Open'
     });
 
+    // FIX: Use lowercase 'cancelled' to match actual order status values
     const totalRevenue =
     await Order.aggregate([
       {
         $match:{
           status:{
-            $ne:'Cancelled'
+            $nin:['cancelled','Cancelled']
           }
         }
       },
@@ -183,7 +189,7 @@ async(req,res,next)=>{
         $group:{
           _id:null,
           total:{
-            $sum:'$amount'
+            $sum:'$total'
           }
         }
       }
