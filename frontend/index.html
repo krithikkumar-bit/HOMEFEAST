@@ -2998,7 +2998,20 @@
 
         async function api(ep, opts = {}) { const tk = localStorage.getItem('hf_tk'); const h = { 'Content-Type': 'application/json', ...opts.headers }; if (tk) h.Authorization = `Bearer ${tk}`; try { const r = await fetch(`${API}${ep}`, { ...opts, headers: h }); const d = await r.json(); if (!r.ok) { if (r.status === 401) { doLogout(); throw new Error('Session expired') } throw new Error(d.message || 'Request failed') } return d } catch (e) { if (e.message === 'Session expired') throw e; if (e.name === 'TypeError' && e.message.includes('fetch')) throw new Error('Server unreachable'); throw e } }
 
-       let DB = { categories: [], cooks: [], menuItems: [], users: [], orders: [], subscriptions: [], reviews: [], complaints: [] };
+       let DB = {
+    categories: [],
+    cooks: [],
+    menuItems: [],
+    users: [],
+    orders: [],
+
+    subscriptions: JSON.parse(
+        localStorage.getItem('hf_subscriptions') || '[]'
+    ),
+
+    reviews: [],
+    complaints: []
+};
 
 async function loadDatabase() {
     try {
@@ -3393,24 +3406,55 @@ console.log("Filtered Items:", items);
             );
 
             document.getElementById('confirmSubBtn').addEventListener('click', () => {
-                const newSub = {
-                    _id: 'sub' + Date.now(),
-                    userId: S.user._id,
-                    cookId: cookId,
-                    cook: cookId,
-                    plan: planType,
-                    meal: planMeal,
-                    price: planPrice,
-                    status: 'active',
-                    startDate: new Date().toISOString(),
-                    endDate: null,
-                    nextDelivery: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-                    createdAt: new Date().toISOString()
-                };
-                DB.subscriptions.push(newSub);
-                closeModal();
-                toast(`Subscribed to ${cookName}'s ${planType} plan successfully!`);
-            });
+
+    console.log("Current User:", S.user);
+
+    const currentUserId =
+        S.user._id ||
+        S.user.id;
+
+    const newSub = {
+        _id: 'sub' + Date.now(),
+
+        userId: currentUserId,
+
+        cookId: cookId,
+        cook: cookId,
+
+        plan: planType,
+        meal: planMeal,
+
+        price: planPrice,
+
+        status: 'active',
+
+        startDate: new Date().toISOString(),
+
+        endDate: null,
+
+        nextDelivery:
+            new Date(Date.now() + 86400000)
+            .toISOString()
+            .split('T')[0],
+
+        createdAt: new Date().toISOString()
+    };
+
+    DB.subscriptions.push(newSub);
+
+    localStorage.setItem(
+        'hf_subscriptions',
+        JSON.stringify(DB.subscriptions)
+    );
+
+    console.log("Saved Subscription:", newSub);
+
+    closeModal();
+
+    toast(
+        `Subscribed to ${cookName}'s ${planType} plan successfully!`
+    );
+});
         });
     });
 
@@ -3505,11 +3549,15 @@ console.log("Filtered Items:", items);
         toast('Failed to load orders', 'error');
     }
 
-    const mySubs = DB.subscriptions.filter(
-        s =>
-            s.userId === S.user._id &&
-            s.status === 'active'
-    );
+    const currentUserId =
+    S.user._id ||
+    S.user.id;
+
+const mySubs = DB.subscriptions.filter(
+    s =>
+        s.userId === currentUserId &&
+        s.status === 'active'
+);
 
     const totalSpent =
         myOrders.reduce(
