@@ -3479,15 +3479,434 @@ console.log("Filtered Items:", items);
             });
         }
 
-        function pgDashboard(a) {
-            if (!S.user || S.user.role !== 'user') { nav('login'); return }
-            const myOrders = DB.orders.filter(o => o.userId === S.user._id); const mySubs = DB.subscriptions.filter(s => s.userId === S.user._id && s.status === 'active'); const totalSpent = myOrders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0) + mySubs.filter(s => s.status === 'active').reduce((s, sub) => s + sub.price, 0);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Dashboard</div><h2>Welcome, ${S.user.firstName || ''} ${S.user.lastName || ''}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-repeat"></i></div><div><div class="stat-val">${mySubs.length}</div><div class="stat-lbl">Active Subscriptions</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalSpent)}</div><div class="stat-lbl">Total Spent</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-star"></i></div><div><div class="stat-val">${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}</div><div class="stat-lbl">Account Status</div></div></div></div><div class="tabs" id="dashTabs"><button class="tab active" data-tab="recent">Recent Orders</button><button class="tab" data-tab="subs">Active Subs</button></div><div id="tab-recent">${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>Order ID</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${myOrders.slice(0, 5).map(o => { const ck = DB.cooks.find(c => c._id === o.cookId); return `<tr style="cursor:pointer" data-nv="order-detail" data-id="${o._id}"><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${ck?.name || 'Cook'}</td><td>${o.items ? o.items.length + ' item' + (o.items.length !== 1 ? 's' : '') : (o.meal || '1 item')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="color:var(--muted);font-size:.8rem">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3><p>Start by browsing home cooks and subscribing!</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div><div id="tab-subs" style="display:none">${mySubs.length ? `<div class="tbl-wrap"><table><thead><tr><th>Cook</th><th>Plan</th><th>Price</th><th>Next Delivery</th><th>Status</th><th>Action</th></tr></thead><tbody>${mySubs.map(s => { const ck = DB.cooks.find(c => c._id === s.cookId); return `<tr><td style="font-weight:600">${ck?.name || 'Cook'}</td><td style="text-transform:capitalize">${s.plan} ${s.meal}</td><td style="font-weight:700;color:var(--accent)">${fp(s.price)}</td><td style="font-size:.85rem">${s.nextDelivery || '\u2014'}</td><td><span class="badge-st ${stMap[s.status]?.c || ''}">${stMap[s.status]?.l || s.status}</span></td><td><button class="btn btn-o btn-sm pause-sub-btn" data-sid="${s._id}">Pause</button></td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-repeat"></i><h3>No active subscriptions</h3><p>Browse cooks and subscribe to daily homemade meals.</p><a class="btn btn-p" data-nv="browse">Find Tiffin</a></div>'}</div></div></section>`;
-            updateUI();
-            $$('[data-tab]', a).forEach(t => t.addEventListener('click', () => { $$('.tab', a).forEach(x => x.classList.remove('active')); t.classList.add('active'); $$('.tabs~div>[id^="tab-"]', a).forEach(d => d.style.display = 'none'); $(`#tab-${t.dataset.tab}`, a).style.display = '' }));
-            $$('tr[data-nv]', a).forEach(r => r.addEventListener('click', () => nav(r.dataset.nv, { id: r.dataset.id })));
-            $$('.pause-sub-btn', a).forEach(b => b.addEventListener('click', () => { const sub = DB.subscriptions.find(s => s._id === b.dataset.sid); if (sub) { sub.status = 'paused'; sub.nextDelivery = null; toast('Subscription paused'); pgDashboard(a) } }));
-        }
+        async function pgDashboard(a) {
+
+    if (!S.user || S.user.role !== 'user') {
+        nav('login');
+        return;
+    }
+
+    let myOrders = [];
+
+    try {
+
+        const res = await api('/orders/my');
+
+        myOrders = (res.data || []).sort(
+            (a, b) =>
+                new Date(b.createdAt) -
+                new Date(a.createdAt)
+        );
+
+    } catch (err) {
+
+        console.error(err);
+
+        toast('Failed to load orders', 'error');
+    }
+
+    const mySubs = DB.subscriptions.filter(
+        s =>
+            s.userId === S.user._id &&
+            s.status === 'active'
+    );
+
+    const totalSpent =
+        myOrders.reduce(
+            (sum, o) =>
+                sum + (o.total || o.amount || 0),
+            0
+        ) +
+        mySubs.reduce(
+            (sum, s) =>
+                sum + (s.price || 0),
+            0
+        );
+
+    a.innerHTML = `
+    <section class="page-sec">
+        <div class="container">
+
+            <div style="margin-bottom:24px">
+                <div class="sec-label">
+                    Dashboard
+                </div>
+
+                <h2>
+                    Welcome,
+                    ${S.user.firstName || ''}
+                    ${S.user.lastName || ''}
+                </h2>
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon"
+                        style="background:rgba(232,93,44,.1);color:var(--accent)">
+                        <i class="fas fa-repeat"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-val">
+                            ${mySubs.length}
+                        </div>
+
+                        <div class="stat-lbl">
+                            Active Subscriptions
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon"
+                        style="background:rgba(25,118,210,.1);color:var(--info)">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-val">
+                            ${myOrders.length}
+                        </div>
+
+                        <div class="stat-lbl">
+                            Total Orders
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon"
+                        style="background:rgba(45,143,78,.1);color:var(--success)">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-val">
+                            ${fp(totalSpent)}
+                        </div>
+
+                        <div class="stat-lbl">
+                            Total Spent
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon"
+                        style="background:rgba(212,148,10,.1);color:var(--warning)">
+                        <i class="fas fa-star"></i>
+                    </div>
+
+                    <div>
+                        <div class="stat-val">
+                            ${mySubs.length + myOrders.length > 0 ? 'Active' : 'None'}
+                        </div>
+
+                        <div class="stat-lbl">
+                            Account Status
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="tabs" id="dashTabs">
+
+                <button class="tab active"
+                    data-tab="recent">
+                    Recent Orders
+                </button>
+
+                <button class="tab"
+                    data-tab="subs">
+                    Active Subs
+                </button>
+
+            </div>
+
+            <div id="tab-recent">
+
+                ${myOrders.length ? `
+
+                <div class="tbl-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Cook</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        ${myOrders.slice(0, 5).map(o => {
+
+                            const ck =
+                                o.cook ||
+                                DB.cooks.find(
+                                    c =>
+                                        c._id === o.cookId ||
+                                        c._id === o.cook
+                                );
+
+                            return `
+
+                            <tr
+                                style="cursor:pointer"
+                                data-nv="order-detail"
+                                data-id="${o._id}">
+
+                                <td style="font-weight:600">
+                                    #${o._id.slice(-6).toUpperCase()}
+                                </td>
+
+                                <td>
+                                    ${ck?.name || 'Cook'}
+                                </td>
+
+                                <td>
+                                    ${o.items
+                                        ? o.items.length +
+                                          ' item' +
+                                          (o.items.length !== 1 ? 's' : '')
+                                        : (o.meal || '1 item')}
+                                </td>
+
+                                <td style="font-weight:700;color:var(--accent)">
+                                    ${fp(o.total || o.amount || 0)}
+                                </td>
+
+                                <td>
+                                    <span class="badge-st ${stMap[o.status]?.c || ''}">
+                                        ${stMap[o.status]?.l || o.status}
+                                    </span>
+                                </td>
+
+                                <td style="color:var(--muted);font-size:.8rem">
+                                    ${new Date(o.createdAt)
+                                        .toLocaleDateString(
+                                            'en-IN',
+                                            {
+                                                day:'numeric',
+                                                month:'short'
+                                            }
+                                        )}
+                                </td>
+
+                            </tr>
+
+                            `;
+
+                        }).join('')}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                ` : `
+
+                <div class="empty-state">
+
+                    <i class="fas fa-receipt"></i>
+
+                    <h3>
+                        No orders yet
+                    </h3>
+
+                    <p>
+                        Start by browsing home cooks
+                        and subscribing!
+                    </p>
+
+                    <a class="btn btn-p"
+                        data-nv="browse">
+                        Find Tiffin
+                    </a>
+
+                </div>
+
+                `}
+
+            </div>
+
+            <div id="tab-subs" style="display:none">
+
+                ${mySubs.length ? `
+
+                <div class="tbl-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Cook</th>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Next Delivery</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        ${mySubs.map(s => {
+
+                            const ck =
+                                DB.cooks.find(
+                                    c => c._id === s.cookId
+                                );
+
+                            return `
+
+                            <tr>
+
+                                <td style="font-weight:600">
+                                    ${ck?.name || 'Cook'}
+                                </td>
+
+                                <td style="text-transform:capitalize">
+                                    ${s.plan} ${s.meal}
+                                </td>
+
+                                <td style="font-weight:700;color:var(--accent)">
+                                    ${fp(s.price)}
+                                </td>
+
+                                <td>
+                                    ${s.nextDelivery || '—'}
+                                </td>
+
+                                <td>
+                                    <span class="badge-st ${stMap[s.status]?.c || ''}">
+                                        ${stMap[s.status]?.l || s.status}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        class="btn btn-o btn-sm pause-sub-btn"
+                                        data-sid="${s._id}">
+                                        Pause
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                            `;
+
+                        }).join('')}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                ` : `
+
+                <div class="empty-state">
+
+                    <i class="fas fa-repeat"></i>
+
+                    <h3>
+                        No active subscriptions
+                    </h3>
+
+                    <p>
+                        Browse cooks and subscribe
+                        to daily homemade meals.
+                    </p>
+
+                    <a class="btn btn-p"
+                        data-nv="browse">
+                        Find Tiffin
+                    </a>
+
+                </div>
+
+                `}
+
+            </div>
+
+        </div>
+    </section>
+    `;
+
+    updateUI();
+
+    $$('[data-tab]', a).forEach(t => {
+
+        t.addEventListener('click', () => {
+
+            $$('.tab', a).forEach(
+                x => x.classList.remove('active')
+            );
+
+            t.classList.add('active');
+
+            $$('.tabs~div>[id^="tab-"]', a)
+                .forEach(
+                    d => d.style.display = 'none'
+                );
+
+            $(`#tab-${t.dataset.tab}`, a)
+                .style.display = '';
+
+        });
+
+    });
+
+    $$('tr[data-nv]', a).forEach(r => {
+
+        r.addEventListener('click', () => {
+
+            nav(
+                r.dataset.nv,
+                {
+                    id: r.dataset.id
+                }
+            );
+
+        });
+
+    });
+
+    $$('.pause-sub-btn', a).forEach(b => {
+
+        b.addEventListener('click', () => {
+
+            const sub =
+                DB.subscriptions.find(
+                    s => s._id === b.dataset.sid
+                );
+
+            if (sub) {
+
+                sub.status = 'paused';
+
+                sub.nextDelivery = null;
+
+                toast('Subscription paused');
+
+                pgDashboard(a);
+
+            }
+
+        });
+
+    });
+
+}
 
         function pgSubs(a) {
             if (!S.user || S.user.role !== 'user') { nav('login'); return }
