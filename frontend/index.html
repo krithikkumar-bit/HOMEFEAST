@@ -4483,7 +4483,16 @@ if (!res.ok) {
 
         function pgCookOrders(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
-            const myOrders = DB.orders
+     const cookData = DB.cooks.find(
+    c =>
+        c.user === S.user._id ||
+        c.userId === S.user._id ||
+        c.user?._id === S.user._id
+);
+
+console.log("Cook Data:", cookData);
+
+const myOrders = DB.orders
     .filter(o => {
 
         const orderCookId =
@@ -4491,10 +4500,7 @@ if (!res.ok) {
             o.cook ||
             o.cookId;
 
-        return (
-            orderCookId === S.user._id ||
-            orderCookId === S.user.id
-        );
+        return orderCookId === cookData?._id;
     }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Orders</div><h2 class="sec-title">${myOrders.length} Orders</h2></div>${myOrders.length ? `<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${myOrders.map(o => { const u = DB.users.find(x => x._id === o.userId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || 'User'}</td><td>${o.items.map(i => `${i.name} x${i.qty}`).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td><td>${o.status === 'placed' ? `<button class="btn btn-s btn-sm acc-o" data-oid="${o._id}">Accept</button>` : o.status === 'confirmed' ? `<button class="btn btn-p btn-sm prep-o" data-oid="${o._id}">Start Prep</button>` : o.status === 'preparing' ? `<button class="btn btn-i btn-sm disp-o" data-oid="${o._id}">Out for Delivery</button>` : o.status === 'on_the_way' ? `<button class="btn btn-s btn-sm del-o" data-oid="${o._id}">Delivered</button>` : '\u2014'}</td></tr>` }).join('')}</tbody></table></div>` : '<div class="empty-state"><i class="fas fa-receipt"></i><h3>No orders yet</h3></div>'}</div></section>`; updateUI();
             const updateO = (id, st) => { const o = DB.orders.find(x => x._id === id); if (o) { o.status = st; o.updatedAt = new Date().toISOString(); toast(`Order ${st}`); pgCookOrders(a) } };
