@@ -8,6 +8,8 @@ const subscriptionSchema = new mongoose.Schema({
   status: { type: String, enum: ['Active', 'Paused', 'Cancelled', 'Expired'], default: 'Active' },
   startDate: { type: Date, default: Date.now },
   endDate: { type: Date },
+  // FIX: Added pausedAt field — was being set in routes/users.js but missing from schema
+  pausedAt: { type: Date },
   mealPreference: { type: [String], enum: ['lunch', 'dinner'], default: ['lunch', 'dinner'] },
   deliveryAddress: { type: String, trim: true }
 }, { timestamps: true });

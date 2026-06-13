@@ -2983,7 +2983,7 @@
     </footer>
 
     <script>
-        const API = 'https://homefeast-3fqr.onrender.com/api';
+        const API = '/api';
         const $ = (s, c = document) => c.querySelector(s);
         const $$ = (s, c = document) => [...c.querySelectorAll(s)];
         const fp = p => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(p);
@@ -3017,11 +3017,11 @@
 
 async function loadDatabase() {
     try {
-        const cooksRes = await fetch('https://homefeast-3fqr.onrender.com/api/cooks');
+        const cooksRes = await fetch('/api/cooks');
         const cooksData = await cooksRes.json();
         DB.cooks = cooksData.data || cooksData;
 
-        const menusRes = await fetch('https://homefeast-3fqr.onrender.com/api/menus');
+        const menusRes = await fetch('/api/menus');
         const menusData = await menusRes.json();
         DB.menuItems = menusData.data || menusData;
 
@@ -3430,7 +3430,7 @@ if(existingSub){
         const token = localStorage.getItem('hf_tk');
 
         const res = await fetch(
-            'https://homefeast-3fqr.onrender.com/api/subscriptions',
+            '/api/subscriptions',
             {
                 method: 'POST',
                 headers: {
@@ -3505,7 +3505,7 @@ if(existingSub){
                 const btn = $('button[type=submit]', a);
                 btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
                 try {
-                    const r = await fetch('https://homefeast-3fqr.onrender.com/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
+                    const r = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, role: currentRole }) });
                     const data = await r.json();
                     if (!r.ok) { toast(data.message || 'Login failed', 'error'); return; }
                     S.user = data.user || data.data?.user;
@@ -3533,7 +3533,7 @@ if(existingSub){
                 if (isCook) { d.cuisine = $('#rCui', a).value.trim(); d.experience = $('#rExp', a).value; d.fssai = $('#rFss', a).value.trim(); d.serviceArea = $('#rArea', a).value.trim(); d.timings = $('#rTim', a).value.trim(); d.bio = $('#rBio', a).value.trim(); }
                 const btn = $('button[type=submit]', a); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
                 try {
-                    const r = await fetch('https://homefeast-3fqr.onrender.com/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+                    const r = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
                     const data = await r.json();
                     if (!r.ok) { toast(data.message || 'Registration failed', 'error'); return; }
                     toast(isCook ? 'Cook registration submitted!' : 'Account created successfully!'); nav('login');
@@ -4137,7 +4137,7 @@ const mySubs = DB.subscriptions.filter(s => {
         const token = localStorage.getItem('hf_tk');
 
         const response = await fetch(
-            'https://homefeast-3fqr.onrender.com/api/cooks/menu/my',
+            '/api/cooks/menu/my',
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -4284,7 +4284,7 @@ const mySubs = DB.subscriptions.filter(s => {
                     localStorage.getItem('hf_tk');
 
                 const res = await fetch(
-                    `https://homefeast-3fqr.onrender.com/api/menus/${btn.dataset.id}`,
+                    `/api/menus/${btn.dataset.id}`,
                     {
                         method: 'DELETE',
                         headers: {
@@ -4427,7 +4427,7 @@ if (!res.ok) {
                 if (isEdit) {
 
                     response = await fetch(
-    `https://homefeast-3fqr.onrender.com/api/cooks/menu/${meal._id}`,
+    `/api/cooks/menu/${meal._id}`,
                         {
                             method: 'PUT',
                             headers: {
@@ -4441,7 +4441,7 @@ if (!res.ok) {
                 } else {
 
                   response = await fetch(
-    'https://homefeast-3fqr.onrender.com/api/cooks/menus',
+    '/api/cooks/menu',
                         {
                             method: 'POST',
                             headers: {
@@ -4747,7 +4747,7 @@ if (!res.ok) {
 
         const response =
             await fetch(
-                'https://homefeast-3fqr.onrender.com/api/cooks/profile/my',
+                '/api/cooks/profile/my',
                 {
                     method: 'PUT',
                     headers: {
@@ -5043,7 +5043,7 @@ if (!res.ok) {
         const token = localStorage.getItem('hf_tk');
 
         const response = await fetch(
-            'https://homefeast-3fqr.onrender.com/api/users',
+            '/api/users',
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -5163,7 +5163,7 @@ ${
         const token = localStorage.getItem('hf_tk');
 
         const response = await fetch(
-            'https://homefeast-3fqr.onrender.com/api/orders',
+            '/api/orders',
             {
                 headers: {
                     Authorization: `Bearer ${token}`

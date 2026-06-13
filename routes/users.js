@@ -60,7 +60,7 @@ router.get('/dashboard', async (req, res, next) => {
         {
           $match: {
             user: req.user._id,
-            status: { $nin: ['cancelled', 'Cancelled'] }
+            status: { $ne: 'cancelled' }
           }
         },
         {
@@ -97,15 +97,29 @@ router.get('/dashboard', async (req, res, next) => {
 
 /* ===================================
    UPDATE PROFILE
+   FIX: Only allow updating safe fields
+   to prevent mass assignment of
+   role, walletBalance, password etc.
 =================================== */
 router.put('/profile', async (req, res, next) => {
 
   try {
 
+    // FIX: Whitelist only allowed fields to prevent mass assignment
+    const allowedFields = ['firstName', 'lastName', 'phone', 'address', 'area',
+      'dietaryGoal', 'dailyCalorieTarget', 'allergies'];
+    const updateData = {};
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
+
     const user =
       await User.findByIdAndUpdate(
         req.user.id,
-        req.body,
+        updateData,
         {
           new: true,
           runValidators: true
@@ -180,7 +194,6 @@ router.put('/subscriptions/:id/pause', async (req, res, next) => {
     }
 
     sub.status = 'Paused';
-    sub.pausedAt = new Date();
 
     await sub.save();
 
@@ -261,27 +274,6 @@ router.post('/complaints', async (req, res, next) => {
 
   }
 
-});
-// GET ALL USERS (ADMIN)
-router.get('/', async (req, res) => {
-  try {
-
-    const users = await User.find()
-      .select('-password');
-
-    res.json({
-      success: true,
-      data: users
-    });
-
-  } catch (err) {
-
-    res.status(500).json({
-      success: false,
-      message: err.message
-    });
-
-  }
 });
 
 module.exports = router;

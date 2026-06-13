@@ -113,54 +113,10 @@ router.get('/', async (req, res, next) => {
 });
 
 
-// GET /api/cooks/:id — cook detail
-router.get('/:id', async (req, res, next) => {
-  try {
-
-    const cook =
-      await Cook.findById(req.params.id);
-
-    if (!cook) {
-      return res.status(404).json({
-        success: false,
-        message: 'Cook not found'
-      });
-    }
-
-    const menu =
-      await Menu.find({
-        cook: cook._id
-      }).sort({
-        popular: -1
-      });
-
-    const reviews =
-      await Review.find({
-        cook: cook._id
-      })
-        .populate(
-          'user',
-          'firstName lastName'
-        )
-        .sort({
-          createdAt: -1
-        });
-
-    const data =
-      cook.toObject();
-
-    data.menu = menu;
-    data.reviews = reviews;
-
-    res.json({
-      success: true,
-      data
-    });
-
-  } catch (err) {
-    next(err);
-  }
-});
+// ============================================================
+// FIX: Specific routes MUST be defined BEFORE the /:id route
+// Otherwise Express treats "dashboard" and "orders" as :id params
+// ============================================================
 
 
 // GET /api/cooks/dashboard/my
@@ -184,8 +140,6 @@ router.get(
         });
       }
 
-      // FIX: Query both 'placed' and 'confirmed' as pending for the cook dashboard
-      // Orders are created with lowercase status values
       const pendingOrders =
         await Order.countDocuments({
           cook: cook._id,
@@ -198,15 +152,13 @@ router.get(
           status: 'Active'
         });
 
-      // FIX: Use lowercase 'cancelled' to match actual order status values
-      // Also sum 'total' field instead of 'amount' for cart-based orders
       const totalEarnings =
         await Order.aggregate([
           {
             $match: {
               cook: cook._id,
               status: {
-                $nin: ['cancelled', 'Cancelled']
+                $ne: 'cancelled'
               }
             }
           },
@@ -283,6 +235,148 @@ router.get(
 );
 
 
+// GET /api/cooks/menu/my
+router.get(
+  '/menu/my',
+  protect,
+  authorize('cook'),
+  async (req, res, next) => {
+
+    try {
+
+      const cook =
+        await Cook.findOne({
+          user: req.user.id
+        });
+
+      if (!cook) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cook profile not found'
+        });
+      }
+
+      const menu =
+        await Menu.find({
+          cook: cook._id
+        }).sort({
+          createdAt: -1
+        });
+
+      res.json({
+        success: true,
+        data: menu
+      });
+
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
+// PUT /api/cooks/profile/my
+router.put(
+  '/profile/my',
+  protect,
+  authorize('cook'),
+  async (req, res, next) => {
+
+    try {
+
+      const cook =
+        await Cook.findOneAndUpdate(
+          {
+            user: req.user.id
+          },
+          req.body,
+          {
+            new: true,
+            runValidators: true
+          }
+        );
+
+      if (!cook) {
+        return res.status(404).json({
+          success: false,
+          message: 'Cook profile not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Cook profile updated',
+        data: cook
+      });
+
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
+// POST /api/cooks/profile
+router.post(
+  '/profile',
+  protect,
+  authorize('cook'),
+  async (req, res, next) => {
+
+    try {
+
+      let cook =
+        await Cook.findOne({
+          user: req.user.id
+        });
+
+      if (cook) {
+
+        cook =
+          await Cook.findOneAndUpdate(
+            {
+              user: req.user.id
+            },
+            {
+              ...req.body,
+              status: 'pending'
+            },
+            {
+              new: true,
+              runValidators: true
+            }
+          );
+
+        return res.json({
+          success: true,
+          message:
+            'Cook profile updated, sent for review',
+          data: cook
+        });
+      }
+
+      cook =
+        await Cook.create({
+          user: req.user.id,
+          ...req.body,
+          status: 'pending',
+          verified: false
+        });
+
+      res.status(201).json({
+        success: true,
+        message:
+          'Cook profile created, sent for review',
+        data: cook
+      });
+
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
 // PUT /api/cooks/orders/:id
 router.put(
   '/orders/:id',
@@ -317,7 +411,6 @@ router.put(
         });
       }
 
-      // FIX: Validate the status value before updating
       const validStatuses = ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'];
       if (!validStatuses.includes(req.body.status)) {
         return res.status(400).json({
@@ -335,46 +428,6 @@ router.put(
         success: true,
         message: 'Order updated',
         data: order
-      });
-
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-
-// GET /api/cooks/menu/my
-router.get(
-  '/menu/my',
-  protect,
-  authorize('cook'),
-  async (req, res, next) => {
-
-    try {
-
-      const cook =
-        await Cook.findOne({
-          user: req.user.id
-        });
-
-      if (!cook) {
-        return res.status(404).json({
-          success: false,
-          message: 'Cook profile not found'
-        });
-      }
-
-      const menu =
-        await Menu.find({
-          cook: cook._id
-        }).sort({
-          createdAt: -1
-        });
-
-      res.json({
-        success: true,
-        data: menu
       });
 
     } catch (err) {
@@ -524,105 +577,60 @@ router.delete(
 );
 
 
-// PUT /api/cooks/profile/my
-router.put(
-  '/profile/my',
-  protect,
-  authorize('cook'),
-  async (req, res, next) => {
+// ============================================================
+// FIX: /:id route MUST be defined AFTER all specific routes
+// so that "dashboard", "orders", "menu", "profile" are not
+// matched as :id parameter values
+// ============================================================
 
-    try {
+// GET /api/cooks/:id — cook detail
+router.get('/:id', async (req, res, next) => {
+  try {
 
-      const cook =
-        await Cook.findOneAndUpdate(
-          {
-            user: req.user.id
-          },
-          req.body,
-          {
-            new: true,
-            runValidators: true
-          }
-        );
+    const cook =
+      await Cook.findById(req.params.id);
 
-      if (!cook) {
-        return res.status(404).json({
-          success: false,
-          message: 'Cook profile not found'
-        });
-      }
+    if (!cook) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cook not found'
+      });
+    }
 
-      res.json({
-        success: true,
-        message: 'Cook profile updated',
-        data: cook
+    const menu =
+      await Menu.find({
+        cook: cook._id
+      }).sort({
+        popular: -1
       });
 
-    } catch (err) {
-      next(err);
-    }
+    const reviews =
+      await Review.find({
+        cook: cook._id
+      })
+        .populate(
+          'user',
+          'firstName lastName'
+        )
+        .sort({
+          createdAt: -1
+        });
+
+    const data =
+      cook.toObject();
+
+    data.menu = menu;
+    data.reviews = reviews;
+
+    res.json({
+      success: true,
+      data
+    });
+
+  } catch (err) {
+    next(err);
   }
-);
+});
 
-
-// POST /api/cooks/profile
-router.post(
-  '/profile',
-  protect,
-  authorize('cook'),
-  async (req, res, next) => {
-
-    try {
-
-      let cook =
-        await Cook.findOne({
-          user: req.user.id
-        });
-
-      if (cook) {
-
-        cook =
-          await Cook.findOneAndUpdate(
-            {
-              user: req.user.id
-            },
-            {
-              ...req.body,
-              status: 'pending'
-            },
-            {
-              new: true,
-              runValidators: true
-            }
-          );
-
-        return res.json({
-          success: true,
-          message:
-            'Cook profile updated, sent for review',
-          data: cook
-        });
-      }
-
-      cook =
-        await Cook.create({
-          user: req.user.id,
-          ...req.body,
-          status: 'pending',
-          verified: false
-        });
-
-      res.status(201).json({
-        success: true,
-        message:
-          'Cook profile created, sent for review',
-        data: cook
-      });
-
-    } catch (err) {
-      next(err);
-    }
-  }
-);
 
 module.exports = router;

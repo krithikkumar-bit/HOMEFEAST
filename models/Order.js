@@ -24,8 +24,11 @@ const orderSchema = new mongoose.Schema({
   total: { type: Number, min: 0, default: 0 },
   status: {
     type: String,
-    // FIX: Standardized to lowercase. Kept capitalized variants for backward compat with existing data.
-    enum: ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled', 'Pending', 'Active', 'Completed', 'Cancelled'],
+    // FIX: Standardized all status values to lowercase for consistency.
+    // Removed capitalized variants ('Pending', 'Active', 'Completed', 'Cancelled')
+    // that were causing queries to miss data. All new orders use lowercase.
+    // If you have existing data with capitalized values, run a migration.
+    enum: ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'],
     default: 'placed'
   },
   address: {

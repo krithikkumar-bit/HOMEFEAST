@@ -35,15 +35,18 @@ app.use(cookieParser());
 
 /* =========================
    STATIC FILES
+   FIX: Only serve frontend/ folder instead of entire project root.
+   Previously served __dirname which exposed .env, package.json, etc.
 ========================= */
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 
 /* =========================
    FRONTEND
+   FIX: Serve index.html from the frontend/ subdirectory
 ========================= */
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
 
@@ -63,6 +66,8 @@ app.use('/api/categories',      require('./routes/categories'));
 app.use('/api/wallet',          require('./routes/wallet'));
 app.use('/api/nutrition',       require('./routes/nutrition'));
 app.use('/api/recommendations', require('./routes/recommendations'));
+// FIX: Added missing notifications route
+app.use('/api/notifications',   require('./routes/notifications'));
 
 
 /* =========================
@@ -75,10 +80,11 @@ app.get('/api/health', (req, res) => {
 
 /* =========================
    SPA FALLBACK
+   FIX: Serve from frontend/ directory
 ========================= */
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
 
@@ -110,6 +116,7 @@ app.listen(PORT, () => {
   ✅ Online Wallet (/api/wallet)
   ✅ Nutrition Tracking (/api/nutrition)
   ✅ AI Recommendations (/api/recommendations)
+  ✅ Notifications (/api/notifications)
   ✅ Order Bug Fixed (/api/orders)
 =================================
   `);

@@ -66,9 +66,7 @@ router.get('/kpi', async (req, res, next) => {
     // FIX: Use lowercase to match actual order status values
     const completedOrders =
       await Order.countDocuments({
-        status: {
-          $in: ['delivered', 'Delivered', 'completed', 'Completed']
-        }
+        status: 'delivered'
       });
 
     const openComplaints =
@@ -85,7 +83,7 @@ router.get('/kpi', async (req, res, next) => {
         {
           $match: {
             status: {
-              $nin: ['cancelled', 'Cancelled']
+              $ne: 'cancelled'
             }
           }
         },
@@ -181,7 +179,7 @@ async(req,res,next)=>{
       {
         $match:{
           status:{
-            $nin:['cancelled','Cancelled']
+            $ne:'cancelled'
           }
         }
       },

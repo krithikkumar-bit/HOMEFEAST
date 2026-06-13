@@ -12,7 +12,7 @@ router.get('/summary', protect, async (req, res, next) => {
 
     const orders = await Order.find({
       user: req.user.id,
-      status: { $in: ['delivered', 'Completed'] },
+      status: { $in: ['delivered'] },
       createdAt: { $gte: since }
     });
 

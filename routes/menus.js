@@ -3,10 +3,13 @@ const router = express.Router();
 
 const Menu = require('../models/Menu');
 
+// FIX: Import auth middleware for protecting write routes
+const { protect, authorize } = require('../middleware/auth');
+
 /* =========================
    GET ALL MENUS
 ========================= */
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
 
         const menus = await Menu.find().populate('cook');
@@ -18,12 +21,7 @@ router.get('/', async (req, res) => {
         });
 
     } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
+        next(err);
     }
 });
 
@@ -31,7 +29,7 @@ router.get('/', async (req, res) => {
 /* =========================
    GET SINGLE MENU
 ========================= */
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
 
     try {
 
@@ -53,12 +51,7 @@ router.get('/:id', async (req, res) => {
         });
 
     } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
+        next(err);
     }
 
 });
@@ -66,8 +59,9 @@ router.get('/:id', async (req, res) => {
 
 /* =========================
    ADD MENU
+   FIX: Added auth protection — only admin/cook can add menus
 ========================= */
-router.post('/', async (req, res) => {
+router.post('/', protect, authorize('admin', 'cook'), async (req, res, next) => {
 
     try {
 
@@ -98,12 +92,7 @@ router.post('/', async (req, res) => {
         });
 
     } catch (err) {
-
-        res.status(400).json({
-            success: false,
-            message: err.message
-        });
-
+        next(err);
     }
 
 });
@@ -111,8 +100,9 @@ router.post('/', async (req, res) => {
 
 /* =========================
    UPDATE MENU
+   FIX: Added auth protection — only admin/cook can update menus
 ========================= */
-router.put('/:id', async (req, res) => {
+router.put('/:id', protect, authorize('admin', 'cook'), async (req, res, next) => {
 
     try {
 
@@ -141,12 +131,7 @@ router.put('/:id', async (req, res) => {
         });
 
     } catch (err) {
-
-        res.status(400).json({
-            success: false,
-            message: err.message
-        });
-
+        next(err);
     }
 
 });
@@ -154,8 +139,9 @@ router.put('/:id', async (req, res) => {
 
 /* =========================
    DELETE MENU
+   FIX: Added auth protection — only admin/cook can delete menus
 ========================= */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protect, authorize('admin', 'cook'), async (req, res, next) => {
 
     try {
 
@@ -178,12 +164,7 @@ router.delete('/:id', async (req, res) => {
         });
 
     } catch (err) {
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
-
+        next(err);
     }
 
 });
