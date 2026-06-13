@@ -3551,11 +3551,47 @@ console.log("Filtered Items:", items);
             $$('[data-nv]', a).forEach(el => { el.addEventListener('click', () => nav(el.dataset.nv, { id: el.dataset.id })); });
         }
 
-        function pgOrderDetail(id, a) {
-            if (!id) { nav('orders'); return } const app = a || $('#app'); if (!S.user) { nav('login'); return }
-            const order = DB.orders.find(o => o._id === id);
-            if (!order) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-receipt"></i><h3>Order not found</h3><a class="btn btn-p" data-nv="orders">Back</a></div></div></div>`; updateUI(); return }
-            const ck = DB.cooks.find(c => c._id === order.cookId);
+        async function pgOrderDetail(id, a) {
+
+    if (!id) {
+        nav('orders');
+        return;
+    }
+
+    const app = a || $('#app');
+
+    if (!S.user) {
+        nav('login');
+        return;
+    }
+
+    let order = null;
+
+    try {
+
+        const res = await api('/orders/my');
+
+        const orders = res.data || [];
+
+        order = orders.find(
+            o => o._id === id
+        );
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+    if (!order) {
+         app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-receipt"></i><h3>Order not found</h3><a class="btn btn-p" data-nv="orders">Back</a></div></div></div>`; updateUI(); return }
+            const ck =
+    order.cook ||
+    DB.cooks.find(
+        c =>
+            c._id === order.cookId ||
+            c._id === order.cook
+    );
             const flow = ['placed', 'confirmed', 'preparing', 'on_the_way', 'delivered'];
             const curIdx = flow.indexOf(order.status);
             const isCancel = order.status === 'cancelled';
