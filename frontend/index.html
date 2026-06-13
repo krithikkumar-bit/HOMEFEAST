@@ -3385,13 +3385,29 @@ console.log("Filtered Items:", items);
                 return;
             }
 
-            const existingSub = DB.subscriptions.find(
-                s => s.userId === S.user._id && (s.cookId === cookId || s.cook === cookId) && s.status === 'active'
-            );
-            if (existingSub) {
-                toast('You already have an active subscription with this cook', 'error');
-                return;
-            }
+            const existingSub = DB.subscriptions.find(s => {
+
+    const userId =
+        s.user?._id ||
+        s.user;
+
+    const subCookId =
+        s.cook?._id ||
+        s.cook;
+
+    return (
+        userId === S.user.id &&
+        subCookId === cookId &&
+        s.status === 'Active'
+    );
+});
+if(existingSub){
+    toast(
+        'You already have an active subscription with this cook',
+        'error'
+    );
+    return;
+}
 
             openModal(
                 'Confirm Subscription',
@@ -3553,11 +3569,21 @@ console.log("Filtered Items:", items);
     S.user._id ||
     S.user.id;
 
-const mySubs = DB.subscriptions.filter(
-    s =>
-        s.userId === S.user.id &&
-        s.status === 'active'
-);
+const mySubs = DB.subscriptions.filter(s => {
+
+    const userId =
+        s.user?._id ||
+        s.user ||
+        s.userId;
+
+    return (
+        userId === S.user.id &&
+        (
+            s.status === 'Active' ||
+            s.status === 'active'
+        )
+    );
+});
 
     const totalSpent =
         myOrders.reduce(
