@@ -4031,16 +4031,156 @@ function pgCookProfile(id, a) {
 });
         }
 
-        function pgAdminDash(a) {
-            if (!S.user || S.user.role !== 'admin') { nav('login'); return; }
-            const totalUsers = DB.users.length; const totalCooks = DB.cooks.length; const totalOrders = DB.orders.length;
-            const pendingCooks = DB.cooks.filter(c => c.status === 'pending').length;
-            const totalRevenue = DB.orders.filter(o => o.status === 'delivered').reduce((s, o) => s + o.total, 0);
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">Dashboard Overview</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-users"></i></div><div><div class="stat-val">${totalUsers}</div><div class="stat-lbl">Users</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${totalCooks}</div><div class="stat-lbl">Cooks ${pendingCooks ? `<span style="color:var(--warning);font-size:.8rem">(${pendingCooks} pending)</span>` : ''}</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${totalOrders}</div><div class="stat-lbl">Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalRevenue)}</div><div class="stat-lbl">Revenue</div></div></div></div></div></section>`;
-            updateUI();
-        }
+        async function pgAdminDash(a) {
 
-        async function pgAdminUsers(a) {
+    if (!S.user || S.user.role !== 'admin') {
+        nav('login');
+        return;
+    }
+
+    try {
+
+        const usersRes = await api('/users');
+        const cooksRes = await api('/cooks');
+        const ordersRes = await api('/orders');
+
+        const users =
+            (usersRes.data || []).filter(
+                u => u.role === 'user'
+            );
+
+        const cooks =
+            cooksRes.data || [];
+
+        const orders =
+            ordersRes.data || [];
+
+        const pendingCooks =
+            cooks.filter(
+                c => c.status === 'pending'
+            ).length;
+
+        const totalRevenue =
+            orders
+                .filter(
+                    o => o.status === 'delivered'
+                )
+                .reduce(
+                    (sum, o) => sum + (o.total || 0),
+                    0
+                );
+
+        a.innerHTML = `
+        <section class="page-sec">
+            <div class="container">
+
+                <div style="margin-bottom:24px">
+                    <div class="sec-label">Admin</div>
+                    <h2 class="sec-title">
+                        Dashboard Overview
+                    </h2>
+                </div>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                             style="background:rgba(25,118,210,.1);color:var(--info)">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div>
+                            <div class="stat-val">
+                                ${users.length}
+                            </div>
+
+                            <div class="stat-lbl">
+                                Users
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                             style="background:rgba(232,93,44,.1);color:var(--accent)">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+
+                        <div>
+                            <div class="stat-val">
+                                ${cooks.length}
+                            </div>
+
+                            <div class="stat-lbl">
+                                Cooks
+                                ${pendingCooks > 0
+                                    ? `<span style="color:var(--warning);font-size:.8rem">
+                                        (${pendingCooks} pending)
+                                       </span>`
+                                    : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                             style="background:rgba(212,148,10,.1);color:var(--warning)">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+
+                        <div>
+                            <div class="stat-val">
+                                ${orders.length}
+                            </div>
+
+                            <div class="stat-lbl">
+                                Orders
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"
+                             style="background:rgba(34,197,94,.1);color:green">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+
+                        <div>
+                            <div class="stat-val">
+                                ${fp(totalRevenue)}
+                            </div>
+
+                            <div class="stat-lbl">
+                                Revenue
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+        `;
+
+        updateUI();
+
+    } catch (err) {
+
+        console.error(err);
+
+        a.innerHTML = `
+        <section class="page-sec">
+            <div class="container">
+                <h2>Failed to load dashboard</h2>
+                <p>${err.message}</p>
+            </div>
+        </section>
+        `;
+    }
+}
+
+       async function pgAdminUsers(a) {
 
     if (!S.user || S.user.role !== 'admin') {
         nav('login');
@@ -4075,7 +4215,9 @@ function pgCookProfile(id, a) {
             throw new Error(result.message);
         }
 
-        const users = result.data || result.users || [];
+        // ONLY USERS
+        const users = (result.data || [])
+            .filter(u => u.role === 'user');
 
         a.innerHTML = `
         <section class="page-sec">
@@ -4083,7 +4225,9 @@ function pgCookProfile(id, a) {
 
                 <div style="margin-bottom:24px">
                     <div class="sec-label">Admin</div>
-                    <h2 class="sec-title">Users (${users.length})</h2>
+                    <h2 class="sec-title">
+                        Users (${users.length})
+                    </h2>
                 </div>
 
                 <div class="tbl-wrap">
@@ -4103,10 +4247,24 @@ function pgCookProfile(id, a) {
 
                             ${users.map(u => `
                                 <tr>
-                                    <td>${u.firstName || ''} ${u.lastName || ''}</td>
-                                    <td>${u.email}</td>
-                                    <td>${u.phone || '-'}</td>
-                                    <td>${u.role}</td>
+                                    <td>
+                                        ${u.firstName || ''} ${u.lastName || ''}
+                                    </td>
+
+                                    <td>
+                                        ${u.email}
+                                    </td>
+
+                                    <td>
+                                        ${u.phone || '-'}
+                                    </td>
+
+                                    <td>
+                                        <span class="badge badge-veg">
+                                            user
+                                        </span>
+                                    </td>
+
                                 </tr>
                             `).join('')}
 
