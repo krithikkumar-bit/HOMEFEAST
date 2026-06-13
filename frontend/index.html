@@ -4111,17 +4111,38 @@ const mySubs = DB.subscriptions.filter(s => {
             $('#passF', a).addEventListener('submit', e => { e.preventDefault(); if ($('#newP', a).value !== $('#confP', a).value) { toast('Passwords don\'t match', 'error'); return } toast('Password updated!'); $('#passF', a).reset() });
         }
 
-        function pgCookDash(a) {
+        async function pgCookDash(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return; }
-            const cookData = DB.cooks.find(c => c.user === S.user.id || c.userId === S.user.id || c.user === S.user._id || c.userId === S.user._id || c.email?.toLowerCase() === S.user.email?.toLowerCase());
-            if (!cookData) { a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-user-slash"></i><h3>Cook Profile Not Found</h3></div></div></section>`; return; }
-            const myItems = DB.menuItems.filter(m => m.cookId === cookData._id || m.cook === cookData._id);
-            const myOrders = DB.orders.filter(o => o.cookId === cookData._id || o.cook === cookData._id);
-            const mySubs = DB.subscriptions.filter(s => (s.cookId === cookData._id || s.cook === cookData._id) && s.status === 'active');
-            const myRevs = DB.reviews.filter(r => r.cookId === cookData._id || r.cook === cookData._id);
-            const earnings = myOrders.reduce((s, o) => s + (o.total || 0), 0);
-            const pendingOrders = myOrders.filter(o => o.status === 'placed' || o.status === 'confirmed');
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Cook Dashboard</div><h2 class="sec-title">Welcome, ${S.user.firstName} ${S.user.lastName}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${myItems.length}</div><div class="stat-lbl">Menu Items</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${myOrders.length}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-clock"></i></div><div><div class="stat-val">${pendingOrders.length}</div><div class="stat-lbl">Pending Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(earnings)}</div><div class="stat-lbl">Total Earnings</div></div></div></div></div></section>`;
+
+            // FIX: Fetch cook dashboard from authenticated API instead of local DB
+            // The old code used DB.cooks.find() which matched the WRONG cook
+            try {
+                const dashData = await api('/cooks/dashboard/my');
+                const d = dashData.data || {};
+                const cookInfo = d.cook || {};
+                const pendingOrders = d.pendingOrders || 0;
+                const activeSubscribers = d.activeSubscribers || 0;
+                const totalEarnings = d.totalEarnings || 0;
+
+                // Also fetch menu count
+                let menuCount = 0;
+                try {
+                    const menuRes = await api('/cooks/menu/my');
+                    menuCount = (menuRes.data || []).length;
+                } catch(e) {}
+
+                // Also fetch orders count
+                let orderCount = 0;
+                try {
+                    const orderRes = await api('/cooks/orders/my');
+                    orderCount = (orderRes.data || []).length;
+                } catch(e) {}
+
+                a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Cook Dashboard</div><h2 class="sec-title">Welcome, ${S.user.firstName} ${S.user.lastName}</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-icon" style="background:rgba(232,93,44,.1);color:var(--accent)"><i class="fas fa-utensils"></i></div><div><div class="stat-val">${menuCount}</div><div class="stat-lbl">Menu Items</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)"><i class="fas fa-receipt"></i></div><div><div class="stat-val">${orderCount}</div><div class="stat-lbl">Total Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(212,148,10,.1);color:var(--warning)"><i class="fas fa-clock"></i></div><div><div class="stat-val">${pendingOrders}</div><div class="stat-lbl">Pending Orders</div></div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(45,143,78,.1);color:var(--success)"><i class="fas fa-wallet"></i></div><div><div class="stat-val">${fp(totalEarnings)}</div><div class="stat-lbl">Total Earnings</div></div></div></div></div></section>`;
+            } catch(err) {
+                console.error('Cook dashboard error:', err);
+                a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error loading dashboard</h3><p>${err.message}</p></div></div></section>`;
+            }
             updateUI();
         }
 
@@ -4397,17 +4418,8 @@ if (!res.ok) {
                 return;
             }
 
-            const cookData = DB.cooks.find(
-                c =>
-                    c.user === S.user._id ||
-                    c.userId === S.user._id ||
-                    c.email === S.user.email
-            );
-
-            if (!cookData) {
-                toast('Cook profile not found', 'error');
-                return;
-            }
+            // FIX: Removed broken DB.cooks.find() — the API endpoints
+            // (/cooks/menu POST and /cooks/menu/:id PUT) handle cook lookup server-side
 
             const payload = {
     name,
@@ -4484,41 +4496,22 @@ if (!res.ok) {
     }, 100);
 }
 
-        function pgCookOrders(a) {
+        async function pgCookOrders(a) {
 
     if (!S.user || S.user.role !== 'cook') {
         nav('login');
         return;
     }
 
-    const cookData = DB.cooks.find(
-        c =>
-            c.user === S.user._id ||
-            c.userId === S.user._id ||
-            c.user?._id === S.user._id
-    );
-
-    console.log("Cook Data:", cookData);
-    console.log("All Orders:", DB.orders);
-
-    const myOrders = DB.orders.filter(o => {
-
-        const orderCookId =
-            o.cookId ||
-            o.cook?._id ||
-            o.cook ||
-            o.cookData?._id;
-
-        return (
-            orderCookId === cookData?._id ||
-            orderCookId === cookData?.id
+    // FIX: Fetch orders from authenticated API instead of local DB
+    // The old code used DB.cooks and DB.orders (localStorage) which caused:
+    // 1. Wrong cook being matched (showing Nafees Bhai instead of Meera Sharma)
+    // 2. o._id being undefined causing .slice() crash
+    try {
+        const result = await api('/cooks/orders/my');
+        const myOrders = (result.data || []).sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
-
-    }).sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-
-    console.log("Matched Orders:", myOrders);
 
     a.innerHTML = `
     <section class="page-sec">
@@ -4551,27 +4544,32 @@ if (!res.ok) {
 
                         ${myOrders.map(o => {
 
-                            const u = DB.users.find(
-                                x => x._id === o.userId
-                            );
+                            // FIX: Safe access to user data from populated order
+                            const userName = o.user
+                                ? `${o.user.firstName || ''} ${o.user.lastName || ''}`.trim() || 'User'
+                                : 'User';
+
+                            // FIX: Safe access to _id — use orderId as fallback
+                            const orderDisplayId = (o.orderId || (o._id ? o._id.toString().slice(-6) : 'N/A')).toUpperCase();
+
+                            // FIX: Safe access to items array
+                            const itemsList = (o.items && o.items.length)
+                                ? o.items.map(i => `${i.name || 'Item'} x${i.qty || 1}`).join(', ')
+                                : (o.meal || 'Meal');
 
                             return `
                             <tr>
 
                                 <td style="font-weight:600">
-                                    #${o._id.slice(-6).toUpperCase()}
+                                    #${orderDisplayId}
                                 </td>
 
                                 <td>
-                                    ${u?.name || 'User'}
+                                    ${userName}
                                 </td>
 
                                 <td>
-                                    ${
-                                        o.items
-                                        .map(i => `${i.name} x${i.qty}`)
-                                        .join(', ')
-                                    }
+                                    ${itemsList}
                                 </td>
 
                                 <td style="font-weight:700;color:var(--accent)">
@@ -4585,14 +4583,17 @@ if (!res.ok) {
                                 </td>
 
                                 <td style="font-size:.8rem;color:var(--muted)">
-                                    ${new Date(o.createdAt)
-                                        .toLocaleDateString(
-                                            'en-IN',
-                                            {
-                                                day:'numeric',
-                                                month:'short'
-                                            }
-                                        )}
+                                    ${o.createdAt
+                                        ? new Date(o.createdAt)
+                                            .toLocaleDateString(
+                                                'en-IN',
+                                                {
+                                                    day:'numeric',
+                                                    month:'short'
+                                                }
+                                            )
+                                        : '—'
+                                    }
                                 </td>
 
                                 <td>
@@ -4651,22 +4652,18 @@ if (!res.ok) {
 
     updateUI();
 
-    const updateO = (id, st) => {
-
-        const o = DB.orders.find(x => x._id === id);
-
-        if (o) {
-
-            o.status = st;
-            o.updatedAt = new Date().toISOString();
-
-            localStorage.setItem(
-                'hf_orders',
-                JSON.stringify(DB.orders)
-            );
-
+    // FIX: Use API to update order status instead of localStorage
+    const updateO = async (id, st) => {
+        try {
+            await api(`/cooks/orders/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: st })
+            });
             toast(`Order ${st}`);
             pgCookOrders(a);
+        } catch (err) {
+            toast(err.message || 'Failed to update order', 'error');
         }
     };
 
@@ -4697,6 +4694,12 @@ if (!res.ok) {
             () => updateO(b.dataset.oid, 'delivered')
         )
     );
+
+    } catch(err) {
+        console.error('Cook orders error:', err);
+        a.innerHTML = `<section class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error loading orders</h3><p>${err.message}</p></div></div></section>`;
+        updateUI();
+    }
 }
 
         function pgCookSubs(a) {
@@ -4718,12 +4721,19 @@ if (!res.ok) {
             requestAnimationFrame(() => { $$('.earn-bar-fill', a).forEach(el => { const w = el.style.width; el.style.width = '0'; requestAnimationFrame(() => el.style.width = w) }) });
         }
 
-        function pgCookSettings(a) {
+        async function pgCookSettings(a) {
             if (!S.user || S.user.role !== 'cook') { nav('login'); return }
-            const cook = DB.cooks.find(c => c._id === S.user._id) || S.user;
-            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="margin-bottom:24px"><div class="sec-label">Settings</div><h2 class="sec-title">Cook Profile</h2></div><div class="co-card"><h3><i class="fas fa-user" style="color:var(--accent)"></i> Basic Info</h3><form id="ckSetF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="ckN" value="${S.user.name}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ckPh" value="${S.user.phone || ''}"/></div></div><div class="fg"><label class="fl">Cuisine</label><input class="fi" id="ckCui" value="${cook.cuisine || ''}"/></div><div class="fg"><label class="fl">Service Area</label><input class="fi" id="ckArea" value="${cook.serviceArea || ''}"/></div><div class="fg"><label class="fl">Timings</label><input class="fi" id="ckTim" value="${cook.timings || ''}"/></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ckBio" rows="2">${cook.bio || ''}</textarea></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save Changes</button></form></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-tags" style="color:var(--accent)"></i> Subscription Plans</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:16px">Set your daily, weekly, and monthly pricing.</p><div id="plansEditor">${[{ type: 'daily', label: 'Daily' }, { type: 'weekly', label: 'Weekly' }, { type: 'monthly', label: 'Monthly' }].map(pt => `<div style="margin-bottom:16px;padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-weight:700;font-size:.9rem;margin-bottom:10px">${pt.label}</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div class="fg" style="margin:0"><label class="fl">Lunch Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="lunch" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'lunch')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Dinner Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="dinner" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'dinner')?.price || ''}" placeholder="0"/></div><div class="fg" style="margin:0"><label class="fl">Both Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="both" value="${(cook.plans || []).find(p => p.type === pt.type && p.meal === 'both')?.price || ''}" placeholder="0"/></div></div></div>`).join('')}</div><button class="btn btn-p btn-sm" id="savePlans" style="margin-top:12px"><i class="fas fa-save"></i> Save Plans</button></div></div></section>`;
+
+            // FIX: Fetch cook profile from authenticated API instead of broken DB.cooks.find
+            let cook = S.user;
+            try {
+                const dashRes = await api('/cooks/dashboard/my');
+                cook = dashRes.data?.cook || S.user;
+            } catch(e) {}
+
+            a.innerHTML = `<section class="page-sec"><div class="container" style="max-width:600px"><div style="margin-bottom:24px"><div class="sec-label">Settings</div><h2 class="sec-title">Cook Profile</h2></div><div class="co-card"><h3><i class="fas fa-user" style="color:var(--accent)"></i> Basic Info</h3><form id="ckSetF"><div class="fr"><div class="fg"><label class="fl">Name</label><input class="fi" id="ckN" value="${cook.name || S.user.firstName || ''}"/></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ckPh" value="${S.user.phone || cook.phone || ''}"/></div></div><div class="fg"><label class="fl">Cuisine</label><input class="fi" id="ckCui" value="${cook.cuisine || ''}"/></div><div class="fg"><label class="fl">Service Area</label><input class="fi" id="ckArea" value="${cook.area || cook.serviceArea || ''}"/></div><div class="fg"><label class="fl">Timings</label><input class="fi" id="ckTim" value="${cook.deliveryTime || cook.timings || ''}"/></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ckBio" rows="2">${cook.tagline || cook.bio || ''}</textarea></div><button type="submit" class="btn btn-p btn-sm"><i class="fas fa-save"></i> Save Changes</button></form></div><div class="co-card" style="margin-top:20px"><h3><i class="fas fa-tags" style="color:var(--accent)"></i> Subscription Plans</h3><p style="font-size:.86rem;color:var(--muted);margin-bottom:16px">Set your daily, weekly, and monthly pricing.</p><div id="plansEditor">${[{ type: 'daily', label: 'Daily', val: cook.plans?.daily || 0 }, { type: 'weekly', label: 'Weekly', val: cook.plans?.weekly || 0 }, { type: 'monthly', label: 'Monthly', val: cook.plans?.monthly || 0 }].map(pt => `<div style="margin-bottom:16px;padding:14px;background:var(--bg-deep);border-radius:var(--radius-sm)"><div style="font-weight:700;font-size:.9rem;margin-bottom:10px">${pt.label}</div><div style="display:grid;grid-template-columns:1fr;gap:10px"><div class="fg" style="margin:0"><label class="fl">Price</label><input class="fi plan-price" data-pt="${pt.type}" data-meal="both" value="${pt.val}" placeholder="0"/></div></div></div>`).join('')}</div><button class="btn btn-p btn-sm" id="savePlans" style="margin-top:12px"><i class="fas fa-save"></i> Save Plans</button></div></div></section>`;
             updateUI();
-            $('#ckSetF', a)?.addEventListener('submit', e => { e.preventDefault(); S.user.name = $('#ckN', a).value.trim(); S.user.phone = $('#ckPh', a).value.trim(); const ck = DB.cooks.find(c => c._id === S.user._id); if (ck) { ck.cuisine = $('#ckCui', a).value.trim(); ck.serviceArea = $('#ckArea', a).value.trim(); ck.timings = $('#ckTim', a).value.trim(); ck.bio = $('#ckBio', a).value.trim() } saveU(); updateUI(); toast('Settings saved!') });
+            $('#ckSetF', a)?.addEventListener('submit', async (e) => { e.preventDefault(); try { await api('/cooks/profile/my', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: $('#ckN', a).value.trim(), cuisine: $('#ckCui', a).value.trim(), area: $('#ckArea', a).value.trim(), deliveryTime: $('#ckTim', a).value.trim(), tagline: $('#ckBio', a).value.trim() }) }); toast('Settings saved!'); } catch(err) { toast(err.message || 'Save failed', 'error'); } });
             $('#savePlans', a)?.addEventListener('click', async () => {
 
     try {
@@ -4744,7 +4754,7 @@ if (!res.ok) {
             ) || 0;
 
         const token =
-            localStorage.getItem('token');
+            localStorage.getItem('hf_tk') || localStorage.getItem('token');
 
         const response =
             await fetch(
