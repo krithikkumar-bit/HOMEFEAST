@@ -4082,6 +4082,103 @@ function pgCookProfile(id, a) {
                 </div>
 
                 <div class="stats-grid">
+                    <div class="card" style="margin-top:24px;padding:20px;">
+    <h3 style="margin-bottom:15px;">Recent Orders</h3>
+
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            ${orders.slice(0,5).map(o => `
+                <tr>
+                    <td>${o.user?.firstName || 'Customer'}</td>
+                    <td>${fp(o.amount || o.total || 0)}</td>
+                    <td>${o.status}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+</div>
+
+<div class="card" style="margin-top:24px;padding:20px;">
+    <h3 style="margin-bottom:15px;">Top Performing Cooks</h3>
+
+    ${cooks
+        .sort((a,b)=>(b.rating||0)-(a.rating||0))
+        .slice(0,5)
+        .map(c=>`
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                padding:10px 0;
+                border-bottom:1px solid #eee;
+            ">
+                <span>${c.name}</span>
+                <span>⭐ ${c.rating || 0}</span>
+            </div>
+        `).join('')}
+</div>
+
+<div class="card" style="margin-top:24px;padding:20px;">
+    <h3 style="margin-bottom:15px;">
+        Pending Cook Approvals
+    </h3>
+
+    ${cooks
+        .filter(c=>c.status==='pending')
+        .slice(0,5)
+        .map(c=>`
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                padding:10px 0;
+                border-bottom:1px solid #eee;
+            ">
+                <span>${c.name}</span>
+                <span style="color:orange;">Pending</span>
+            </div>
+        `).join('')}
+</div>
+
+<div class="card" style="margin-top:24px;padding:20px;">
+    <h3>Revenue Insights</h3>
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:15px;
+    ">
+        <div>
+            <div style="font-size:13px;color:gray;">
+                Total Revenue
+            </div>
+
+            <div style="font-size:28px;font-weight:bold;">
+                ${fp(totalRevenue)}
+            </div>
+        </div>
+
+        <div>
+            <div style="font-size:13px;color:gray;">
+                Avg Order Value
+            </div>
+
+            <div style="font-size:28px;font-weight:bold;">
+                ${fp(
+                    orders.length
+                    ? totalRevenue/orders.length
+                    : 0
+                )}
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="stat-card">
         <div class="stat-icon" style="background:rgba(25,118,210,.1);color:var(--info)">
@@ -4151,7 +4248,7 @@ function pgCookProfile(id, a) {
     </div>
 
 </div>
-                </div>
+                
 
             </div>
         </section>
