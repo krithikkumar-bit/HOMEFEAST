@@ -36,60 +36,107 @@ router.use(
 
 
 /* =========================
-   KPI DASHBOARD
+   KPI DASHBOARD (SWIGGY STYLE)
 ========================= */
 
-router.get('/kpi',
-async(req,res,next)=>{
+router.get('/kpi', async (req, res, next) => {
 
-  try{
+  try {
 
-    const users =
-    await User.countDocuments({
-      role:'user'
+    const users = await User.countDocuments({
+      role: 'user'
     });
 
-    const cooks =
-    await Cook.countDocuments();
+    const cooks = await Cook.countDocuments();
 
     const activeSubscriptions =
-    await Subscription.countDocuments({
-      status:'Active'
-    });
+      await Subscription.countDocuments({
+        status: 'Active'
+      });
 
-    const orders =
-    await Order.countDocuments();
+    const totalOrders =
+      await Order.countDocuments();
+
+    const pendingOrders =
+      await Order.countDocuments({
+        status: 'Placed'
+      });
 
     const completedOrders =
-    await Order.countDocuments({
-      status:'Completed'
-    });
+      await Order.countDocuments({
+        status: {
+          $in: ['Delivered', 'Completed']
+        }
+      });
+
+    const openComplaints =
+      await Complaint.countDocuments({
+        status: {
+          $ne: 'Resolved'
+        }
+      });
+
+    const revenueData =
+      await Order.aggregate([
+        {
+          $match: {
+            status: {
+              $ne: 'Cancelled'
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            revenue: {
+              $sum: '$amount'
+            }
+          }
+        }
+      ]);
+
+    const revenue =
+      revenueData[0]?.revenue || 0;
+
+    const averageOrderValue =
+      totalOrders > 0
+        ? Math.round(revenue / totalOrders)
+        : 0;
 
     const conversionRate =
-    orders
-      ? (
-        (completedOrders/orders)
-        *100
-      ).toFixed(2)
-      : 0;
+      totalOrders > 0
+        ? Math.round(
+            (completedOrders / totalOrders) * 100
+          )
+        : 0;
+
+    const menuItems =
+      await Menu.countDocuments();
 
     res.json({
-      success:true,
-      data:{
+      success: true,
+      data: {
         users,
         cooks,
         activeSubscriptions,
-        orders,
-        conversionRate
+        totalOrders,
+        pendingOrders,
+        completedOrders,
+        openComplaints,
+        revenue,
+        averageOrderValue,
+        conversionRate,
+        menuItems
       }
     });
 
-  }catch(err){
+  } catch (err) {
+
     next(err);
+
   }
 
 });
-
 
 /* =========================
    ADMIN STATS

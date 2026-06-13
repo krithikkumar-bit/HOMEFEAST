@@ -41,7 +41,12 @@ button{cursor:pointer;border:none;outline:none;font-family:inherit}
 .btn-warning{background:var(--warning);color:#fff}
 .btn-info{background:var(--info);color:#fff}
 .btn-sm{padding:6px 12px;font-size:13px}
-.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:32px}
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:32px;
+}
 .stat-card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .stat-card.s-orange::before{background:var(--accent)}
@@ -175,12 +180,88 @@ tr:hover td{background:rgba(255,255,255,.02)}
   <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
-      <div class="stat-card s-orange"><div class="stat-icon ic-orange"><i class="fas fa-users"></i></div><div class="stat-val" id="kpiUsers">—</div><div class="stat-label">Registered Users</div></div>
-      <div class="stat-card s-green"><div class="stat-icon ic-green"><i class="fas fa-utensils"></i></div><div class="stat-val" id="kpiCooks">—</div><div class="stat-label">Total Cooks</div></div>
-      <div class="stat-card s-blue"><div class="stat-icon ic-blue"><i class="fas fa-calendar-check"></i></div><div class="stat-val" id="kpiSubs">—</div><div class="stat-label">Active Subscriptions</div></div>
-      <div class="stat-card s-yellow"><div class="stat-icon ic-yellow"><i class="fas fa-receipt"></i></div><div class="stat-val" id="kpiOrders">—</div><div class="stat-label">Total Orders</div></div>
-      <div class="stat-card s-green"><div class="stat-icon ic-green"><i class="fas fa-percentage"></i></div><div class="stat-val" id="kpiConversion">—</div><div class="stat-label">Conversion Rate</div></div>
+
+    <div class="stat-card s-orange">
+        <div class="stat-icon ic-orange">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-val" id="kpiUsers">0</div>
+        <div class="stat-label">Users</div>
     </div>
+
+    <div class="stat-card s-green">
+        <div class="stat-icon ic-green">
+            <i class="fas fa-utensils"></i>
+        </div>
+        <div class="stat-val" id="kpiCooks">0</div>
+        <div class="stat-label">Cooks</div>
+    </div>
+
+    <div class="stat-card s-blue">
+        <div class="stat-icon ic-blue">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-val" id="kpiSubs">0</div>
+        <div class="stat-label">Subscriptions</div>
+    </div>
+
+    <div class="stat-card s-yellow">
+        <div class="stat-icon ic-yellow">
+            <i class="fas fa-receipt"></i>
+        </div>
+        <div class="stat-val" id="kpiOrders">0</div>
+        <div class="stat-label">Orders</div>
+    </div>
+
+    <div class="stat-card s-green">
+        <div class="stat-icon ic-green">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <div class="stat-val" id="kpiRevenue">₹0</div>
+        <div class="stat-label">Revenue</div>
+    </div>
+
+    <div class="stat-card s-orange">
+        <div class="stat-icon ic-orange">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-val" id="kpiPendingOrders">0</div>
+        <div class="stat-label">Pending Orders</div>
+    </div>
+
+    <div class="stat-card s-blue">
+        <div class="stat-icon ic-blue">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-val" id="kpiCompletedOrders">0</div>
+        <div class="stat-label">Completed Orders</div>
+    </div>
+
+    <div class="stat-card s-green">
+        <div class="stat-icon ic-green">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-val" id="kpiAOV">₹0</div>
+        <div class="stat-label">Average Order Value</div>
+    </div>
+
+    <div class="stat-card s-red">
+        <div class="stat-icon ic-red">
+            <i class="fas fa-comment"></i>
+        </div>
+        <div class="stat-val" id="kpiComplaints">0</div>
+        <div class="stat-label">Complaints</div>
+    </div>
+
+    <div class="stat-card s-blue">
+        <div class="stat-icon ic-blue">
+            <i class="fas fa-bowl-food"></i>
+        </div>
+        <div class="stat-val" id="kpiMenus">0</div>
+        <div class="stat-label">Menu Items</div>
+    </div>
+
+</div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
       <div class="section">
@@ -488,14 +569,78 @@ document.querySelectorAll('.nav-item').forEach(el=>{el.onclick=()=>showPage(el.d
 // DASHBOARD
 async function loadDashboard(){
   const [kpi,stats,orders]=await Promise.all([apiFetch('/admin/kpi'),apiFetch('/admin/stats'),apiFetch('/admin/orders')]);
-  if(kpi.success){
-    const d=kpi.data;
-    document.getElementById('kpiUsers').textContent=d.users;
-    document.getElementById('kpiCooks').textContent=d.cooks;
-    document.getElementById('kpiSubs').textContent=d.activeSubscriptions;
-    document.getElementById('kpiOrders').textContent=d.orders;
-    document.getElementById('kpiConversion').textContent=d.conversionRate+'%';
-  }
+  if (kpi.success) {
+
+    const d = kpi.data;
+
+    document.getElementById('kpiUsers').textContent =
+        d.users || 0;
+
+    document.getElementById('kpiCooks').textContent =
+        d.cooks || 0;
+
+    document.getElementById('kpiSubs').textContent =
+        d.activeSubscriptions || 0;
+
+    document.getElementById('kpiOrders').textContent =
+        d.totalOrders || d.orders || 0;
+
+    const revenueEl =
+        document.getElementById('kpiRevenue');
+
+    if (revenueEl) {
+        revenueEl.textContent =
+            '₹' + (d.revenue || 0);
+    }
+
+    const pendingEl =
+        document.getElementById('kpiPendingOrders');
+
+    if (pendingEl) {
+        pendingEl.textContent =
+            d.pendingOrders || 0;
+    }
+
+    const completedEl =
+        document.getElementById('kpiCompletedOrders');
+
+    if (completedEl) {
+        completedEl.textContent =
+            d.completedOrders || 0;
+    }
+
+    const aovEl =
+        document.getElementById('kpiAOV');
+
+    if (aovEl) {
+        aovEl.textContent =
+            '₹' + (d.averageOrderValue || 0);
+    }
+
+    const complaintsEl =
+        document.getElementById('kpiComplaints');
+
+    if (complaintsEl) {
+        complaintsEl.textContent =
+            d.openComplaints || 0;
+    }
+
+    const menuEl =
+        document.getElementById('kpiMenus');
+
+    if (menuEl) {
+        menuEl.textContent =
+            d.menuItems || 0;
+    }
+
+    const conversionEl =
+        document.getElementById('kpiConversion');
+
+    if (conversionEl) {
+        conversionEl.textContent =
+            (d.conversionRate || 0) + '%';
+    }
+}
   if(stats.success){
     const pending=stats.data.pendingCooks;
     const openC=stats.data.openComplaints;
