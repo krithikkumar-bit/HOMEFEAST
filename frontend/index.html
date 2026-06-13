@@ -3405,56 +3405,56 @@ console.log("Filtered Items:", items);
                 `<button class="btn btn-o btn-sm" onclick="closeModal()">Cancel</button><button class="btn btn-p btn-sm" id="confirmSubBtn"><i class="fas fa-check"></i> Confirm Subscription</button>`
             );
 
-            document.getElementById('confirmSubBtn').addEventListener('click', () => {
+            document.getElementById('confirmSubBtn').addEventListener('click', async () => {
 
-    console.log("Current User:", S.user);
+    try {
 
-    const currentUserId =
-        S.user._id ||
-        S.user.id;
+        const token = localStorage.getItem('hf_tk');
 
-    const newSub = {
+        const res = await fetch(
+            'https://homefeast-3fqr.onrender.com/api/subscriptions',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    cook: cookId,
+                    plan:
+                        planType.charAt(0).toUpperCase() +
+                        planType.slice(1),
+                    amount: planPrice,
+                    mealPreference: ['lunch', 'dinner']
+                })
+            }
+        );
 
-    _id: 'sub_' + Date.now(),
+        const data = await res.json();
 
-    userId: S.user.id,
+        if (!res.ok) {
+            toast(
+                data.message || 'Subscription failed',
+                'error'
+            );
+            return;
+        }
 
-    cookId: ck._id,
-    cook: ck._id,
+        toast('Subscription created successfully');
 
-    cookName: ck.name,
+        closeModal();
 
-    plan: planType,
-    meal: planMeal,
+        loadSubscriptions();
 
-    price: planPrice,
+    } catch (err) {
 
-    status: 'active',
+        console.error(err);
 
-    startDate: new Date().toISOString(),
-
-    nextDelivery:
-        new Date(Date.now() + 86400000)
-        .toISOString()
-        .split('T')[0],
-
-    createdAt: new Date().toISOString()
-};
-
-    DB.subscriptions.push(newSub);
-
-    localStorage.setItem(
-        'hf_subscriptions',
-        JSON.stringify(DB.subscriptions)
-    );
-
-    console.log("Saved Subscription:", newSub);
-
-    closeModal();
-
-    toast(
-        `Subscribed to ${cookName}'s ${planType} plan successfully!`
-    );
+        toast(
+            'Failed to create subscription',
+            'error'
+        );
+    }
 });
         });
     });
@@ -4268,10 +4268,16 @@ const mySubs = DB.subscriptions.filter(
 
                 const data = await res.json();
 
-                if (!res.ok) {
-                    toast(data.message, 'error');
-                    return;
-                }
+console.log("POST STATUS:", res.status);
+console.log("POST RESPONSE:", data);
+
+if (!res.ok) {
+    toast(
+        data.message || 'Subscription failed',
+        'error'
+    );
+    return;
+}
 
                 toast('Menu deleted');
 
