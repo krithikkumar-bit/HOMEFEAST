@@ -3306,7 +3306,19 @@ function pgCookProfile(id, a) {
     const app = a || $('#app');
     const ck = DB.cooks.find(c => c._id === id);
     if (!ck) { app.innerHTML = `<div class="page-sec"><div class="container"><div class="empty-state"><i class="fas fa-utensils"></i><h3>Cook not found</h3><a class="btn btn-p" data-nv="browse">Browse Cooks</a></div></div></div>`; updateUI(); return; }
-    const items = DB.menuItems.filter(m => (m.cookId === ck._id || m.cook === ck._id) && (m.available === true || m.avail === true));
+    const items = DB.menuItems.filter(m => {
+
+    const cookId =
+        m.cookId ||
+        m.cook?._id ||
+        m.cook;
+
+    return cookId == ck._id;
+
+});
+console.log("Current Cook:", ck._id);
+console.log("Menu Items:", DB.menuItems);
+console.log("Filtered Items:", items);
     const revs = DB.reviews.filter(r => r.cookId === ck._id || r.cook === ck._id);
     const avgR = revs.length ? Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length * 10) / 10 : (ck.rating || 4.5);
     const plans = [];
