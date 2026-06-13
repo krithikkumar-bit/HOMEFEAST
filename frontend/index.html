@@ -4301,11 +4301,130 @@ function pgCookProfile(id, a) {
             $$('.rej-ck2', a).forEach(b => b.addEventListener('click', () => { const c = DB.cooks.find(x => x._id === b.dataset.cid); if (c) { c.status = 'rejected'; toast(`${c.name} deactivated`); pgAdminCooks(a) } }));
         }
 
-        function pgAdminOrders(a) {
-            if (!S.user || S.user.role !== 'admin') { nav('login'); return }
-            const sorted = [...DB.orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            a.innerHTML = `<section class="page-sec"><div class="container"><div style="margin-bottom:24px"><div class="sec-label">Admin</div><h2 class="sec-title">All Orders (${sorted.length})</h2></div><div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Customer</th><th>Cook</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${sorted.map(o => { const u = DB.users.find(x => x._id === o.userId); const ck = DB.cooks.find(x => x._id === o.cookId); return `<tr><td style="font-weight:600">#${o._id.slice(-6).toUpperCase()}</td><td>${u?.name || '\u2014'}</td><td>${ck?.name || '\u2014'}</td><td style="font-size:.82rem">${o.items.map(i => i.name).join(', ')}</td><td style="font-weight:700;color:var(--accent)">${fp(o.total || o.amount || 0)}</td><td><span class="badge-st ${stMap[o.status]?.c || ''}">${stMap[o.status]?.l || o.status}</span></td><td style="font-size:.8rem;color:var(--muted)">${new Date(o.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td></tr>` }).join('')}</tbody></table></div></div></section>`; updateUI()
+        async function pgAdminOrders(a) {
+
+    if (!S.user || S.user.role !== 'admin') {
+        nav('login');
+        return;
+    }
+
+    try {
+
+        const token = localStorage.getItem('hf_tk');
+
+        const response = await fetch(
+            'https://homefeast-3fqr.onrender.com/api/orders',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message);
         }
+
+        const orders =
+            result.data ||
+            result.orders ||
+            [];
+
+        const sorted =
+            [...orders].sort(
+                (a, b) =>
+                    new Date(b.createdAt) -
+                    new Date(a.createdAt)
+            );
+
+        a.innerHTML = `
+        <section class="page-sec">
+            <div class="container">
+
+                <div style="margin-bottom:24px">
+                    <div class="sec-label">Admin</div>
+                    <h2 class="sec-title">
+                        All Orders (${sorted.length})
+                    </h2>
+                </div>
+
+                <div class="tbl-wrap">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Cook</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            ${sorted.map(o => `
+
+                                <tr>
+
+                                    <td>
+                                        #${o._id.slice(-6).toUpperCase()}
+                                    </td>
+
+                                    <td>
+                                        ${o.user?.firstName || ''}
+                                        ${o.user?.lastName || ''}
+                                    </td>
+
+                                    <td>
+                                        ${o.cook?.name || '-'}
+                                    </td>
+
+                                    <td>
+                                        ${fp(o.total || o.amount || 0)}
+                                    </td>
+
+                                    <td>
+                                        ${o.status}
+                                    </td>
+
+                                    <td>
+                                        ${new Date(o.createdAt)
+                                            .toLocaleDateString()}
+                                    </td>
+
+                                </tr>
+
+                            `).join('')}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </section>`;
+
+        updateUI();
+
+    } catch (err) {
+
+        console.error(err);
+
+        a.innerHTML = `
+        <section class="page-sec">
+            <div class="container">
+                <h2>Failed to load orders</h2>
+                <p>${err.message}</p>
+            </div>
+        </section>`;
+    }
+}
 
         function pgAdminCats(a) {
             if (!S.user || S.user.role !== 'admin') { nav('login'); return }
