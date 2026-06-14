@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -819,7 +819,7 @@ tr:hover td{background:rgba(232,93,44,.02)}
 
 // ---- CONFIG ----
 const API = window.location.origin + '/api';
-let token = localStorage.getItem('hf_token');
+let token = localStorage.getItem('hf_tk');
 let user = null;
 let allOrders = [];
 let allSubs = [];
@@ -841,7 +841,7 @@ async function api(path, opts={}){
   try{
     const res = await fetch(API + path, {...opts, headers});
     const data = await res.json();
-    if(res.status===401||res.status===403){ toast('Session expired. Please login again.','error'); setTimeout(()=>{localStorage.removeItem('hf_token');localStorage.removeItem('hf_user');window.location.href='index.html'},1500); return null; }
+    if(res.status===401||res.status===403){ toast('Session expired. Please login again.','error'); setTimeout(()=>{localStorage.removeItem('hf_tk');localStorage.removeItem('hf_user');window.location.href='index.html'},1500); return null; }
     if(!res.ok){ toast(data.message||'Request failed','error'); return null; }
     return data;
   }catch(e){ toast('Network error','error'); return null; }
@@ -1538,7 +1538,7 @@ async function saveProfile(e){
 // ===================================================================
 async function logout(){
   await api('/auth/logout',{method:'POST'});
-  localStorage.removeItem('hf_token');
+  localStorage.removeItem('hf_tk');
   localStorage.removeItem('hf_user');
   window.location.href='index.html';
 }

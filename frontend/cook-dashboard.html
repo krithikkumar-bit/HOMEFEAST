@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -671,7 +671,7 @@ input,select,textarea{font-family:inherit;outline:none}
    STATE & HELPERS
    ══════════════════════════════════════ */
 const API = '';
-let token = localStorage.getItem('hf_token') || '';
+let token = localStorage.getItem('hf_tk') || '';
 let userData = {};
 try { userData = JSON.parse(localStorage.getItem('hf_user') || '{}'); } catch(e) {}
 
@@ -1299,7 +1299,7 @@ async function handleLogout() {
   try {
     await api('/api/auth/logout', { method: 'POST' });
   } catch (e) {}
-  localStorage.removeItem('hf_token');
+  localStorage.removeItem('hf_tk');
   localStorage.removeItem('hf_user');
   window.location.href = 'index.html';
 }

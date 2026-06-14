@@ -1002,7 +1002,7 @@
     <script>
         /* ── Globals ── */
         const API = '';
-        let token = localStorage.getItem('hf_token');
+        let token = localStorage.getItem('hf_tk');
         let userData = null;
         try { userData = JSON.parse(localStorage.getItem('hf_user')); } catch(e) {}
         let allCooks = [], allUsers = [], allOrders = [], allComplaints = [];
@@ -1013,7 +1013,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (!token) { window.location.href = 'index.html'; return; }
             if (userData) {
-                const name = userData.name || userData.fullName || 'Admin';
+                const name = userData.firstName ? `${userData.firstName} ${userData.lastName || ''}`.trim() : userData.name || userData.fullName || 'Admin';
                 document.getElementById('adminName').textContent = name;
                 document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
             }
@@ -1024,7 +1024,7 @@
         async function api(endpoint, options = {}) {
             const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
             const res = await fetch(API + endpoint, { ...options, headers: { ...headers, ...options.headers } });
-            if (res.status === 401) { localStorage.removeItem('hf_token'); localStorage.removeItem('hf_user'); window.location.href = 'index.html'; return null; }
+            if (res.status === 401) { localStorage.removeItem('hf_tk'); localStorage.removeItem('hf_user'); window.location.href = 'index.html'; return null; }
             if (!res.ok) { const err = await res.json().catch(() => ({ message: 'Request failed' })); throw new Error(err.message || 'Request failed'); }
             return res.json();
         }
@@ -1481,7 +1481,7 @@
         function handleLogout() {
             openModal('danger', 'Logout', 'Are you sure you want to logout from the admin dashboard?', 'modal-btn-confirm-danger', async () => {
                 try { await api('/api/auth/logout', { method: 'POST' }); } catch(e) {}
-                localStorage.removeItem('hf_token');
+                localStorage.removeItem('hf_tk');
                 localStorage.removeItem('hf_user');
                 window.location.href = 'index.html';
             });
